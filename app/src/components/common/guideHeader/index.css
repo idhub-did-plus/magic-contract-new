@@ -1,0 +1,67 @@
+.topmenu {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #fff;
+    height:100px;
+    color:rgba(32,32,32,1);
+    box-shadow:0px 4px 15px 0px rgba(0,0,0,0.15);
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+  }
+.topmenu .logoBox{
+    height: 100px;
+    width: 270px;
+    background:linear-gradient(179deg,rgba(60,231,222,1) 0%,rgba(111,179,250,1) 100%);
+    display: flex;
+    align-items: center;
+}
+.topmenu .logoBox .logo{
+    width: 44px;
+    height: 44px;
+    margin-left: 40px;
+    margin-top: 0;
+}
+.topmenu .logoBox .text{
+  width:161px;
+  font-size:18px;
+  font-weight: 500;
+  color:rgba(255,255,255,1);
+  padding-left: 10px;
+}
+.topmenu li{
+  padding-right: 100px;
+  display: flex;
+  align-items: center;
+}
+.topmenu li p{
+  margin: 0;
+  cursor: pointer;
+  width: 120px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+.topmenu li .inOut{
+  display:inline-block;
+  width:80px;
+  height:36px;
+  line-height: 36px;
+  background:linear-gradient(129deg,rgba(111,178,255,1) 0%,rgba(9,95,255,1) 100%);
+  border-radius:4px;
+  text-align: center;
+  cursor:pointer;
+  color: white;
+}
+.topmenu li .icon{
+  width:30px;
+  height:30px;
+  background:url('../../../assets/head@2x.png');
+  background-size: cover;
+  display:inline-block;
+  margin-bottom: 0;
+  margin-right: 10px;
+  border: none;
+}

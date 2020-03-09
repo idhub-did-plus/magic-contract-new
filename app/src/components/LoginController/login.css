@@ -1,0 +1,61 @@
+/* 弹性盒布局结合百分比布局适配 */
+.loginController{
+    width:100%;
+    height:100%;
+    background-color: #fff;
+    color:rgba(51,129,255,1);
+    display: flex;
+    justify-content: space-around;
+}
+.loginController .bg{
+    width: auto;
+    height: 100%;
+}
+.loginController .container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 8%;
+}
+.container p:nth-of-type(1){
+    font-size: 60px;
+    font-weight:500;
+    margin: 0;
+}
+.container p:nth-of-type(2){
+    font-size: 20px;
+    font-weight:400;
+    margin: 0;
+}
+.container .login{
+    width: 60%;
+    margin-top: 10%;
+}
+.container .login .select{
+    width: 100%;
+    height: 46px;
+    line-height: 46px;
+    font-weight: 500;
+    border-radius:32px;
+    border:1px solid rgba(51,129,255,1);
+    margin-bottom: 14px;
+    padding: 0 7%;
+    display: flex;
+    justify-content: space-between;
+}
+.container .login .logBtn{
+    margin-top: 20px;
+    height: 90px;
+    width: 180px;
+    background: url('../../assets/loginBtn.png');
+    background-size: cover;
+}
+.container .login .select .icon{
+    display: inline-block;
+    background: url('../../assets/对勾@2x.png') no-repeat;
+    background-size: cover;
+    border:none;
+    width: 19px;
+    height: 19px;
+    margin-top: 14px;
+ }
