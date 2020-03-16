@@ -10,12 +10,15 @@ import TokenManage from "./components/TokenManage/TokenManage"
 import Compliance from "./components/tokenComplianceConfigure/compliance"
 import ERC1400Deploy from "./components/token/Erc1400DeployComponent"
 import ERC1400Issue from "./components/token/TokenIssueComponent"
-import Configure from "./components/compliance/ComplianceComponent"
+// import Configure from "./components/compliance/ComplianceComponent"
 
 import LoginController from "./components/LoginController/LoginController";
 import Home from "./components/home/Home"
 import InformRegister from "./components/guideModule/informRegister/register"
 import Deploy from "./components/guideModule/tokenDeploy/deploy"
+import Configure from "./components/guideModule/tokenComplianceConfigure/configure"
+import Issue from "./components/guideModule/tokenIssue/issue"
+import Onchain from "./components/guideModule/fileOnline/online"
 
 class App extends Component {
   render() {
@@ -39,10 +42,10 @@ class App extends Component {
                       <Route path="/" component={Home} exact/>
                       {/* <li hidden={drizzleState.login.claim=="tokenIssuer"}></li><Route path="/manage" component={TokenManage} exact/> */}
                       <Route path="/register" component={InformRegister} exact/>
-                      <Route path="/compliance" component={Compliance} exact/>
                       <Route path="/deploy" component={Deploy} exact/>
-                      <Route path="/issue" component={ERC1400Issue} exact/>
-                      <Route path="/config" component={Configure} exact/>
+                      <Route path="/configure" component={Configure} exact/>
+                      <Route path="/issue" component={Issue} exact/>
+                      <Route path="/disclosure" component={Onchain} exact/>
                   </Router>
                 </LoginController>
               );

@@ -11,7 +11,10 @@ class InformRegister extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        fileName: "",
+        fileName1: "",
+        fileName2: "",
+        fileName3: "",
+        fileName4: "",
         optionBoxIndex: 1,
         optionBox1: false,
         optionBox2: false,
@@ -27,12 +30,27 @@ class InformRegister extends Component {
     };
     
   }
-  handleChange(e){
+  handleChange(index,e){
       var arr = e.target.value.split("\\");
       var name = arr[arr.length-1];
-      this.setState({
-          fileName: name
-      })
+      console.log(index,name)
+      if(index == 1){
+          this.setState({
+            fileName1: name
+          })
+      }else if(index == 2){
+          this.setState({
+            fileName2: name
+          })
+      }else if(index == 3){
+          this.setState({
+            fileName3: name
+          })
+      }else if(index == 4){
+          this.setState({
+            fileName4: name
+          })
+      }
   }
   handleSelect(index){
     if(index == 1){
@@ -215,12 +233,16 @@ class InformRegister extends Component {
                         </ul>
                     </div>
                     <p></p>
+                    {/* 上传文件1 */}
                     <div className="uploadRow">
-                        <div className="upload">
-                            <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName ? "block" : "none"}}/>
-                            <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName ? "none" : "block"}}/>
-                            <input type="file" id="file1" className="upInput" onChange={this.handleChange.bind(this)}/>
-                            <div className="fileName" style={{display: !this.state.fileName ? "none" : "block"}}>{this.state.fileName}</div>
+                        <div className="upload" style={{display: !this.state.fileName1 ? "block" : "none"}}>
+                            <img className="up" src={Upload} alt="上传图标"/>
+                            <input type="file" id="file1" className="upInput" onChange={this.handleChange.bind(this,1)}/>
+                        </div>
+                        <div className="uploaded" style={{display: !this.state.fileName1 ? "none" : "block"}}>
+                            <img className="file" src={file} alt="已上传图标"/>
+                            <input type="file" id="file1" className="upInput" onChange={this.handleChange.bind(this,1)}/>
+                            <div className="fileName">{this.state.fileName1}</div>
                         </div>
                         <label htmlFor="file1">Upload legal documents:</label>
                     </div>
@@ -229,26 +251,34 @@ class InformRegister extends Component {
                         <label htmlFor="description1">Content description: </label>
                     </div>
                     <p></p>
-                    <div className="uploadRow">
-                        <div className="upload">
-                            <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName ? "block" : "none"}}/>
-                            <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName ? "none" : "block"}}/>
-                            <input type="file" id="file2" className="upInput" onChange={this.handleChange.bind(this)}/>
-                            <div className="fileName" style={{display: !this.state.fileName ? "none" : "block"}}>{this.state.fileName}</div>
-                        </div>
-                        <label htmlFor="file2">Upload marketing files:</label>
-                    </div>
                     <div className="informRow">
                         <input type="text" id="description2"/>
                         <label htmlFor="description2">Content description: </label>
                     </div>
                     <p></p>
+                    {/* 上传文件2 */}
                     <div className="uploadRow">
-                        <div className="upload">
-                            <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName ? "block" : "none"}}/>
-                            <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName ? "none" : "block"}}/>
-                            <input type="file" id="file3" className="upInput" onChange={this.handleChange.bind(this)}/>
-                            <div className="fileName" style={{display: !this.state.fileName ? "none" : "block"}}>{this.state.fileName}</div>
+                        <div className="upload" style={{display: !this.state.fileName2 ? "block" : "none"}}>
+                            <img className="up" src={Upload} alt="上传图标"/>
+                            <input type="file" id="file2" className="upInput" onChange={this.handleChange.bind(this,2)}/>
+                        </div>
+                        <div className="uploaded" style={{display: !this.state.fileName2 ? "none" : "block"}}>
+                            <img className="file" src={file} alt="已上传图标"/>
+                            <input type="file" id="file2" className="upInput" onChange={this.handleChange.bind(this,2)}/>
+                            <div className="fileName">{this.state.fileName2}</div>
+                        </div>
+                        <label htmlFor="file2">Upload marketing files:</label>
+                    </div>
+                    {/* 上传文件3 */}
+                    <div className="uploadRow">
+                        <div className="upload" style={{display: !this.state.fileName3 ? "block" : "none"}}>
+                            <img className="up" src={Upload} alt="上传图标"/>
+                            <input type="file" id="file3" className="upInput" onChange={this.handleChange.bind(this,3)}/>
+                        </div>
+                        <div className="uploaded" style={{display: !this.state.fileName3 ? "none" : "block"}}>
+                            <img className="file" src={file} alt="已上传图标"/>
+                            <input type="file" id="file3" className="upInput" onChange={this.handleChange.bind(this,3)}/>
+                            <div className="fileName">{this.state.fileName3}</div>
                         </div>
                         <label htmlFor="file3">Upload white paper:</label>
                     </div>
@@ -325,14 +355,18 @@ class InformRegister extends Component {
                  </div>
                  <div className="titl">Security Token ICON</div>
                  <div className="content">
-                    <div className="uploadRow">
-                        <div className="upload">
-                            <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName ? "block" : "none"}}/>
-                            <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName ? "none" : "block"}}/>
-                            <input type="file" id="stIcon" className="upInput" onChange={this.handleChange.bind(this)}/>
-                            <div className="fileName" style={{display: !this.state.fileName ? "none" : "block"}}>{this.state.fileName}</div>
+                     {/* 上传文件3 */}
+                     <div className="uploadRow">
+                        <div className="upload" style={{display: !this.state.fileName4 ? "block" : "none"}}>
+                            <img className="up" src={Upload} alt="上传图标"/>
+                            <input type="file" id="file4" className="upInput" onChange={this.handleChange.bind(this,4)}/>
                         </div>
-                        <label htmlFor="stIcon">Upload ICON:</label>
+                        <div className="uploaded" style={{display: !this.state.fileName4 ? "none" : "block"}}>
+                            <img className="file" src={file} alt="已上传图标"/>
+                            <input type="file" id="file4" className="upInput" onChange={this.handleChange.bind(this,4)}/>
+                            <div className="fileName">{this.state.fileName4}</div>
+                        </div>
+                        <label htmlFor="file4">Upload ICON:</label>
                     </div>
                  </div>
                  <div className="submit">Submit</div>
@@ -347,4 +381,4 @@ export default function Register(){
     return (
         <InformRegister/>
     );
-  }
+}

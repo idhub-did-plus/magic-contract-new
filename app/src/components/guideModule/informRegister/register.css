@@ -223,3 +223,43 @@
     margin-left: 3%;
     background:linear-gradient(130deg,rgba(255,164,72,1) 0%,rgba(255,111,56,1) 100%);
 }
+.content .uploadRow .uploaded{
+    float: right;
+    width: 45%;
+    border-radius:4px;
+    border:1px solid rgba(214,214,214,1);
+    padding: 20px 8px;
+    position: relative;
+}
+.content .uploadRow .uploaded .upInput{
+    border: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    cursor: pointer;
+    opacity: 0;
+}
+.content .uploadRow .uploaded .fileName{
+    text-align: center;
+    margin-top: 20px;
+}
+.content .uploadRow .uploaded .up{
+    width: 40px;
+    height: auto;
+    cursor: pointer;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+.content .uploadRow .uploaded .file{
+    width: 40px;
+    height: auto;
+    cursor: pointer;
+    margin-left: 45%;
+}

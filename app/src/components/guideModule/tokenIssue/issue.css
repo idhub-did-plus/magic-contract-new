@@ -1,0 +1,211 @@
+
+*{
+    margin: 0;
+    padding: 0;
+}
+.issueBox{
+    display: flex;
+    justify-content: flex-start;
+}
+.issueBox .contentBox{
+    width: 100%;
+    min-height: 700px;
+    background:rgba(244,246,252,1);
+    padding: 30px;
+    padding-bottom: 40px;
+}
+.issueBox .contentBox .stContent{
+    width: 100%;
+    background:rgba(255,255,255,1);
+    box-shadow:0px 2px 12px 0px rgba(228,233,247,1);
+    border-radius:8px;
+    margin-bottom: 20px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-right: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+}
+.stContent .table{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0 5%;
+    color:rgba(90,104,114,1);
+}
+.stContent .table .thead{
+    width: 100%;
+    height: 50px;
+    background:linear-gradient(360deg,rgba(247,250,255,1) 0%,rgba(235,243,255,1) 100%);
+    display: flex;
+    justify-content: flex-start;
+    padding: 0 5%;
+}
+.stContent .table .thead .td{
+    width: 40%;
+    height: 50px;
+    line-height: 50px;
+    text-align: left;
+    padding-right: 2%;
+}
+.stContent .table .thead .td:nth-of-type(2){
+    width: 15%;
+}
+.stContent .table .tr{
+    width: 100%;
+    height: 50px;
+    background:rgba(248,251,255,1);
+    margin-top: 5px;
+    display: flex;
+    justify-content: flex-start;
+    padding: 0 5%;
+}
+.stContent .table .tr .td{
+    width: 40%;
+    height: 50px;
+    line-height: 50px;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-right: 2%;
+}
+.stContent .table .tr .td:nth-of-type(2){
+    width: 15%;
+}
+.stContent .addrTable{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0 5%;
+    color:rgba(90,104,114,1);
+    margin-bottom: 15px;
+}
+.stContent .addrTable .tr{
+    width: 100%;
+    height: 50px;
+    background:rgba(248,251,255,1);
+    margin-top: 5px;
+    display: flex;
+    justify-content: center;
+}
+.stContent .addrTable .tr .td{
+    width: 15%;
+    min-width: 115px;
+    height: 50px;
+    line-height: 50px;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-right: 3%;
+}
+.stContent .addrTable .tr .td:nth-of-type(2){
+    width: 50%;
+    min-width: 380px;
+}
+.stContent form {
+    width: 100%;
+    padding: 0 5%;
+    padding-right: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.stContent form .informRow{
+    margin-top: 10px;
+    height: 43px;
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+}
+.stContent form .informRow:nth-of-type(1){
+    margin-top: 10px;
+    height: 43px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.stContent .informRow .select{
+    position: relative;
+}
+.stContent .informRow .select img{
+    width: 11px;
+    height: 6px;
+    cursor: pointer;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+}
+.stContent .informRow .optionBox{
+    width: 55%;
+    min-width: 370px;
+    border-radius:4px;
+    border:1px solid rgba(214,214,214,1);
+    padding-top: 8px;
+    padding-bottom: 8px;
+    font-weight:500;
+    color:rgba(32,32,32,1);
+    float: right;
+    outline: none;
+    position: absolute;
+    top: 45px;
+    right: 0;
+    z-index: 2;
+    background-color: #fff;
+}
+.stContent .informRow .optionBox li{
+    list-style: none;
+    padding: 3px 15px;
+
+}
+.stContent .informRow .optionBox li:hover{
+    background-color: rgba(214,214,214,.5);
+}
+.stContent .informRow:nth-of-type(1){
+    margin-top: 0;
+}
+.stContent .informRow input{
+    width: 55%;
+    min-width: 370px;
+    height: 38px;
+    padding-left: 10px;
+    border-radius:4px;
+    border:1px solid rgba(214,214,214,1);
+    font-weight:500;
+    color:rgba(32,32,32,1);
+    float: right;
+    outline: none;
+    font-size: 14px;
+}
+.stContent .informRow label{
+    color:rgba(32,32,32,1);
+    font-weight: 400;
+    padding: 8px;
+    float: right;
+    margin-right: 30px;
+    text-align: right;
+    min-width: 130px;
+}
+.stContent .submit{
+    display: inline-block;
+    width: 170px;
+    height: 42px;
+    line-height: 42px;
+    font-size: 18px;
+    text-align: center;
+    background:linear-gradient(129deg,rgba(111,178,255,1) 0%,rgba(9,95,255,1) 100%);
+    border-radius:3px;
+    font-weight:500;
+    color:rgba(255,255,255,1);
+    margin-top: 30px;
+    cursor: pointer;
+    position: absolute;
+    bottom: -80px;
+}
