@@ -4,8 +4,9 @@ import Header from "../../../components/common/guideHeader"
 import Guide from "../../../components/common/guideMenu"
 import select from "../../../assets/下拉@2x.png"
 import "./issue.css"
+import { DrizzleContext } from "@drizzle/react-plugin";
 
-export default class Issue extends Component {
+class Issue extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,6 +15,8 @@ export default class Issue extends Component {
         deployed: true
     };
     this.handleSelect = this.handleSelect.bind(this);
+    this.handleIssue = this.handleIssue.bind(this);
+    this.cancelOptionBox = this.cancelOptionBox.bind(this);
   }
   handleSelect(){
     this.setState({
@@ -26,16 +29,28 @@ export default class Issue extends Component {
         partition: e.target.innerHTML
     })
   }
-  
+  handleIssue(){
+      var partition = this.state.partition;
+      var amount = this.amount.value;
+      var receiver = this.receiver.value;
+      console.log(partition);
+      console.log(amount);
+      console.log(receiver);
+  }
   componentWillMount(){
-    //收起下拉框
-    document.addEventListener('click',(e) => {
-        if(e.target.className != "selectIcon"){
-            this.setState({
-                optionBox: false
-            })
-        }
-    })
+      console.log(this.props.drizzleState.deployedTokens)
+      //收起下拉框
+      document.addEventListener('click', this.cancelOptionBox)
+  }
+  componentWillUnmount(){
+      document.removeEventListener('click', this.cancelOptionBox)
+  }
+  cancelOptionBox(e){
+    if(e.target.className != "selectIcon"){
+        this.setState({
+            optionBox: false
+        })
+    }
   }
   render(){
       const Asset = ["11111111111","222222222","33333333333333"];
@@ -54,7 +69,7 @@ export default class Issue extends Component {
                         <div className="addrTable">
                             <div className="tr">
                                 <div className="td">Token address: </div>
-                                <div className="td">0X4c000E507bE6663e264a1A21507a69Bfa5035D95</div>
+                                <div className="td">0x291cC5385C302694e9B982478583c677a261B21D</div>
                             </div>
                         </div>
                         <div className="table" style={{display: this.state.deployed ? "flex":"none"}}>
@@ -88,14 +103,14 @@ export default class Issue extends Component {
                             </div>
                             <div className="informRow">
                                 <label htmlFor="amount">Amount: </label>
-                                <input type="text" id="amount"/>
+                                <input ref={(el)=>this.amount = el} type="text" id="amount"/>
                             </div>
                             <div className="informRow">
-                                <label htmlFor="receiver">Receiving address:</label>
-                                <input type="text" id="receiver" defaultValue="0X4c000E507bE6663e264a1A21507a69Bfa5035D95"/>
+                                <label htmlFor="receiver">Receiver address:</label>
+                                <input ref={(el)=>this.receiver = el} type="text" id="receiver" defaultValue="0x08229c18a228989ce016c37fEEB1F875Bab0b4C8"/>
                             </div>
                         </form>
-                        <div className="submit">Submit</div>
+                        <div className="submit" onClick={this.handleIssue}>Submit</div>
                     </div>
                 </div>
             </div>
@@ -104,3 +119,15 @@ export default class Issue extends Component {
   }
   
 }
+export default (props) => {
+    return (
+      <DrizzleContext.Consumer>
+        {drizzleContext => {
+          return (
+            <Issue {...drizzleContext} {...props} />
+          );
+        }}
+      </DrizzleContext.Consumer>
+  
+    )
+  }

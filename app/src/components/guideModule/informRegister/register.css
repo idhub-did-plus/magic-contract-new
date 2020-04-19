@@ -31,6 +31,7 @@
     padding-bottom: 30px;
     padding-right: 20%;
     overflow: hidden;
+    min-width: 950px;
 }
 .content .informRow{
     margin-top: 10px;

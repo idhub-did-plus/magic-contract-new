@@ -28,6 +28,7 @@
     justify-content: flex-start;
     align-items: center;
     position: relative;
+    min-width: 950px;
 }
 .onchainBox .table{
     width: 100%;

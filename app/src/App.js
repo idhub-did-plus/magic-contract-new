@@ -18,7 +18,7 @@ import InformRegister from "./components/guideModule/informRegister/register"
 import Deploy from "./components/guideModule/tokenDeploy/deploy"
 import Configure from "./components/guideModule/tokenComplianceConfigure/configure"
 import Issue from "./components/guideModule/tokenIssue/issue"
-import Onchain from "./components/guideModule/fileOnline/online"
+import Onchain from "./components/guideModule/fileOnchain/onchain"
 
 class App extends Component {
   render() {

@@ -28,6 +28,7 @@ class InformRegister extends Component {
         steps: ""
 
     };
+    this.cancelOptionBox = this.cancelOptionBox.bind(this);
     
   }
   handleChange(index,e){
@@ -108,17 +109,22 @@ class InformRegister extends Component {
   }
   componentWillMount(){
     //收起下拉框
-    document.addEventListener('click',(e) => {
-        if(e.target.className != "selectIcon"){
-            this.setState({
-                optionBox1: false,
-                optionBox2: false,
-                optionBox3: false,
-                optionBox4: false,
-                optionBox5: false
-            })
-        }
-    })
+    document.addEventListener('click', this.cancelOptionBox)
+  }
+  componentWillUnmount() {
+    //移除下拉框的事件监听
+    document.removeEventListener("click", this.cancelOptionBox);
+  }
+  cancelOptionBox(e){
+    if(e.target.className != "selectIcon"){
+        this.setState({
+            optionBox1: false,
+            optionBox2: false,
+            optionBox3: false,
+            optionBox4: false,
+            optionBox5: false
+        })
+    }
   }
   render(){
       const Asset = ["产权","债务","债券","艺术","房地产","基金","其他"];

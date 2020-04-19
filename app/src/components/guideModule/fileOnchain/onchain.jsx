@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, NavLink } from "react-router-dom";
-import Header from "../../../components/common/guideHeader"
-import Guide from "../../../components/common/guideMenu"
+import Header from "../../common/guideHeader"
+import Guide from "../../common/guideMenu"
 import Upload from "../../../assets/上传@2x.png"
 import file from "../../../assets/文件@2x.png"
-import "./online.css"
+import "./onchain.css"
 
 export default class Online extends Component {
   constructor(props) {

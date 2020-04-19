@@ -28,6 +28,7 @@
     justify-content: flex-start;
     align-items: center;
     position: relative;
+    min-width: 950px;
 }
 .stContent .table{
     width: 100%;

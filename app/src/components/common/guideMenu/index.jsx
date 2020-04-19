@@ -20,7 +20,7 @@ class Guide extends Component {
         <div className="guide">
             <ul>
                 <NavLink to="/register" exact><li className={this.state.path == "/register" ? "active" : ""}>Information Registration</li></NavLink>
-                <NavLink to="/deploy" exact><li className={this.state.path == "/deploy" ? "active" : ""}>Deployment Contract</li></NavLink>
+                <NavLink to="/deploy" exact><li className={this.state.path == "/deploy" ? "active" : ""}>Deploy Contract</li></NavLink>
                 <NavLink to="/configure" exact><li className={this.state.path == "/configure" ? "active" : ""}>Compliance Configuration</li></NavLink>
                 <NavLink to="/issue"><li className={this.state.path == "/issue" ? "active" : ""}>Security Tokenization</li></NavLink>
                 <NavLink to="/disclosure"><li className={this.state.path == "/disclosure" ? "active" : ""}>Onchain Disclosure</li></NavLink>
