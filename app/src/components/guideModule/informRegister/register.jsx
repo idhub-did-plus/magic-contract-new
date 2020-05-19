@@ -25,33 +25,32 @@ class InformRegister extends Component {
         Judicial: "",
         financialPartners: "",
         raiseBefore: "",
-        steps: ""
-
+        steps: "",
+        legalPerson: "",
+        CompRegNum: "",
+        VAT: "",
+        webAddr: "",
+        country: "",
+        city: "",
+        comAddr: "",
+        postalCode: "",
+        establishCountry: "",
+        firstName: "",
+        lastName: "",
+        position: "",
+        phone: "",
+        email: ""
     };
     this.cancelOptionBox = this.cancelOptionBox.bind(this);
+    this.informSubmit = this.informSubmit.bind(this);
     
   }
-  handleChange(index,e){
+  handle_Change(key,e){
       var arr = e.target.value.split("\\");
       var name = arr[arr.length-1];
-      console.log(index,name)
-      if(index == 1){
-          this.setState({
-            fileName1: name
-          })
-      }else if(index == 2){
-          this.setState({
-            fileName2: name
-          })
-      }else if(index == 3){
-          this.setState({
-            fileName3: name
-          })
-      }else if(index == 4){
-          this.setState({
-            fileName4: name
-          })
-      }
+      this.setState({
+          [key]: name
+      })
   }
   handleSelect(index){
     if(index == 1){
@@ -126,6 +125,63 @@ class InformRegister extends Component {
         })
     }
   }
+  handleChange(key,e){
+      this.setState({
+        [key]:e.target.value
+      })
+  }
+  informSubmit(){
+    var data = new FormData();
+    //生成表单数据
+    //Project details
+    data.append("company",this.company.value);
+    data.append("asset_type",this.state.asset);
+    data.append("Judicial",this.state.Judicial);
+    data.append("financial_regulator",this.state.financialPartners);
+    data.append("mini_amount",this.mini_amount.value);
+    data.append("raiseBefore",this.state.raiseBefore);
+    data.append("steps",this.state.steps);
+    const file1 = this.file1.files[0];
+    const file2 = this.file2.files[0];
+    const file3 = this.file3.files[0];
+    data.append("file1",file1);
+    data.append("file2",file2);
+    data.append("file3",file3);
+    data.append("desc1",this.desc1.value);
+    data.append("desc2",this.desc2.value);
+    data.append("desc3",this.desc3.value);
+
+    //Company Information
+    data.append("legalPerson",this.state.legalPerson);
+    data.append("CompRegNum",this.state.CompRegNum);
+    data.append("VAT",this.state.VAT);
+    data.append("webAddr",this.state.webAddr);
+
+    //Company Address
+    data.append("country",this.state.country);
+    data.append("city",this.state.city);
+    data.append("comAddr",this.state.comAddr);
+    data.append("postalCode",this.state.postalCode);
+    data.append("establishCountry",this.state.establishCountry);
+
+    //Contact Person
+    data.append("firstName",this.state.firstName);
+    data.append("lastName",this.state.lastName);
+    data.append("position",this.state.position);
+    data.append("phone",this.state.phone);
+    data.append("email",this.state.email);
+
+    //ICON
+    const icon = this.icon.files[0];
+    data.append("icon",icon);
+
+//     for(let item of data){
+//        console.log(item)
+//     }
+    
+    //调用后端接口，传FormData数据
+    
+  }
   render(){
       const Asset = ["产权","债务","债券","艺术","房地产","基金","其他"];
       const Judicial = ["美国","加拿大","亚洲","欧洲","澳大利亚","拉丁美洲","非洲","其他"];
@@ -141,11 +197,11 @@ class InformRegister extends Component {
              <div className="guideBox">
                  <Guide/>
              </div>
-             <form className="contentBox" autoComplete="off">
+             <form className="contentBox" autoComplete="off" ref={el=>this.form=el}>
                  <div className="titl">Project details</div>
                  <div className="content">
                     <div className="informRow">
-                        <input type="text" id="company" defaultValue="IC"/>
+                        <input type="text" id="company" defaultValue="IC" ref={el=>this.company=el}/>
                         <label htmlFor="company">Company Name: </label>
                     </div>
                     <p></p>
@@ -201,7 +257,7 @@ class InformRegister extends Component {
                     </div>
                     <p></p>
                     <div className="informRow">
-                        <input type="text" id="amount"/>
+                        <input ref={el=>this.mini_amount=el}type="text" id="amount"/>
                         <label htmlFor="amount">What is the minimum amount of capital you plan to raise？</label>
                     </div>
                     <p></p>
@@ -241,55 +297,47 @@ class InformRegister extends Component {
                     <p></p>
                     {/* 上传文件1 */}
                     <div className="uploadRow">
-                        <div className="upload" style={{display: !this.state.fileName1 ? "block" : "none"}}>
-                            <img className="up" src={Upload} alt="上传图标"/>
-                            <input type="file" id="file1" className="upInput" onChange={this.handleChange.bind(this,1)}/>
-                        </div>
-                        <div className="uploaded" style={{display: !this.state.fileName1 ? "none" : "block"}}>
-                            <img className="file" src={file} alt="已上传图标"/>
-                            <input type="file" id="file1" className="upInput" onChange={this.handleChange.bind(this,1)}/>
-                            <div className="fileName">{this.state.fileName1}</div>
+                        <div className="upload">
+                            <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName1 ? "block" : "none"}}/>
+                            <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName1 ? "none" : "block"}}/>
+                            <input ref={el=>this.file1=el} type="file" id="file1" className="upInput" onChange={this.handle_Change.bind(this,"fileName1")}/>
+                            <div className="fileName" style={{display: !this.state.fileName1 ? "none" : "block"}}>{this.state.fileName1}</div>
                         </div>
                         <label htmlFor="file1">Upload legal documents:</label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="description1"/>
+                        <input type="text" id="description1" ref={el=>this.desc1=el}/>
                         <label htmlFor="description1">Content description: </label>
-                    </div>
-                    <p></p>
-                    <div className="informRow">
-                        <input type="text" id="description2"/>
-                        <label htmlFor="description2">Content description: </label>
                     </div>
                     <p></p>
                     {/* 上传文件2 */}
                     <div className="uploadRow">
-                        <div className="upload" style={{display: !this.state.fileName2 ? "block" : "none"}}>
-                            <img className="up" src={Upload} alt="上传图标"/>
-                            <input type="file" id="file2" className="upInput" onChange={this.handleChange.bind(this,2)}/>
-                        </div>
-                        <div className="uploaded" style={{display: !this.state.fileName2 ? "none" : "block"}}>
-                            <img className="file" src={file} alt="已上传图标"/>
-                            <input type="file" id="file2" className="upInput" onChange={this.handleChange.bind(this,2)}/>
-                            <div className="fileName">{this.state.fileName2}</div>
+                        <div className="upload">
+                            <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName2 ? "block" : "none"}}/>
+                            <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName2 ? "none" : "block"}}/>
+                            <input ref={el=>this.file2=el} type="file" id="file2" className="upInput" onChange={this.handle_Change.bind(this,"fileName2")}/>
+                            <div className="fileName" style={{display: !this.state.fileName2 ? "none" : "block"}}>{this.state.fileName2}</div>
                         </div>
                         <label htmlFor="file2">Upload marketing files:</label>
                     </div>
+                    <p></p>
+                    <div className="informRow">
+                        <input type="text" id="description2" ref={el=>this.desc2=el}/>
+                        <label htmlFor="description2">Content description: </label>
+                    </div>
+                    <p></p>
                     {/* 上传文件3 */}
                     <div className="uploadRow">
-                        <div className="upload" style={{display: !this.state.fileName3 ? "block" : "none"}}>
-                            <img className="up" src={Upload} alt="上传图标"/>
-                            <input type="file" id="file3" className="upInput" onChange={this.handleChange.bind(this,3)}/>
-                        </div>
-                        <div className="uploaded" style={{display: !this.state.fileName3 ? "none" : "block"}}>
-                            <img className="file" src={file} alt="已上传图标"/>
-                            <input type="file" id="file3" className="upInput" onChange={this.handleChange.bind(this,3)}/>
-                            <div className="fileName">{this.state.fileName3}</div>
+                        <div className="upload">
+                            <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName3 ? "block" : "none"}}/>
+                            <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName3 ? "none" : "block"}}/>
+                            <input ref={el=>this.file3=el} type="file" id="file3" className="upInput" onChange={this.handle_Change.bind(this,"fileName3")}/>
+                            <div className="fileName" style={{display: !this.state.fileName3 ? "none" : "block"}}>{this.state.fileName3}</div>
                         </div>
                         <label htmlFor="file3">Upload white paper:</label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="description3"/>
+                        <input type="text" id="description3" ref={el=>this.desc3=el}/>
                         <label htmlFor="description3">Content description: </label>
                     </div>
                     <p></p>
@@ -297,85 +345,82 @@ class InformRegister extends Component {
                  <div className="titl">Company Information</div>
                  <div className="content">
                     <div className="informRow">
-                        <input type="text" id="legalPerson"/>
+                        <input type="text" id="legalPerson" value={this.state.legalPerson} onChange={this.handleChange.bind(this,"legalPerson")}/>
                         <label htmlFor="legalPerson">Legal Entity Name: </label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="CompRegNum"/>
+                        <input type="text" id="CompRegNum" value={this.state.CompRegNum} onChange={this.handleChange.bind(this,"CompRegNum")}/>
                         <label htmlFor="CompRegNum">Company Registration Number:</label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="VAT"/>
+                        <input type="text" id="VAT" value={this.state.VAT} onChange={this.handleChange.bind(this,"VAT")}/>
                         <label htmlFor="VAT">VAT Registration Number:</label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="webAddr"/>
+                        <input type="text" id="webAddr" value={this.state.webAddr} onChange={this.handleChange.bind(this,"webAddr")}/>
                         <label htmlFor="webAddr">Website address:</label>
                     </div>
                  </div>
                  <div className="titl">Company Address</div>
                  <div className="content">
                     <div className="informRow">
-                        <input type="text" id="country"/>
+                        <input type="text" id="country" value={this.state.country} onChange={this.handleChange.bind(this,"country")}/>
                         <label htmlFor="country">Country:</label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="city"/>
+                        <input type="text" id="city" value={this.state.city} onChange={this.handleChange.bind(this,"city")}/>
                         <label htmlFor="city">City:</label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="comAddr"/>
+                        <input type="text" id="comAddr" value={this.state.comAddr} onChange={this.handleChange.bind(this,"comAddr")}/>
                         <label htmlFor="comAddr">Address:</label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="postalCode"/>
+                        <input type="text" id="postalCode" value={this.state.postalCode} onChange={this.handleChange.bind(this,"postalCode")}/>
                         <label htmlFor="postalCode">Postal Code:</label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="establishCountry"/>
+                        <input type="text" id="establishCountry" value={this.state.establishCountry} onChange={this.handleChange.bind(this,"establishCountry")}/>
                         <label htmlFor="establishCountry">Country of Incorporation:</label>
                     </div>
                  </div>
                  <div className="titl">Contact Person</div>
                  <div className="content">
                     <div className="informRow">
-                        <input type="text" id="firstName"/>
+                        <input type="text" id="firstName" value={this.state.firstName} onChange={this.handleChange.bind(this,"firstName")}/>
                         <label htmlFor="firstName">Contact Person‘s First Name: </label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="lastName"/>
+                        <input type="text" id="lastName" value={this.state.lastName} onChange={this.handleChange.bind(this,"lastName")}/>
                         <label htmlFor="lastName">Contact Person‘s Last Name:</label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="position"/>
+                        <input type="text" id="position" value={this.state.position} onChange={this.handleChange.bind(this,"position")}/>
                         <label htmlFor="position">Contact Person‘s Title/Position:</label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="phone"/>
+                        <input type="text" id="phone" value={this.state.phone} onChange={this.handleChange.bind(this,"phone")}/>
                         <label htmlFor="phone">Contact Person‘s Phone:</label>
                     </div>
                     <div className="informRow">
-                        <input type="text" id="email"/>
+                        <input type="text" id="email" value={this.state.email} onChange={this.handleChange.bind(this,"email")}/>
                         <label htmlFor="email">Contact Person‘s Email:</label>
                     </div>
                  </div>
                  <div className="titl">Security Token ICON</div>
                  <div className="content">
-                     {/* 上传文件3 */}
+                     {/* 上传图片 */}
                      <div className="uploadRow">
-                        <div className="upload" style={{display: !this.state.fileName4 ? "block" : "none"}}>
-                            <img className="up" src={Upload} alt="上传图标"/>
-                            <input type="file" id="file4" className="upInput" onChange={this.handleChange.bind(this,4)}/>
-                        </div>
-                        <div className="uploaded" style={{display: !this.state.fileName4 ? "none" : "block"}}>
-                            <img className="file" src={file} alt="已上传图标"/>
-                            <input type="file" id="file4" className="upInput" onChange={this.handleChange.bind(this,4)}/>
-                            <div className="fileName">{this.state.fileName4}</div>
+                        <div className="upload">
+                            <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName4 ? "block" : "none"}}/>
+                            <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName4 ? "none" : "block"}}/>
+                            <input ref={el=>this.icon=el} type="file" id="file4" className="upInput" onChange={this.handle_Change.bind(this,"fileName4")}/>
+                            <div className="fileName" style={{display: !this.state.fileName4 ? "none" : "block"}}>{this.state.fileName4}</div>
                         </div>
                         <label htmlFor="file4">Upload ICON:</label>
                     </div>
                  </div>
-                 <div className="submit">Submit</div>
+                 <div className="submit" onClick={this.informSubmit}>Submit</div>
                  <div className="submit">Review</div>
              </form>
           </div>
