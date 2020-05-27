@@ -107,7 +107,7 @@ class Deploy extends Component {
     return;
   }
   deployParti(){
-
+    //判断partition列表中是否已经添加数据
     if(!this.state.partiList.length){
         alert("Please add to the list first")
         return
@@ -141,6 +141,7 @@ class Deploy extends Component {
           )
       return;
   }
+//   调用接口存储已部署ST
 //   async save(token) {
 //     try {
 //       let response = await fetch("http://localhost:8080/saveDeployedToken", {

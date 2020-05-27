@@ -30,7 +30,7 @@
     padding-top: 30px;
     padding-bottom: 30px;
     padding-right: 20%;
-    overflow: hidden;
+    /* overflow: hidden; */
     min-width: 950px;
 }
 .content .informRow{
@@ -222,4 +222,36 @@
 .submit:nth-last-of-type(1){
     margin-left: 3%;
     background:linear-gradient(130deg,rgba(255,164,72,1) 0%,rgba(255,111,56,1) 100%);
+}
+.projSub{
+    display: inline-block;
+    width: 170px;
+    height: 42px;
+    line-height: 42px;
+    font-size: 18px;
+    text-align: center;
+    background:linear-gradient(129deg,rgba(111,178,255,1) 0%,rgba(9,95,255,1) 100%);
+    border-radius:3px;
+    font-weight:500;
+    color:rgba(255,255,255,1);
+    margin-top: 30px;
+    margin-left: 40%;
+    margin-bottom: 30px;
+    cursor: pointer;
+}
+.fileSub{
+    display: inline-block;
+    width: 100px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 14px;
+    text-align: center;
+    background:linear-gradient(129deg,rgba(111,178,255,1) 0%,rgba(9,95,255,1) 100%);
+    border-radius:3px;
+    font-weight:500;
+    color:rgba(255,255,255,1);
+    margin-top: 30px;
+    margin-left: 70%;
+    margin-bottom: 30px;
+    cursor: pointer;
 }

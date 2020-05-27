@@ -33,6 +33,7 @@
 }
 .container .login .select{
     width: 100%;
+    min-width: 210px;
     height: 46px;
     line-height: 46px;
     font-weight: 500;

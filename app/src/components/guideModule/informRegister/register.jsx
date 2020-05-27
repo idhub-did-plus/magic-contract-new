@@ -39,11 +39,13 @@ class InformRegister extends Component {
         lastName: "",
         position: "",
         phone: "",
-        email: ""
+        email: "",
+        pid: null
     };
     this.cancelOptionBox = this.cancelOptionBox.bind(this);
     this.informSubmit = this.informSubmit.bind(this);
-    
+    this.review = this.review.bind(this);
+    this.projectSubmit = this.projectSubmit.bind(this);
   }
   handle_Change(key,e){
       var arr = e.target.value.split("\\");
@@ -133,54 +135,283 @@ class InformRegister extends Component {
   informSubmit(){
     var data = new FormData();
     //生成表单数据
-    //Project details
-    data.append("company",this.company.value);
-    data.append("asset_type",this.state.asset);
-    data.append("Judicial",this.state.Judicial);
-    data.append("financial_regulator",this.state.financialPartners);
-    data.append("mini_amount",this.mini_amount.value);
-    data.append("raiseBefore",this.state.raiseBefore);
-    data.append("steps",this.state.steps);
-    const file1 = this.file1.files[0];
-    const file2 = this.file2.files[0];
-    const file3 = this.file3.files[0];
-    data.append("file1",file1);
-    data.append("file2",file2);
-    data.append("file3",file3);
-    data.append("desc1",this.desc1.value);
-    data.append("desc2",this.desc2.value);
-    data.append("desc3",this.desc3.value);
 
     //Company Information
-    data.append("legalPerson",this.state.legalPerson);
-    data.append("CompRegNum",this.state.CompRegNum);
-    data.append("VAT",this.state.VAT);
-    data.append("webAddr",this.state.webAddr);
+    data.append("legalEntityName",this.state.legalPerson);
+    data.append("registrationNumber",this.state.CompRegNum);
+    data.append("vatRegistrationNumber",this.state.VAT);
+    data.append("website",this.state.webAddr);
 
     //Company Address
-    data.append("country",this.state.country);
-    data.append("city",this.state.city);
-    data.append("comAddr",this.state.comAddr);
-    data.append("postalCode",this.state.postalCode);
-    data.append("establishCountry",this.state.establishCountry);
+    data.append("address[country]",this.state.country);
+    data.append("address[city]",this.state.city);
+    data.append("address[postalCode]",this.state.postalCode);
+    data.append("address[address]",this.state.comAddr);
+    data.append("address[countryOfIncorporation]",this.state.establishCountry);
+    
+    //Contact Person
+    data.append("contactPerson[firstName]",this.state.firstName);
+    data.append("contactPerson[lastName]",this.state.lastName);
+    data.append("contactPerson[title]",this.state.position);
+    data.append("contactPerson[phone]",this.state.phone);
+    data.append("contactPerson[email]",this.state.email);
+
+    //Company Address
+    // data.append("country",this.state.country);
+    // data.append("city",this.state.city);
+    // data.append("comAddr",this.state.comAddr);
+    // data.append("postalCode",this.state.postalCode);
+    // data.append("establishCountry",this.state.establishCountry);
 
     //Contact Person
-    data.append("firstName",this.state.firstName);
-    data.append("lastName",this.state.lastName);
-    data.append("position",this.state.position);
-    data.append("phone",this.state.phone);
-    data.append("email",this.state.email);
+    // data.append("firstName",this.state.firstName);
+    // data.append("lastName",this.state.lastName);
+    // data.append("position",this.state.position);
+    // data.append("phone",this.state.phone);
+    // data.append("email",this.state.email);
 
     //ICON
-    const icon = this.icon.files[0];
-    data.append("icon",icon);
+    // const icon = this.icon.files[0];
+    // data.append("icon",icon);
 
 //     for(let item of data){
 //        console.log(item)
 //     }
     
     //调用后端接口，传FormData数据
+    console.log("调用信息存储接口")
+    this.saveIssuerInfo(data);
+//         headers: {
+//           'content-type': 'multipart/form-data'
+//         }
+  }
+  async saveIssuerInfo(formData) {
+    try {
+      let response = await fetch("http://etf2fd.natappfree.cc/issue_project/save_issuer_information", {
+        body: formData, // must match 'Content-Type' header
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, same-origin, *omit
+        headers: {
+          'user-agent': 'Mozilla/4.0 MDN Example',
+          'content-type': 'multipart/form-data'
+        },
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, cors, *same-origin
+        redirect: 'follow', // manual, *follow, error
+        referrer: 'no-referrer', // *client, no-referrer
+      })
+      let json = response.json() // parses response to JSON
+      console.log(json)
+    } catch (err) {
+      alert(err);
+    } finally {
+
+    }
+  }
+  projectSubmit(){
+    var data = new FormData();
+    //生成表单数据
+    //Project details
+    data.append("name",this.company.value);
+    data.append("assetType",this.state.asset);
+    data.append("jurisdiction",this.state.Judicial);
+    var hasFinancialRegulator = this.state.financialPartners=="Yes"?true:false;
+    var everRaseedFunds = this.state.raiseBefore=="Yes"?true:false;
+    data.append("hasFinancialRegulator",hasFinancialRegulator);
+    data.append("everRaseedFunds",everRaseedFunds);
+    data.append("stepsCompleted",this.state.steps);
+    data.append("plannedRasedCapital",this.mini_amount.value);
+    //fromdata转jsondata
+    var jsonData = {};
+    data.forEach((value, key) => jsonData[key] = value);
     
+    //调用接口存储项目信息
+    this.saveProjDetails(jsonData);
+  }
+  async saveProjDetails(jsonData) {
+    try {
+      let url = "http://13.229.205.74:2006/issue_project/save_project_detail";
+      if(this.state.pid){
+          url += ("?pid="+this.state.pid)
+      }
+      let response = await fetch(url, {
+        body: JSON.stringify(jsonData), // must match 'Content-Type' header
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, same-origin, *omit
+        headers: {
+          'user-agent': 'Mozilla/4.0 MDN Example',
+          'content-type': 'application/json'
+        },
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, cors, *same-origin
+        redirect: 'follow', // manual, *follow, error
+        referrer: 'no-referrer', // *client, no-referrer
+      })
+
+      let json = response.json() 
+      json.then(res=>{
+          console.log("pid",res.data)
+          this.setState({
+              pid: res.data
+          })
+      })
+    } catch (err) {
+      alert(err);
+    } finally {
+
+    }
+  }
+  async review(){
+      //调用审核接口
+      try {
+        //入库后传pid
+        let response = await fetch("http://etf2fd.natappfree.cc/issue_project/audit?pid=", {
+          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+          credentials: 'same-origin', // include, same-origin, *omit
+          method: 'GET', // *GET, POST, PUT, DELETE, etc.
+          mode: 'cors', // no-cors, cors, *same-origin
+          redirect: 'follow', // manual, *follow, error
+          referrer: 'no-referrer', // *client, no-referrer
+        })
+        let json = response.json() // parses response to JSON
+        console.log(json)
+      } catch (err) {
+        alert(err);
+      } finally {
+  
+      }
+  }
+  fileSubmit(type){
+      var fileType = type;
+    //   console.log(this.state.pid);
+    //   console.log(type);
+    //   if(!this.state.pid){
+    //       alert("Please submit project details first");
+    //       return;
+    //   }
+    //生成各个文件的表单数据
+    //调用三次接口上传文件
+    const file1 = this.file1.files[0];
+    const file2 = this.file2.files[0];
+    const file3 = this.file3.files[0];
+    console.log("111",file1);
+    var file1Data = new FormData();
+    var file2Data = new FormData();
+    var file3Data = new FormData();
+    file1Data.append("file",file1);
+    file2Data.append("file",file2);
+    file3Data.append("file",file3);
+    console.log(file1Data)
+    this.saveFile(file1Data,file2Data,file3Data,fileType);
+  }
+  async saveFile(file1Data,file2Data,file3Data,fileType){
+    if(fileType=="lagal"){
+        console.log(file1Data)
+        console.log(typeof(file1Data))
+        //lagal文件
+        try {
+            var url = "http://t532jg.natappfree.cc/material/upload_material";
+            if(this.state.pid){
+                url += ("?pid="+this.state.pid+"&type=lagal&name=lagal&content="+this.desc1.value)
+            }else{
+                alert("Please submit project details first");
+                return;
+            }
+            let response = await fetch(url, {
+            body: file1Data, // must match 'Content-Type' header
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'include', // include, same-origin, *omit
+            headers: {
+                'user-agent': 'Mozilla/4.0 MDN Example',
+                'content-type': 'multipart/form-data'
+            },
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // *client, no-referrer
+            })
+            let json = response.json() // parses response to JSON
+            json.then(res=>{
+                if(res.success){
+                    console.log("lagal成功")
+                }else{
+                    console.log("lagal失败")
+                }
+            })
+        } catch (err) {
+            alert(err);
+        } finally {
+    
+        }
+    }else if(fileType=="marketting"){
+      //marketting文件
+        try {
+            var url = "http://t532jg.natappfree.cc/material/upload_material";
+            if(this.state.pid){
+                url += ("?pid="+this.state.pid+"&type=marketting&name=marketting&content="+this.desc2.value)
+            }else{
+                alert("Please submit project details first");
+                return;
+            }
+            let response = await fetch(url, {
+            body: file2Data, // must match 'Content-Type' header
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'include', // include, same-origin, *omit
+            headers: {
+                'user-agent': 'Mozilla/4.0 MDN Example',
+                'content-type': 'multipart/form-data'
+            },
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // *client, no-referrer
+            })
+            let json = response.json() // parses response to JSON
+            json.then(res=>{
+                if(res.success){
+                    console.log("market成功")
+                }
+            })
+        } catch (err) {
+            alert(err);
+        } finally {
+    
+        }
+    }else if(fileType == "whitepaper"){
+      //whitepaper文件
+        try {
+            var url = "http://t532jg.natappfree.cc/material/upload_material";
+            if(this.state.pid){
+                url += ("?pid="+this.state.pid+"&type=whitepaper文件&name=whitepaper文件&content="+this.desc3.value)
+            }else{
+                alert("Please submit project details first");
+                return;
+            }
+            let response = await fetch(url, {
+            body: file3Data, // must match 'Content-Type' headerbody: file3Data, // must match 'Content-Type' header
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'include', // include, same-origin, *omit
+            headers: {
+                'user-agent': 'Mozilla/4.0 MDN Example',
+                'content-type': 'multipart/form-data'
+            },
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // *client, no-referrer
+            })
+            let json = response.json() // parses response to JSON
+            json.then(res=>{
+                if(res.success){
+                    console.log("whitep成功")
+                }
+            })
+        } catch (err) {
+            alert(err);
+        } finally {
+    
+        }
+    }
   }
   render(){
       const Asset = ["产权","债务","债券","艺术","房地产","基金","其他"];
@@ -201,7 +432,7 @@ class InformRegister extends Component {
                  <div className="titl">Project details</div>
                  <div className="content">
                     <div className="informRow">
-                        <input type="text" id="company" defaultValue="IC" ref={el=>this.company=el}/>
+                        <input type="text" id="company" ref={el=>this.company=el}/>
                         <label htmlFor="company">Company Name: </label>
                     </div>
                     <p></p>
@@ -295,6 +526,9 @@ class InformRegister extends Component {
                         </ul>
                     </div>
                     <p></p>
+                </div>
+                <div className="submit projSub" onClick={this.projectSubmit}>Submit</div>
+                <div className="content">
                     {/* 上传文件1 */}
                     <div className="uploadRow">
                         <div className="upload">
@@ -309,6 +543,7 @@ class InformRegister extends Component {
                         <input type="text" id="description1" ref={el=>this.desc1=el}/>
                         <label htmlFor="description1">Content description: </label>
                     </div>
+                    <div className="fileSub" onClick={this.fileSubmit.bind(this,"lagal")}>submit</div>
                     <p></p>
                     {/* 上传文件2 */}
                     <div className="uploadRow">
@@ -325,6 +560,7 @@ class InformRegister extends Component {
                         <input type="text" id="description2" ref={el=>this.desc2=el}/>
                         <label htmlFor="description2">Content description: </label>
                     </div>
+                    <div className=" fileSub" onClick={this.fileSubmit.bind(this,"marketting")}>submit</div>
                     <p></p>
                     {/* 上传文件3 */}
                     <div className="uploadRow">
@@ -340,6 +576,7 @@ class InformRegister extends Component {
                         <input type="text" id="description3" ref={el=>this.desc3=el}/>
                         <label htmlFor="description3">Content description: </label>
                     </div>
+                    <div className="fileSub" onClick={this.fileSubmit.bind(this,"whitepaper")}>submit</div>
                     <p></p>
                 </div>
                  <div className="titl">Company Information</div>
@@ -421,7 +658,7 @@ class InformRegister extends Component {
                     </div>
                  </div>
                  <div className="submit" onClick={this.informSubmit}>Submit</div>
-                 <div className="submit">Review</div>
+                 <div className="submit" onClick={this.review}>Review</div>
              </form>
           </div>
         </div>
