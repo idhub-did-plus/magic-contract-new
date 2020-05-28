@@ -6,27 +6,29 @@ import "./index.css"
 class Header extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      inOut:""
-    };
 
     this.handleLogin = this.handleLogin.bind(this);
   }
-  componentWillMount(){
-    if(document.cookie){
-      this.setState({
-        inOut:"Sign out"
+  async handleLogin(){
+    //退出登录
+    try {
+      let response = await fetch('http://13.229.205.74:2006/auth/logout', {
+        credentials: 'include', // include, same-origin, *omit
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
       })
-    }else{
-      this.setState({
-        inOut:"Sign In"
+      let json = response.json() // parses response to JSON
+      json.then(res=>{
+        if(res.success){
+            window.location.reload();
+            this.props.history.push("/");
+        }else{
+          console.log("注销失败")
+        }
       })
-    }
-  }
-  handleLogin(){
-    if(this.state.inOut == "Sign out"){
-      document.cookie = "mysession=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      window.location.reload()
+    } catch (err) {
+      alert(err);
+    } finally {
+
     }
   }
   render(){
@@ -42,7 +44,7 @@ class Header extends Component {
           <li>
               <a className="icon"></a>
               <p>{this.props.drizzleState.accounts[0]}</p>
-              <div className="inOut" onClick={this.handleLogin}>{this.state.inOut}</div>
+              <div className="inOut" onClick={this.handleLogin}>Sign out</div>
           </li>
       </ul>
     );

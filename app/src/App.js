@@ -40,7 +40,6 @@ class App extends Component {
                     
                   {/* <div>{drizzleState.login.claim}</div> */}
                       <Route path="/" component={Home} exact/>
-                      {/* <li hidden={drizzleState.login.claim=="tokenIssuer"}></li><Route path="/manage" component={TokenManage} exact/> */}
                       <Route path="/register" component={InformRegister} exact/>
                       <Route path="/deploy" component={Deploy} exact/>
                       <Route path="/configure" component={Configure} exact/>

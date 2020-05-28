@@ -177,7 +177,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    margin: auto;
+    margin: auto; 
 }
 .content .uploadRow .upload .file{
     width: 40px;
@@ -209,19 +209,15 @@
     line-height: 42px;
     font-size: 18px;
     text-align: center;
-    background:linear-gradient(129deg,rgba(111,178,255,1) 0%,rgba(9,95,255,1) 100%);
+    background:linear-gradient(130deg,rgba(255,164,72,1) 0%,rgba(255,111,56,1) 100%);
     border-radius:3px;
     font-weight:500;
     color:rgba(255,255,255,1);
     margin-top: 30px;
     cursor: pointer;
 }
-.submit:nth-last-of-type(2){
-    margin-left: 30%;
-}
-.submit:nth-last-of-type(1){
-    margin-left: 3%;
-    background:linear-gradient(130deg,rgba(255,164,72,1) 0%,rgba(255,111,56,1) 100%);
+.audit{
+    margin-left: 40%;
 }
 .projSub{
     display: inline-block;
@@ -254,4 +250,20 @@
     margin-left: 70%;
     margin-bottom: 30px;
     cursor: pointer;
+}
+.infoSub{
+    display: inline-block;
+    width: 170px;
+    height: 42px;
+    line-height: 42px;
+    font-size: 18px;
+    text-align: center;
+    background:linear-gradient(129deg,rgba(111,178,255,1) 0%,rgba(9,95,255,1) 100%);
+    border-radius:3px;
+    font-weight:500;
+    color:rgba(255,255,255,1);
+    margin-top: 30px;
+    margin-left: 40%;
+    margin-bottom: 30px;
+    cursor: pointer;    
 }

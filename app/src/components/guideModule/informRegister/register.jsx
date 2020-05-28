@@ -40,21 +40,56 @@ class InformRegister extends Component {
         position: "",
         phone: "",
         email: "",
-        pid: null
+        pid: null,
+        baseURL:"http://13.229.205.74:2006"
     };
     this.cancelOptionBox = this.cancelOptionBox.bind(this);
     this.informSubmit = this.informSubmit.bind(this);
     this.review = this.review.bind(this);
     this.projectSubmit = this.projectSubmit.bind(this);
   }
-  handle_Change(key,e){
+  async handle_Change(key,e){
+      //file input 处理方法
       var arr = e.target.value.split("\\");
       var name = arr[arr.length-1];
       this.setState({
           [key]: name
       })
+      if(key=="fileName4"){
+          //存储ICON
+          console.log("调接口传icon")
+          var iconFormData = new FormData();
+          iconFormData.append("file",e.target.files[0])
+          try {
+            var url = this.state.baseURL+"/material/upload_material";
+            if(this.state.pid){
+                url += ("?pid="+this.state.pid+"&type=icon&name=icon")
+            }else{
+                alert("Please submit project details first");
+                return;
+            }
+            let response = await fetch(url, {
+                body: iconFormData, 
+                credentials: 'include',
+                method: 'POST'
+            })
+            let json = response.json() // parses response to JSON
+            json.then(res=>{
+                if(res.success){
+                    console.log("上传ICON成功")
+                }else{
+                    console.log("上传ICON失败")
+                }
+            })
+        } catch (err) {
+            alert(err);
+        } finally {
+    
+        }
+      }
   }
   handleSelect(index){
+    //下拉框处理方法
     if(index == 1){
         this.setState({
             optionBox1: !this.state.optionBox1
@@ -79,6 +114,7 @@ class InformRegister extends Component {
     
   }
   option(index,e){
+    //下拉框选择处理方法
       this.setState({
          optionBox1: false,
          optionBox2: false,
@@ -109,14 +145,15 @@ class InformRegister extends Component {
     }
   }
   componentWillMount(){
-    //收起下拉框
+    //点击任意位置收起下拉框
     document.addEventListener('click', this.cancelOptionBox)
   }
   componentWillUnmount() {
-    //移除下拉框的事件监听
+    //组件卸载前 移除下拉框的事件监听
     document.removeEventListener("click", this.cancelOptionBox);
   }
   cancelOptionBox(e){
+    //点击收起下拉框
     if(e.target.className != "selectIcon"){
         this.setState({
             optionBox1: false,
@@ -128,11 +165,18 @@ class InformRegister extends Component {
     }
   }
   handleChange(key,e){
+    //处理react input text的onChange方法
       this.setState({
         [key]:e.target.value
       })
   }
+  //存储发行人信息
   informSubmit(){
+
+    if(!this.state.pid){
+        alert("PID Not Found , Please submit project details first");
+        return;
+    }
     var data = new FormData();
     //生成表单数据
 
@@ -156,58 +200,53 @@ class InformRegister extends Component {
     data.append("contactPerson[phone]",this.state.phone);
     data.append("contactPerson[email]",this.state.email);
 
-    //Company Address
-    // data.append("country",this.state.country);
-    // data.append("city",this.state.city);
-    // data.append("comAddr",this.state.comAddr);
-    // data.append("postalCode",this.state.postalCode);
-    // data.append("establishCountry",this.state.establishCountry);
+    //fromdata转jsondata
+    var jsonData = {};
+    data.forEach((value, key) => jsonData[key] = value);
 
-    //Contact Person
-    // data.append("firstName",this.state.firstName);
-    // data.append("lastName",this.state.lastName);
-    // data.append("position",this.state.position);
-    // data.append("phone",this.state.phone);
-    // data.append("email",this.state.email);
-
-    //ICON
-    // const icon = this.icon.files[0];
-    // data.append("icon",icon);
-
+//     输出FormData
 //     for(let item of data){
 //        console.log(item)
 //     }
     
-    //调用后端接口，传FormData数据
-    console.log("调用信息存储接口")
-    this.saveIssuerInfo(data);
-//         headers: {
-//           'content-type': 'multipart/form-data'
-//         }
+    //调用后端接口，传json数据
+    this.saveIssuerInfo(jsonData);
   }
-  async saveIssuerInfo(formData) {
+  async saveIssuerInfo(jsonData) {
     try {
-      let response = await fetch("http://etf2fd.natappfree.cc/issue_project/save_issuer_information", {
-        body: formData, // must match 'Content-Type' header
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, same-origin, *omit
-        headers: {
-          'user-agent': 'Mozilla/4.0 MDN Example',
-          'content-type': 'multipart/form-data'
-        },
-        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, cors, *same-origin
-        redirect: 'follow', // manual, *follow, error
-        referrer: 'no-referrer', // *client, no-referrer
+        var url = this.state.baseURL+"/issue_project/save_issuer_information";
+            if(this.state.pid){
+                url += ("?pid="+this.state.pid)
+            }else{
+                alert("Not Found PID , Please submit project details first");
+                return;
+            }
+      let response = await fetch(url, {
+        body: JSON.stringify(jsonData), 
+            credentials: 'include', //支持跨域或同源请求 可携带cookies
+            headers: {
+            'user-agent': 'Mozilla/4.0 MDN Example',
+            'content-type': 'application/json'
+            },
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
       })
       let json = response.json() // parses response to JSON
-      console.log(json)
+      json.then(res=>{
+        if(res.success){
+            console.log("issInfo成功")
+        }else{
+            console.log("issInfo失败")
+        }
+      })
     } catch (err) {
       alert(err);
     } finally {
 
     }
   }
+
+  //存储项目详细信息
+  //初次请求返回pid 用于后续文件、发行人信息、审核接口的传参
   projectSubmit(){
     var data = new FormData();
     //生成表单数据
@@ -221,6 +260,7 @@ class InformRegister extends Component {
     data.append("everRaseedFunds",everRaseedFunds);
     data.append("stepsCompleted",this.state.steps);
     data.append("plannedRasedCapital",this.mini_amount.value);
+    
     //fromdata转jsondata
     var jsonData = {};
     data.forEach((value, key) => jsonData[key] = value);
@@ -230,27 +270,24 @@ class InformRegister extends Component {
   }
   async saveProjDetails(jsonData) {
     try {
-      let url = "http://13.229.205.74:2006/issue_project/save_project_detail";
+      let url = this.state.baseURL+"/issue_project/save_project_detail";
       if(this.state.pid){
           url += ("?pid="+this.state.pid)
       }
       let response = await fetch(url, {
-        body: JSON.stringify(jsonData), // must match 'Content-Type' header
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'include', // include, same-origin, *omit
+        body: JSON.stringify(jsonData),
+        credentials: 'include', 
         headers: {
           'user-agent': 'Mozilla/4.0 MDN Example',
           'content-type': 'application/json'
         },
-        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, cors, *same-origin
-        redirect: 'follow', // manual, *follow, error
-        referrer: 'no-referrer', // *client, no-referrer
+        method: 'POST'
       })
 
       let json = response.json() 
       json.then(res=>{
           console.log("pid",res.data)
+          //存返回的pid值
           this.setState({
               pid: res.data
           })
@@ -261,20 +298,31 @@ class InformRegister extends Component {
 
     }
   }
+  //调用审核接口
   async review(){
-      //调用审核接口
+        if(!this.state.pid){
+            alert("PID Not Found , Please submit project details first");
+            return;
+        }
       try {
         //入库后传pid
-        let response = await fetch("http://etf2fd.natappfree.cc/issue_project/audit?pid=", {
-          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-          credentials: 'same-origin', // include, same-origin, *omit
-          method: 'GET', // *GET, POST, PUT, DELETE, etc.
-          mode: 'cors', // no-cors, cors, *same-origin
-          redirect: 'follow', // manual, *follow, error
-          referrer: 'no-referrer', // *client, no-referrer
+        let url = this.state.baseURL+"/issue_project/audit"
+        if(this.state.pid){
+            url += ("?pid="+this.state.pid)
+        }
+
+        let response = await fetch(url, {
+          credentials: 'include',
+          method: 'GET'
         })
         let json = response.json() // parses response to JSON
-        console.log(json)
+        json.then(res=>{
+            if(res.success){
+                console.log("audit成功")
+            }else{
+                console.log("audit失败")
+            }
+          })
       } catch (err) {
         alert(err);
       } finally {
@@ -283,34 +331,31 @@ class InformRegister extends Component {
   }
   fileSubmit(type){
       var fileType = type;
-    //   console.log(this.state.pid);
-    //   console.log(type);
-    //   if(!this.state.pid){
-    //       alert("Please submit project details first");
-    //       return;
-    //   }
+      console.log(this.state.pid);
+      console.log(type);
+      if(!this.state.pid){
+          alert("PID Not Found , Please submit project details first");
+          return;
+      }
     //生成各个文件的表单数据
     //调用三次接口上传文件
     const file1 = this.file1.files[0];
     const file2 = this.file2.files[0];
     const file3 = this.file3.files[0];
-    console.log("111",file1);
     var file1Data = new FormData();
     var file2Data = new FormData();
     var file3Data = new FormData();
     file1Data.append("file",file1);
     file2Data.append("file",file2);
     file3Data.append("file",file3);
-    console.log(file1Data)
     this.saveFile(file1Data,file2Data,file3Data,fileType);
   }
   async saveFile(file1Data,file2Data,file3Data,fileType){
     if(fileType=="lagal"){
-        console.log(file1Data)
-        console.log(typeof(file1Data))
+        
         //lagal文件
         try {
-            var url = "http://t532jg.natappfree.cc/material/upload_material";
+            var url = this.state.baseURL+"/material/upload_material";
             if(this.state.pid){
                 url += ("?pid="+this.state.pid+"&type=lagal&name=lagal&content="+this.desc1.value)
             }else{
@@ -318,17 +363,9 @@ class InformRegister extends Component {
                 return;
             }
             let response = await fetch(url, {
-            body: file1Data, // must match 'Content-Type' header
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'include', // include, same-origin, *omit
-            headers: {
-                'user-agent': 'Mozilla/4.0 MDN Example',
-                'content-type': 'multipart/form-data'
-            },
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            mode: 'cors', // no-cors, cors, *same-origin
-            redirect: 'follow', // manual, *follow, error
-            referrer: 'no-referrer', // *client, no-referrer
+                body: file1Data,
+                credentials: 'include',
+                method: 'POST',
             })
             let json = response.json() // parses response to JSON
             json.then(res=>{
@@ -346,7 +383,7 @@ class InformRegister extends Component {
     }else if(fileType=="marketting"){
       //marketting文件
         try {
-            var url = "http://t532jg.natappfree.cc/material/upload_material";
+            var url = this.state.baseURL+"/material/upload_material";
             if(this.state.pid){
                 url += ("?pid="+this.state.pid+"&type=marketting&name=marketting&content="+this.desc2.value)
             }else{
@@ -354,22 +391,16 @@ class InformRegister extends Component {
                 return;
             }
             let response = await fetch(url, {
-            body: file2Data, // must match 'Content-Type' header
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'include', // include, same-origin, *omit
-            headers: {
-                'user-agent': 'Mozilla/4.0 MDN Example',
-                'content-type': 'multipart/form-data'
-            },
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            mode: 'cors', // no-cors, cors, *same-origin
-            redirect: 'follow', // manual, *follow, error
-            referrer: 'no-referrer', // *client, no-referrer
+                body: file2Data, 
+                credentials: 'include', 
+                method: 'POST'
             })
             let json = response.json() // parses response to JSON
             json.then(res=>{
                 if(res.success){
                     console.log("market成功")
+                }else{
+                    console.log("market失败")
                 }
             })
         } catch (err) {
@@ -380,7 +411,7 @@ class InformRegister extends Component {
     }else if(fileType == "whitepaper"){
       //whitepaper文件
         try {
-            var url = "http://t532jg.natappfree.cc/material/upload_material";
+            var url = this.state.baseURL+"/material/upload_material";
             if(this.state.pid){
                 url += ("?pid="+this.state.pid+"&type=whitepaper文件&name=whitepaper文件&content="+this.desc3.value)
             }else{
@@ -388,22 +419,16 @@ class InformRegister extends Component {
                 return;
             }
             let response = await fetch(url, {
-            body: file3Data, // must match 'Content-Type' headerbody: file3Data, // must match 'Content-Type' header
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'include', // include, same-origin, *omit
-            headers: {
-                'user-agent': 'Mozilla/4.0 MDN Example',
-                'content-type': 'multipart/form-data'
-            },
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            mode: 'cors', // no-cors, cors, *same-origin
-            redirect: 'follow', // manual, *follow, error
-            referrer: 'no-referrer', // *client, no-referrer
+                body: file3Data,
+                credentials: 'include',
+                method: 'POST'
             })
             let json = response.json() // parses response to JSON
             json.then(res=>{
                 if(res.success){
-                    console.log("whitep成功")
+                    console.log("whitepaper成功")
+                }else{
+                    console.log("whitepaper失败")
                 }
             })
         } catch (err) {
@@ -644,9 +669,10 @@ class InformRegister extends Component {
                         <label htmlFor="email">Contact Person‘s Email:</label>
                     </div>
                  </div>
+                 <div className="infoSub" onClick={this.informSubmit}>Submit</div>
                  <div className="titl">Security Token ICON</div>
                  <div className="content">
-                     {/* 上传图片 */}
+                     {/* 上传图片ICON */}
                      <div className="uploadRow">
                         <div className="upload">
                             <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName4 ? "block" : "none"}}/>
@@ -657,8 +683,7 @@ class InformRegister extends Component {
                         <label htmlFor="file4">Upload ICON:</label>
                     </div>
                  </div>
-                 <div className="submit" onClick={this.informSubmit}>Submit</div>
-                 <div className="submit" onClick={this.review}>Review</div>
+                 <div className="submit audit" onClick={this.review}>Review</div>
              </form>
           </div>
         </div>

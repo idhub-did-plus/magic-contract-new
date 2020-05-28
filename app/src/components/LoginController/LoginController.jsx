@@ -13,7 +13,8 @@ export default class LoginController extends Component {
     super(props);
     this.state = {
       claim: "",
-      selItem: 1
+      selItem: 1,
+      baseURL:"http://13.229.205.74:2006"
     };
 
     // this.handleClaimChange = this.handleClaimChange.bind(this);
@@ -69,7 +70,10 @@ export default class LoginController extends Component {
   }
   async request(identity, tp,claim, sig) {
     try {
-      let response = await fetch('http://13.229.205.74:2006/auth/login?identity='+identity+'&timestamp='+tp + '&claim=' + claim+ '&signature=' + sig, {
+
+      let url = this.state.baseURL+'/auth/login?identity='+identity+'&timestamp='+tp + '&claim=' + claim+ '&signature=' + sig;
+      
+      let response = await fetch(url, {
        
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         credentials: 'include', // include, same-origin, *omit
@@ -90,55 +94,12 @@ export default class LoginController extends Component {
 
     }
   }
-  // async request(identity, tp,claim, sig) {
-  //   try {
-  //     let response = await fetch('http://localhost:8080/login?identity='+identity+'&timestamp='+tp + '&claim=' + claim+ '&signature=' + sig, {
-       
-  //       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-  //       credentials: 'include', // include, same-origin, *omit
-  //       headers: {
-  //         'user-agent': 'Mozilla/4.0 MDN Example',
-  //         'content-type': 'application/json'
-  //       },
-  //       method: 'GET', // *GET, POST, PUT, DELETE, etc.
-  //       mode: 'cors', // no-cors, cors, *same-origin
-  //       redirect: 'follow', // manual, *follow, error
-  //       referrer: 'no-referrer', // *client, no-referrer
-  //     })
-  //     let json = response.json() // parses response to JSON
-  //     return json;
-  //   } catch (err) {
-  //     alert(err);
-  //   } finally {
-
-  //   }
-  // }
-  //   async reentry() {
-  //   try {
-  //     let response = await fetch('http://localhost:8080/login?action=reentry', {
-       
-  //       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-  //       credentials: 'include', // include, same-origin, *omit
-  //       headers: {
-  //         'user-agent': 'Mozilla/4.0 MDN Example',
-  //         'content-type': 'application/json'
-  //       },
-  //       method: 'GET', // *GET, POST, PUT, DELETE, etc.
-  //       mode: 'cors', // no-cors, cors, *same-origin
-  //       redirect: 'follow', // manual, *follow, error
-  //       referrer: 'no-referrer', // *client, no-referrer
-  //     })
-  //     let json = response.json() // parses response to JSON
-  //     return json;
-  //   } catch (err) {
-  //     alert(err);
-  //   } finally {
-
-  //   }
-  // }
   async reentry() {
+
+    let url = this.state.baseURL+"/auth/login?action=reentry"
+
     try {
-      let response = await fetch('http://13.229.205.74:2006/auth/login?action=reentry', {
+      let response = await fetch(url, {
        
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         credentials: 'include', // include, same-origin, *omit

@@ -13,13 +13,47 @@ export default class Online extends Component {
         onchain: true,
         fileName: ""
     };
+    this.fileSub = this.fileSub.bind(this);
   }
   handleChange(e){
+    //file input onChange处理方法
+    //处理文件名及文件存储
     var arr = e.target.value.split("\\");
     var name = arr[arr.length-1];
     this.setState({
-        fileName: name
+        fileName: name 
     })
+    //调用文件存储方法
+    this.fileSub(e);
+  }
+  async fileSub(event){
+
+      let url = "http://13.229.205.74:2006/material/upload_material";
+      url += ("?content="+this.desc.value);
+
+      var formData = new FormData();
+      var file = event.target.files[0];
+      formData.append("file",file);
+      try {
+        let response = await fetch(url, {
+            body: formData,
+            credentials: 'include',
+            method: 'POST',
+        })
+        let json = response.json() // parses response to JSON
+        json.then(res=>{
+            if(res.success){
+                console.log("上传成功")
+                //返回上传时间 返回http地址准备上链 1400 更新列表 /material/retrieve_materials?pid=
+            }else{
+                console.log("上传失败")
+            }
+        })
+    } catch (err) {
+        alert(err);
+    } finally {
+
+    }
   }
   render(){
       const Asset = ["11111111111","222222222","33333333333333"];
@@ -44,20 +78,20 @@ export default class Online extends Component {
                                 <div className="td"></div>
                             </div>
                             <div className="tr">
-                                <div className="td">11122222222444444444444444411</div>
-                                <div className="td">2222222222222222222222222</div>
-                                <div className="td">2020.01.12  12:24:33</div>
-                                <div className="td">2020.12.30  23:45:45</div>
+                                <div className="td">whitepaper</div>
+                                <div className="td">whitepaper desc</div>
+                                <div className="td">2020.05.30  12:24:33</div>
+                                <div className="td">2020.05.30  23:45:45</div>
                                 <div className="td">
                                     <div className="on" style={{display: this.state.onchain?"block":"none"}}>已上链</div>
                                     <div className="un" style={{display: this.state.onchain?"none":"block",cursor:'pointer'}}>上链</div>
                                 </div>
                             </div>
                             <div className="tr">
-                                <div className="td">11122222222444444444444444411</div>
-                                <div className="td">2222222222222222222222222</div>
-                                <div className="td">2020.01.12  12:24:33</div>
-                                <div className="td">2020.12.30  23:45:45</div>
+                                <div className="td">legal</div>
+                                <div className="td">legal desc</div>
+                                <div className="td">2020.05.29  12:24:33</div>
+                                <div className="td">2020.05.29 23:45:45</div>
                                 <div className="td">
                                     <div className="on" style={{display: this.state.onchain?"block":"none"}}>已上链</div>
                                     <div className="un" style={{display: this.state.onchain?"none":"block",cursor:'pointer'}}>上链</div>
@@ -65,24 +99,21 @@ export default class Online extends Component {
                             </div>
                         </div>
                         <form action="" autoComplete="off">
-                            <div className="informRow">
-                                <label htmlFor="desc">Content description: </label>
-                                <input type="text" id="desc"/>
-                            </div>
                             <div className="uploadRow">
-                                <div className="upload" style={{display: !this.state.fileName ? "block" : "none"}}>
-                                    <img className="up" src={Upload} alt="上传图标"/>
-                                    <input type="file" id="file1" className="upInput" onChange={this.handleChange.bind(this)}/>
-                                </div>
-                                <div className="uploaded" style={{display: !this.state.fileName ? "none" : "block"}}>
+                                <div className="upload" >
+                                    <img className="up" src={Upload} alt="上传图标"style={{display: !this.state.fileName ? "block" : "none"}}/>
                                     <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName ? "none" : "block"}}/>
                                     <input type="file" id="file1" className="upInput" onChange={this.handleChange.bind(this)}/>
                                     <div className="fileName" style={{display: !this.state.fileName ? "none" : "block"}}>{this.state.fileName}</div>
                                 </div>
-                                <label htmlFor="file1">Upload legal documents:</label>
+                                <label htmlFor="file1">Upload documents:</label>
+                            </div>
+                            <div className="informRow">
+                                <label htmlFor="desc">Content description: </label>
+                                <input type="text" id="desc" ref={el=>this.desc=el}/>
                             </div>
                         </form>
-                        <div className="submit">Submit</div>
+                        <div className="submit" onClick={this.fileSub}>Submit</div>
                     </div>
                 </div>
             </div>
