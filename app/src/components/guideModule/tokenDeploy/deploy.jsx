@@ -25,11 +25,20 @@ class Deploy extends Component {
         name: "",
         symbol: "",
         decimal: 0,
-        controllers: []
+        controllers: [],
+        baseURL:"http://13.229.205.74:2006",
+        pid:""
     };
     this.addToList = this.addToList.bind(this);
     this.deployCommon = this.deployCommon.bind(this);
     this.deployParti = this.deployParti.bind(this);
+  }
+  componentWillMount(){
+    let pid = this.props.drizzle.store.getState().pid;
+    console.log("仓库取pid",pid)
+    this.setState({
+        pid: pid
+    })
   }
   changeTab(index){
     this.setState({
@@ -37,6 +46,7 @@ class Deploy extends Component {
     })
   }
   addToList(){
+    var partiName = this.pPName.value;
     var id = this.pId.value;
     var name =  this.pName.value;
     var symbol = this.pSymbol.value;
@@ -53,8 +63,12 @@ class Deploy extends Component {
         alert("input correct partition please!")
     }else{
         var arr = new Array(id,name,symbol,decimal);
+        var parti = {
+            name:partiName,
+            label:id
+        }
         this.setState({
-            partiList: [...this.state.partiList,id],
+            partiList: [...this.state.partiList,parti],
             arrList: [...this.state.arrList,arr],
             name: name,
             symbol: symbol,
@@ -97,7 +111,7 @@ class Deploy extends Component {
             tokenType: "erc1400"
         };
         this.props.drizzle.store.dispatch(deployFinished1400(payload))
-        //   this.save(payload)
+          this.save(payload)
         }).then(
             //部署成功
             setTimeout(()=>{
@@ -112,7 +126,7 @@ class Deploy extends Component {
         alert("Please add to the list first")
         return
     }
-
+    console.log(this.state.partiList);
     let web3 = this.props.drizzle.web3;
     this.MyContract.setProvider(web3.currentProvider);
     this.MyContract.new(
@@ -121,6 +135,7 @@ class Deploy extends Component {
         this.utils.toBN(this.state.decimal),
         this.state.controllers,
         this.props.drizzle.contracts.ComplianceServiceRegistry.address, { from: this.props.drizzleState.accounts[0] }).then(inst => {
+          //生成json数据
           let payload = {
             name: this.state.name,
             symbol: this.state.symbol,
@@ -132,7 +147,15 @@ class Deploy extends Component {
             tokenType: "erc1400"
           };
           this.props.drizzle.store.dispatch(deployFinished1400(payload))
-        //   this.save(payload)
+          this.save(payload);
+          //存储partitionList
+          let config = {
+            name: this.state.name,
+            symbol: this.state.symbol,
+            decimals: this.utils.toBN(this.state.decimal),
+            partitions:this.state.partiList
+          }
+          this.saveTokenConfig(config);
         }).then(
             //部署成功
               setTimeout(()=>{
@@ -142,28 +165,78 @@ class Deploy extends Component {
       return;
   }
 //   调用接口存储已部署ST
-//   async save(token) {
-//     try {
-//       let response = await fetch("http://localhost:8080/saveDeployedToken", {
-//         body: JSON.stringify(token), // must match 'Content-Type' header
-//         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-//         credentials: 'same-origin', // include, same-origin, *omit
-//         headers: {
-//           'user-agent': 'Mozilla/4.0 MDN Example',
-//           'content-type': 'application/json'
-//         },
-//         method: 'POST', // *GET, POST, PUT, DELETE, etc.
-//         mode: 'cors', // no-cors, cors, *same-origin
-//         redirect: 'follow', // manual, *follow, error
-//         referrer: 'no-referrer', // *client, no-referrer
-//       })
-//       let json = response.json() // parses response to JSON
-//     } catch (err) {
-//       alert(err);
-//     } finally {
+  async save(token) {
+      let url = this.state.baseURL+"/issue_project/token_deployed"
+      //拼接pid
+      if(this.state.pid){
+        url += ("?pid="+this.state.pid)
+      }else{
+        alert("PID Not Found , Please submit project details first");
+        return;
+      }
 
-//     }
-//   }
+    try {
+      let response = await fetch(url, {
+        body: JSON.stringify(token), // must match 'Content-Type' header
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, same-origin, *omit
+        headers: {
+          'user-agent': 'Mozilla/4.0 MDN Example',
+          'content-type': 'application/json'
+        },
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, cors, *same-origin
+        redirect: 'follow', // manual, *follow, error
+        referrer: 'no-referrer', // *client, no-referrer
+      })
+      let json = response.json() // parses response to JSON
+      json.then(res=>{
+        if(res.success){
+            console.log("save部署成功",res.data)
+        }else{
+            console.log("save部署失败")
+        }
+      })
+    } catch (err) {
+      alert(err);
+    } finally {
+
+    }
+  }
+  async saveTokenConfig(config) {
+    let url = this.state.baseURL+"/issue_project/save_token_config"
+    //拼接pid
+    if(this.state.pid){
+      url += ("?pid="+this.state.pid)
+    }else{
+      alert("PID Not Found , Please submit project details first");
+      return;
+    }
+
+  try {
+    let response = await fetch(url, {
+      body: JSON.stringify(config), // must match 'Content-Type' header
+      credentials: 'same-origin', // include, same-origin, *omit
+      headers: {
+        'user-agent': 'Mozilla/4.0 MDN Example',
+        'content-type': 'application/json'
+      },
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    })
+    let json = response.json() // parses response to JSON
+    json.then(res=>{
+        if(res.success){
+            console.log("save config成功",res.data)
+        }else{
+            console.log("save config失败")
+        }
+      })
+  } catch (err) {
+    alert(err);
+  } finally {
+
+  }
+}
   render(){
       return (
         <div className="deploy">
@@ -243,6 +316,10 @@ class Deploy extends Component {
                         </div>
                         <form  ref={el=>this.partiForm=el} action="" autoComplete="off" className="partiForm" style={{display: this.state.index == 2&&!this.state.deployed ? "flex" : "none"}}>
                             <div className="partiList"></div>
+                            <div className="formRow">
+                                <label htmlFor="identifier">Partition Name: </label>
+                                <input ref={el=>this.pPName=el} type="text" id="partiName"/>
+                            </div>
                             <div className="formRow">
                                 <label htmlFor="identifier">Identifier: </label>
                                 <input ref={el=>this.pId=el} type="text" id="identifier"/>

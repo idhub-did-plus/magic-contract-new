@@ -40,7 +40,7 @@ class App extends Component {
                     
                   {/* <div>{drizzleState.login.claim}</div> */}
                       <Route path="/" component={Home} exact/>
-                      <Route path="/register" component={InformRegister} exact/>
+                      <Route path="/register/:index/:type" component={InformRegister}/>
                       <Route path="/deploy" component={Deploy} exact/>
                       <Route path="/configure" component={Configure} exact/>
                       <Route path="/issue" component={Issue} exact/>

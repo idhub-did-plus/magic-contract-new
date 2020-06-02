@@ -47,8 +47,8 @@
 }
 .second .content .listItem{
   width: 29%;
-  min-width: 300px;
-  height: 200px;
+  min-width: 310px;
+  height: 190px;
   background-color: pink;
   float: left;
   margin-right: 3%;
@@ -57,12 +57,13 @@
   background:rgba(255,255,255,1);
   box-shadow:0px -2px 10px 0px rgba(0,0,0,0.07);
   position: relative;
-  padding: 20px 10px 10px 20px;
+  padding: 20px 0 0 20px;
+  cursor: pointer;
 }
 @media screen and (min-width:900px){
   .second .content .listItem .icon{
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
   }
 }
 .second .content .listItem .icon{
@@ -79,31 +80,32 @@
   margin: 0;
   padding: 0;
   width: 65%;
-  height: 100px;
+  height: 90px;
   float: left;
   background-color: #fff;
 }
 .second .content .listItem .box .label{
-  font-size: 18px;
+  font-size: 16px;
   color:rgba(90,104,114,1);
   font-weight: 400;
   display: inline-block;
   margin-top: 15px;
 }
 .second .content .listItem .box .item{
-  font-size: 22px;
-  font-weight:500;
+  font-size: 20px;
+  font-weight:600;
   color:rgba(32,32,32,1);
   margin-left: 5px;
 }
 .second .content2 .listItem .box .item{
-  font-size: 20px;
+  font-size: 16px;
+  font-weight: 600;
 }
 .second .content .listItem .addr{
-  font-size: 18px;
+  font-size: 16px;
   color:rgba(90,104,114,1);
   font-weight: 400;
-  margin-top: 110px;
+  margin-top: 100px;
   margin-left: 10px;
   max-width: 90%;
   white-space: nowrap;
@@ -118,9 +120,10 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  font-weight: 600;
 }
 .second .content2 .listItem .addrCont{
-  font-size: 20px;
+  font-size: 16px;
 }
 .second .content .listItem .add{
   width: 70px;

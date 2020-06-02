@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, NavLink } from "react-router-dom";
+import { DrizzleContext } from "@drizzle/react-plugin";
 import Header from "../../../components/common/guideHeader"
 import Guide from "../../../components/common/guideMenu"
 import "./register.css"
 import Upload from "../../../assets/上传@2x.png"
 import file from "../../../assets/文件@2x.png"
 import select from "../../../assets/下拉@2x.png"
+import { savePID } from "../../../store/pid/actions";
 
 class InformRegister extends Component {
   constructor(props) {
@@ -41,7 +43,8 @@ class InformRegister extends Component {
         phone: "",
         email: "",
         pid: null,
-        baseURL:"http://13.229.205.74:2006"
+        baseURL:"http://13.229.205.74:2006",
+        showData:[]
     };
     this.cancelOptionBox = this.cancelOptionBox.bind(this);
     this.informSubmit = this.informSubmit.bind(this);
@@ -145,8 +148,47 @@ class InformRegister extends Component {
     }
   }
   componentWillMount(){
+      console.log("willmount",this.props.match.params)
+      var index = this.props.match.params.index;
+      var type = this.props.match.params.type;
+      //请求数据渲染
+      this.showData(index,type)
+
+      // console.log(this.props)
+    //测试用，勿忘删除
+    // this.props.drizzle.store.dispatch(savePID("5ed4b8910e7578139e68571c"));
+    let test = this.props.drizzle.store.getState().pid;
+    console.log("pid",test)
+    
     //点击任意位置收起下拉框
     document.addEventListener('click', this.cancelOptionBox)
+  }
+    //信息展示
+    async showData(index,type){
+      try {
+        //入库后传pid
+        let url = this.state.baseURL+"/issue_project/list?status="+type;
+
+        let response = await fetch(url, {
+          credentials: 'include',
+          method: 'GET'
+        })
+        let json = response.json() // parses response to JSON
+        json.then(res=>{
+            if(res.success){
+                console.log(type+"成功",res.data[index])
+                this.setState({
+                    showData:res.data[index]
+                })
+            }else{
+                console.log(type+"失败")
+            }
+          })
+      } catch (err) {
+        alert(err);
+      } finally {
+  
+      }
   }
   componentWillUnmount() {
     //组件卸载前 移除下拉框的事件监听
@@ -286,11 +328,18 @@ class InformRegister extends Component {
 
       let json = response.json() 
       json.then(res=>{
-          console.log("pid",res.data)
-          //存返回的pid值
-          this.setState({
-              pid: res.data
-          })
+        if(res.success){
+            console.log("pid",res.data)
+            //存返回的pid值
+            this.setState({
+                pid: res.data
+            })
+          this.props.drizzle.store.dispatch(savePID(res.data)); 
+          let pid = this.props.drizzle.store.getState().pid;
+          console.log("仓库取pid",pid)
+        }else{
+            console.log("存储项目详细信息失败")
+        }
       })
     } catch (err) {
       alert(err);
@@ -310,6 +359,7 @@ class InformRegister extends Component {
         if(this.state.pid){
             url += ("?pid="+this.state.pid)
         }
+        url += "&agree="+true;
 
         let response = await fetch(url, {
           credentials: 'include',
@@ -690,8 +740,20 @@ class InformRegister extends Component {
     );
   }
 }
-export default function Register(){
+// export default function Register(){
+//     return (
+//         <InformRegister/>
+//     );
+// }
+export default (props) => {
     return (
-        <InformRegister/>
-    );
-}
+      <DrizzleContext.Consumer>
+        {drizzleContext => {
+          return (
+            <InformRegister {...drizzleContext} {...props} />
+          );
+        }}
+      </DrizzleContext.Consumer>
+  
+    )
+  }

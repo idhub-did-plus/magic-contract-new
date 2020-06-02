@@ -9,13 +9,110 @@ export default class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selTab: 1
+      selTab: 1,
+      baseURL:"http://13.229.205.74:2006",
+      editingData:[],
+      audit_passedData:[],
+      deployedData:[]
     };
   }
   handleCheck(index){
     this.setState({
       selTab: index
     })
+  }
+  componentWillMount(){
+    //请求登记信息列表,区分状态
+    this.getEditingList();
+    this.getPassedList();
+    //请求已部署ST列表
+    this.getdeployedList()
+  }
+  async getEditingList() {
+    try {
+      let url = this.state.baseURL+"/issue_project/list?status=editing";
+      let response = await fetch(url, {
+        credentials: 'include', 
+        method: 'GET'
+      })
+
+      let json = response.json() 
+      json.then(res=>{
+        if(res.success){
+            console.log("获取编辑中成功",res.data)
+            this.setState({
+              editingData:res.data
+            })
+        }else{
+            console.log("获取编辑中失败")
+        }
+      })
+    } catch (err) {
+      alert(err);
+    } finally {
+
+    }
+  }
+  async getPassedList() {
+    try {
+      let url = this.state.baseURL+"/issue_project/list?status=audit_passed";
+      let response = await fetch(url, {
+        credentials: 'include', 
+        method: 'GET'
+      })
+
+      let json = response.json() 
+      json.then(res=>{
+        if(res.success){
+            console.log("获取已审核成功",res.data)
+            this.setState({
+              audit_passedData:res.data
+            })
+        }else{
+            console.log("获取已审核失败")
+        }
+      })
+    } catch (err) {
+      alert(err);
+    } finally {
+
+    }
+  }
+  async getdeployedList() {
+    try {
+      let url = this.state.baseURL+"/issue_project/list?status=deployed";
+      let response = await fetch(url, {
+        credentials: 'include', 
+        method: 'GET'
+      })
+
+      let json = response.json() 
+      json.then(res=>{
+        if(res.success){
+            console.log("获取已部署成功",res.data)
+            this.setState({
+              deployedData:res.data
+            })
+        }else{
+            console.log("获取已部署失败")
+        }
+      })
+    } catch (err) {
+      alert(err);
+    } finally {
+
+    }
+  }
+  showEditingRegInfo(index,type){
+    //点击跳转至对应的登记信息详情页 展示已完成登记信息
+    this.props.history.push({pathname:"/register/" + index+ "/" + type});
+  }
+  showPassedRegInfo(index,type){
+    //点击跳转至对应的登记信息详情页 展示已完成登记信息
+    this.props.history.push({pathname:"/register/" + index+ "/" + type});
+  }
+  nextStep(){
+    //对于已部署ST 点击可进行后续的配置和发行操作
   }
   render(){
       return (
@@ -37,7 +134,25 @@ export default class Home extends Component {
             </div>
             {/* 已部署 */}
             <div className="content content1" style={{display: this.state.selTab == 1 ? "block" : "none"}}>
-                <div className="listItem">
+            {
+                  this.state.deployedData.map((item,index)=>{
+                    return(
+                      <div className="listItem" onClick={this.nextStep.bind(this,index)}>
+                        <div className="icon"></div>
+                        <div className="box">
+                            <span className="label">Symbol:</span>
+                            <span className="item">{item.symbol}</span>
+                            <br/>
+                            <span className="label">Name:</span>
+                            <span className="item">{item.name}</span>
+                        </div>
+                        <div className="addr">TokenAddress:</div>
+                        <div className="addrCont">{item.contractAddress}</div>
+                    </div>
+                    )
+                  })
+                }
+                {/* <div className="listItem">
                     <div className="icon"></div>
                     <div className="box">
                         <span className="label">Symbol:</span>
@@ -48,30 +163,55 @@ export default class Home extends Component {
                     </div>
                     <div className="addr">TokenAddress:</div>
                     <div className="addrCont">0x413f1890Ef3223B34b6FE70Ac6c86c3DfdF56785</div>
-                </div>
+                </div> */}
                 {/* 新增入口 */}
                 <div className="listItem">
-                    <NavLink to="/register"><img className="add" src={add} alt="新增icon"/></NavLink>
+                    <NavLink to="/register/index/new"><img className="add" src={add} alt="新增icon"/></NavLink>
                 </div>
             </div>
             {/* 未部署 */}
             <div className="content content2" style={{display: this.state.selTab == 2 ? "block" : "none"}}>
-                <div className="listItem">
-                  <img className="state" src={state} alt="审核状态" style={{display: "block"}}/>
-                  <div className="icon"></div>
-                    <div className="box">
-                        <span className="label">Company:</span>
-                        <span className="item">Magic</span>
-                        <br/>
-                        <span className="label">Asset:</span>
-                        <span className="item">Propetry</span>
-                    </div>
-                    <div className="addr">Jurisdiction of company establishment:</div>
-                    <div className="addrCont">American</div>
-                </div>
+                {
+                  this.state.editingData.map((item,index)=>{
+                    return(
+                      <div className="listItem" key={index} onClick={this.showEditingRegInfo.bind(this,index,"editing")}>
+                        <img className="state" src={state} alt="审核状态" style={{display: item.status=="audit_passed"?"block":"none"}}/>
+                        <div className="icon"></div>
+                        <div className="box">
+                            <span className="label">Company:</span>
+                            <span className="item">{item.projectDetail.name}</span>
+                            <br/>
+                            <span className="label">Asset:</span>
+                            <span className="item">{item.projectDetail.assetType}</span>
+                        </div>
+                        <div className="addr">Jurisdiction of company establishment:</div>
+                        <div className="addrCont">{item.projectDetail.jurisdiction}</div>
+                      </div>
+                    )
+                  })
+                }
+                {
+                  this.state.audit_passedData.map((item,index)=>{
+                    return(
+                      <div className="listItem" key={index} onClick={this.showPassedRegInfo.bind(this,index,"passed")}>
+                        <img className="state" src={state} alt="审核状态" style={{display: item.status=="audit_passed"?"block":"none"}}/>
+                        <div className="icon"></div>
+                        <div className="box">
+                            <span className="label">Company:</span>
+                            <span className="item">{item.projectDetail.name}</span>
+                            <br/>
+                            <span className="label">Asset:</span>
+                            <span className="item">{item.projectDetail.assetType}</span>
+                        </div>
+                        <div className="addr">Jurisdiction of company establishment:</div>
+                        <div className="addrCont">{item.projectDetail.jurisdiction}</div>
+                      </div>
+                    )
+                  })
+                }
                 {/* 新增入口 */}
                 <div className="listItem">
-                    <NavLink to="/register"><img className="add" src={add} alt="新增icon"/></NavLink>
+                    <NavLink to="/register/index/new"><img className="add" src={add} alt="新增icon"/></NavLink>
                 </div>
             </div>
           </div>

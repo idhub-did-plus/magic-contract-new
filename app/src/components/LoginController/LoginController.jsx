@@ -63,7 +63,7 @@ export default class LoginController extends Component {
       
       let json = await this.request(identity, timestamp, this.claim, signature);
       if(json != undefined && json.success){
-        this.props.drizzle.store.dispatch(loginFinished(json));
+        this.props.drizzle.store.dispatch(loginFinished(json)); 
       }
     });
 

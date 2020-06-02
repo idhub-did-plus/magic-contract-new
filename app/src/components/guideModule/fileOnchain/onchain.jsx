@@ -11,7 +11,8 @@ export default class Online extends Component {
     super(props);
     this.state = {
         onchain: true,
-        fileName: ""
+        fileName: "",
+        baseURL:"http://13.229.205.74:2006"
     };
     this.fileSub = this.fileSub.bind(this);
   }
@@ -28,7 +29,7 @@ export default class Online extends Component {
   }
   async fileSub(event){
 
-      let url = "http://13.229.205.74:2006/material/upload_material";
+      let url = this.state.baseURL+"/material/upload_material";
       url += ("?content="+this.desc.value);
 
       var formData = new FormData();
@@ -54,6 +55,11 @@ export default class Online extends Component {
     } finally {
 
     }
+  }
+  async getFileList(){
+     //请求文件列表数据
+     let url = this.state.baseURL+"/material/retrieve_materials"
+     //拼接pid
   }
   render(){
       const Asset = ["11111111111","222222222","33333333333333"];

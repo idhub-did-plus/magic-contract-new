@@ -12,7 +12,8 @@ class Issue extends Component {
     this.state = {
         optionBox:false,
         partition: "",
-        deployed: true
+        deployed: true,
+        tookenAddress:"0x1A00b7fb569d7E61cd2Ac4Bf4b40dA6108E3Fe93"
     };
     this.handleSelect = this.handleSelect.bind(this);
     this.handleIssue = this.handleIssue.bind(this);
@@ -38,7 +39,15 @@ class Issue extends Component {
       console.log(receiver);
   }
   componentWillMount(){
-      console.log(this.props.drizzleState.deployedTokens)
+    console.log(this.props)
+    //获取部署的token地址
+    console.log("仓库获取部署的token列表",this.props.drizzle.store.getState().deployedTokens)
+    let tookenAddr = this.props.drizzle.store.getState().deployedTokens;
+    if(tookenAddr.length!=0){
+      this.setState({
+          tookenAddr:tookenAddr[0].contractAddress
+      })
+    }
       //收起下拉框
       document.addEventListener('click', this.cancelOptionBox)
   }
@@ -69,14 +78,14 @@ class Issue extends Component {
                         <div className="addrTable">
                             <div className="tr">
                                 <div className="td">Token address: </div>
-                                <div className="td">0x291cC5385C302694e9B982478583c677a261B21D</div>
+                                <div className="td">{this.state.tookenAddress}</div>
                             </div>
                         </div>
                         <div className="table" style={{display: this.state.deployed ? "flex":"none"}}>
                             <div className="thead">
                                 <div className="td">Partition</div>
                                 <div className="td">Amount</div>
-                                <div className="td">Receiving address</div>
+                                <div className="td">Receiver address</div>
                             </div>
                             <div className="tr">
                                 <div className="td">0X4c000E507bE6663e264a1A21507a69Bfa5035D950X4c000E507bE6663e264a1A21507a69Bfa5035D95</div>

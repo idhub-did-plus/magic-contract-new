@@ -7,10 +7,17 @@ import arrow from "../../../assets/Group 5@2x.png"
 import del from "../../../assets/delete@2x (1).png"
 import "./configure.css"
 import { DrizzleContext } from "@drizzle/react-plugin";
+import ERC1400 from "../../../contracts/ERC1400.json";
+var contract = require("@truffle/contract");
 
 class Configure extends Component {
   constructor(props) {
     super(props);
+    
+    var MyContract = contract(ERC1400)
+    this.utils = props.drizzle.web3.utils;
+    this.MyContract = MyContract;
+    
     this.state = {
         tabIndex: 1,
         deployed: false,
@@ -24,7 +31,8 @@ class Configure extends Component {
         finalCondition: "",
         defaultService: "",
         and: [],
-        or: []
+        or: [],
+        tookenAddr:"0x1A00b7fb569d7E61cd2Ac4Bf4b40dA6108E3Fe93"
     };
     this.Register = this.Register.bind(this);
     this.handleAddAnd = this.handleAddAnd.bind(this);
@@ -141,13 +149,24 @@ class Configure extends Component {
         gas: 3000000
     }).then(function(receipt){
         // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
-        // console.log(receipt)
+        console.log(receipt)
     });
     
   }
   componentWillMount(){
-    //收起下拉框
+      console.log(this.props)
+      //获取部署的token地址
+      console.log("仓库获取部署的token列表",this.props.drizzle.store.getState().deployedTokens)
+      let tookenAddr = this.props.drizzle.store.getState().deployedTokens;
+      if(tookenAddr.length!=0){
+        this.setState({
+            tookenAddr:tookenAddr[0].contractAddress
+        })
+      }
+
+    //点击任意位置收起下拉框
     document.addEventListener('click', this.cancelOptionBox)
+    
     //获取默认服务地址
     this.contracts = this.props.drizzle.contracts;
     this.utils = this.props.drizzle.web3.utils;
@@ -160,17 +179,27 @@ class Configure extends Component {
     ComplianceServiceRegistry.methods.getDefaultService().call({
         from: this.props.drizzleState.accounts[0]
     }).then((receipt)=>{
-        console.log("default",receipt)
+        console.log("default service",receipt)
         this.setState({
             defaultService: receipt
         })
     })
+
+    // 文档1.2.8
+    // var myContract = new web3.eth.Contract( abi,address, {
+    //     from: this.props.drizzleState.accounts[0], // default from address
+    //     gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
+    // });
+    // myContract.methods.getDefaultService().call({
+    //     from: this.props.drizzleState.accounts[0]
+    // }).then(console.log)
   }
   componentWillUnmount() {
-    //移除下拉框的事件监听
+    //组件结构时，移除下拉框的事件监听
     document.removeEventListener("click", this.cancelOptionBox);
   }
   cancelOptionBox(e){
+    //关闭下拉框
     if(e.target.className != "selIcon"){
         this.setState({
             optionBox1: false,
@@ -195,7 +224,7 @@ class Configure extends Component {
                         <div className="table">
                             <div className="tr">
                                 <div className="td">Token address: </div>
-                                <div className="td" ref={el=>this.addr=el}>0x291cC5385C302694e9B982478583c677a261B21D</div>
+                                <div className="td" ref={el=>this.addr=el}>{this.state.tookenAddr}</div>
                             </div>
                         </div>
                         <div className="configureTabBox">
