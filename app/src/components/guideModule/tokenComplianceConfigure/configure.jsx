@@ -32,7 +32,8 @@ class Configure extends Component {
         defaultService: "",
         and: [],
         or: [],
-        tookenAddr:"0x1A00b7fb569d7E61cd2Ac4Bf4b40dA6108E3Fe93"
+        tookenAddr:"",
+        params:{}
     };
     this.Register = this.Register.bind(this);
     this.handleAddAnd = this.handleAddAnd.bind(this);
@@ -154,6 +155,27 @@ class Configure extends Component {
     
   }
   componentWillMount(){
+      //路由配置
+      var index = this.props.match.params.index;
+      var type = this.props.match.params.type;
+      var pidParams = this.props.match.params.pid;
+      
+      if(type != "new"){
+        this.setState({
+            params:{
+                index:index,
+                type:type,
+                pid:pidParams
+            }
+        })
+      }else{
+        this.setState({
+          params:{
+            type:"new"
+        }
+        })
+      }
+
       console.log(this.props)
       //获取部署的token地址
       console.log("仓库获取部署的token列表",this.props.drizzle.store.getState().deployedTokens)
@@ -216,7 +238,7 @@ class Configure extends Component {
             </div>
             <div className="deployBox">
                 <div className="guideBox">
-                    <Guide/>
+                    <Guide params={this.state.params}/>
                 </div>
                 <div className="configureContentBox">
                     <div className="titl">Compliance configuration</div>

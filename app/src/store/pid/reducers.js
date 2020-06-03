@@ -1,5 +1,5 @@
 import {PID} from "./actions"
-const pidReducer = (state={}, action) => {
+const pidReducer = (state="", action) => {
     if (action.type === PID) {
       // update your state
       return action.pid;

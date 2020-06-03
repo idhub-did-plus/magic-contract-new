@@ -12,9 +12,32 @@ export default class Online extends Component {
     this.state = {
         onchain: true,
         fileName: "",
-        baseURL:"http://13.229.205.74:2006"
+        baseURL:"http://13.229.205.74:2006",
+        params:{}
     };
     this.fileSub = this.fileSub.bind(this);
+  }
+  componentWillMount(){
+    //路由配置
+    var index = this.props.match.params.index;
+    var type = this.props.match.params.type;
+    var pidParams = this.props.match.params.pid;
+    
+    if(type != "new"){
+      this.setState({
+          params:{
+              index:index,
+              type:type,
+              pid:pidParams
+          }
+      })
+    }else{
+      this.setState({
+        params:{
+          type:"new"
+      }
+      })
+    }
   }
   handleChange(e){
     //file input onChange处理方法
@@ -70,7 +93,7 @@ export default class Online extends Component {
             </div>
             <div className="onchainBox">
                 <div className="guideBox">
-                    <Guide/>
+                    <Guide params={this.state.params}/>
                 </div>
                 <div className="contentBox">
                     <div className="titl">Onchain Disclosure</div>

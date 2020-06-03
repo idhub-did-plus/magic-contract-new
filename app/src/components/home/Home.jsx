@@ -39,12 +39,9 @@ export default class Home extends Component {
       let json = response.json() 
       json.then(res=>{
         if(res.success){
-            console.log("获取编辑中成功",res.data)
             this.setState({
               editingData:res.data
             })
-        }else{
-            console.log("获取编辑中失败")
         }
       })
     } catch (err) {
@@ -64,12 +61,9 @@ export default class Home extends Component {
       let json = response.json() 
       json.then(res=>{
         if(res.success){
-            console.log("获取已审核成功",res.data)
             this.setState({
               audit_passedData:res.data
             })
-        }else{
-            console.log("获取已审核失败")
         }
       })
     } catch (err) {
@@ -103,13 +97,13 @@ export default class Home extends Component {
 
     }
   }
-  showEditingRegInfo(index,type){
+  showEditingRegInfo(index,type,pid){
     //点击跳转至对应的登记信息详情页 展示已完成登记信息
-    this.props.history.push({pathname:"/register/" + index+ "/" + type});
+    this.props.history.push({pathname:"/register/" + index+ "/" + type+ "/" + pid});
   }
-  showPassedRegInfo(index,type){
+  showPassedRegInfo(index,type,pid){
     //点击跳转至对应的登记信息详情页 展示已完成登记信息
-    this.props.history.push({pathname:"/register/" + index+ "/" + type});
+    this.props.history.push({pathname:"/register/" + index+ "/" + type+ "/" + pid});
   }
   nextStep(){
     //对于已部署ST 点击可进行后续的配置和发行操作
@@ -166,7 +160,7 @@ export default class Home extends Component {
                 </div> */}
                 {/* 新增入口 */}
                 <div className="listItem">
-                    <NavLink to="/register/index/new"><img className="add" src={add} alt="新增icon"/></NavLink>
+                    <NavLink to="/register/index/new/pid"><img className="add" src={add} alt="新增icon"/></NavLink>
                 </div>
             </div>
             {/* 未部署 */}
@@ -174,7 +168,7 @@ export default class Home extends Component {
                 {
                   this.state.editingData.map((item,index)=>{
                     return(
-                      <div className="listItem" key={index} onClick={this.showEditingRegInfo.bind(this,index,"editing")}>
+                      <div className="listItem" key={index} onClick={this.showEditingRegInfo.bind(this,index,"editing",item.id)}>
                         <img className="state" src={state} alt="审核状态" style={{display: item.status=="audit_passed"?"block":"none"}}/>
                         <div className="icon"></div>
                         <div className="box">
@@ -193,7 +187,7 @@ export default class Home extends Component {
                 {
                   this.state.audit_passedData.map((item,index)=>{
                     return(
-                      <div className="listItem" key={index} onClick={this.showPassedRegInfo.bind(this,index,"passed")}>
+                      <div className="listItem" key={index} onClick={this.showPassedRegInfo.bind(this,index,"audit_passed",item.id)}>
                         <img className="state" src={state} alt="审核状态" style={{display: item.status=="audit_passed"?"block":"none"}}/>
                         <div className="icon"></div>
                         <div className="box">
@@ -211,7 +205,7 @@ export default class Home extends Component {
                 }
                 {/* 新增入口 */}
                 <div className="listItem">
-                    <NavLink to="/register/index/new"><img className="add" src={add} alt="新增icon"/></NavLink>
+                    <NavLink to="/register/index/new/pid"><img className="add" src={add} alt="新增icon"/></NavLink>
                 </div>
             </div>
           </div>

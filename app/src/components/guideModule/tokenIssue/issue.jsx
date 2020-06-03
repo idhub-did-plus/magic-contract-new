@@ -13,7 +13,10 @@ class Issue extends Component {
         optionBox:false,
         partition: "",
         deployed: true,
-        tookenAddress:"0x1A00b7fb569d7E61cd2Ac4Bf4b40dA6108E3Fe93"
+        tookenAddress:"",
+        pid:"",
+        baseURL:"http://13.229.205.74:2006",
+        params:{}
     };
     this.handleSelect = this.handleSelect.bind(this);
     this.handleIssue = this.handleIssue.bind(this);
@@ -39,18 +42,81 @@ class Issue extends Component {
       console.log(receiver);
   }
   componentWillMount(){
-    console.log(this.props)
+      //路由配置
+      var index = this.props.match.params.index;
+      var type = this.props.match.params.type;
+      var pidParams = this.props.match.params.pid;
+      
+      if(type != "new"){
+        this.setState({
+            params:{
+                index:index,
+                type:type,
+                pid:pidParams
+            }
+        })
+      }else{
+        this.setState({
+          params:{
+            type:"new"
+        }
+        })
+      }
+    //获取partition
+    
+
+    //获取pid
+        let pid = this.props.drizzle.store.getState().pid;
+        console.log("仓库取pid",pid)
+        this.setState({
+            pid: pid
+        })
+
     //获取部署的token地址
-    console.log("仓库获取部署的token列表",this.props.drizzle.store.getState().deployedTokens)
-    let tookenAddr = this.props.drizzle.store.getState().deployedTokens;
-    if(tookenAddr.length!=0){
-      this.setState({
-          tookenAddr:tookenAddr[0].contractAddress
-      })
-    }
-      //收起下拉框
-      document.addEventListener('click', this.cancelOptionBox)
+        console.log("仓库获取部署的已部署token列表",this.props.drizzle.store.getState().deployedTokens)
+        let tookenAddr = this.props.drizzle.store.getState().deployedTokens;
+        if(tookenAddr.length!=0){
+            this.setState({
+                tookenAddr:tookenAddr[0].contractAddress
+            })
+        }
+    
+
+    //获取发行信息列表
+        // this.getIssuedList(pid);
+    
+    //收起下拉框
+        document.addEventListener('click', this.cancelOptionBox)
   }
+  async getIssuedList(pid) {
+    let url = this.state.baseURL+"/issurance/list"
+    //拼接pid
+    if(pid){
+      url += ("?pid=" + pid)
+    }else{
+      alert("pid Not Found , can't get list");
+      return;
+    }
+
+  try {
+    let response = await fetch(url, {
+      credentials: 'include',
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    })
+    let json = response.json() // parses response to JSON
+    json.then(res=>{
+        if(res.success){
+            console.log("获取发行列表成功",res.data)
+        }else{
+            console.log("获取发行列表失败")
+        }
+      })
+  } catch (err) {
+    alert(err);
+  } finally {
+
+  }
+}
   componentWillUnmount(){
       document.removeEventListener('click', this.cancelOptionBox)
   }
@@ -70,7 +136,7 @@ class Issue extends Component {
             </div>
             <div className="issueBox">
                 <div className="guideBox">
-                    <Guide/>
+                    <Guide params={this.state.params}/>
                 </div>
                 <div className="contentBox">
                     <div className="titl">Security tokenizaiton</div>

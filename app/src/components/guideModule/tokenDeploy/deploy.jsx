@@ -36,9 +36,27 @@ class Deploy extends Component {
   componentWillMount(){
     let pid = this.props.drizzle.store.getState().pid;
     console.log("仓库取pid",pid)
-    this.setState({
-        pid: pid
-    })
+      
+      var index = this.props.match.params.index;
+      var type = this.props.match.params.type;
+      var pidParams = this.props.match.params.pid;
+      
+      if(type != "new"){
+        this.setState({
+            pid:pid,
+            params:{
+                index:index,
+                type:type,
+                pid:pidParams
+            }
+        })
+      }else{
+        this.setState({
+          params:{
+            type:"new"
+        }
+        })
+      }
   }
   changeTab(index){
     this.setState({
@@ -167,11 +185,12 @@ class Deploy extends Component {
 //   调用接口存储已部署ST
   async save(token) {
       let url = this.state.baseURL+"/issue_project/token_deployed"
+      console.log(this.state.pid)
       //拼接pid
       if(this.state.pid){
         url += ("?pid="+this.state.pid)
       }else{
-        alert("PID Not Found , Please submit project details first");
+        alert("pid Not Found");
         return;
       }
 
@@ -179,14 +198,13 @@ class Deploy extends Component {
       let response = await fetch(url, {
         body: JSON.stringify(token), // must match 'Content-Type' header
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, same-origin, *omit
+        credentials: 'include', 
         headers: {
           'user-agent': 'Mozilla/4.0 MDN Example',
           'content-type': 'application/json'
         },
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, cors, *same-origin
-        redirect: 'follow', // manual, *follow, error
+        mode: 'cors', // n  redirect: 'follow', // manual, *follow, error
         referrer: 'no-referrer', // *client, no-referrer
       })
       let json = response.json() // parses response to JSON
@@ -209,14 +227,14 @@ class Deploy extends Component {
     if(this.state.pid){
       url += ("?pid="+this.state.pid)
     }else{
-      alert("PID Not Found , Please submit project details first");
+      alert("pid Not Found");
       return;
     }
 
   try {
     let response = await fetch(url, {
       body: JSON.stringify(config), // must match 'Content-Type' header
-      credentials: 'same-origin', // include, same-origin, *omit
+      credentials: 'include', 
       headers: {
         'user-agent': 'Mozilla/4.0 MDN Example',
         'content-type': 'application/json'
@@ -245,7 +263,7 @@ class Deploy extends Component {
             </div>
             <div className="deployBox">
                 <div className="guideBox">
-                    <Guide/>
+                    <Guide params={this.state.params}/>
                 </div>
                 <div className="contentBox">
                     <div className="titl">Deploy contract</div>
