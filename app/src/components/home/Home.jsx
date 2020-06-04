@@ -105,8 +105,9 @@ export default class Home extends Component {
     //点击跳转至对应的登记信息详情页 展示已完成登记信息
     this.props.history.push({pathname:"/register/" + index+ "/" + type+ "/" + pid});
   }
-  nextStep(){
+  nextStep(index,type,pid){
     //对于已部署ST 点击可进行后续的配置和发行操作
+    this.props.history.push({pathname:"/register/" + index+ "/" + type+ "/" + pid});
   }
   render(){
       return (
@@ -131,33 +132,21 @@ export default class Home extends Component {
             {
                   this.state.deployedData.map((item,index)=>{
                     return(
-                      <div className="listItem" onClick={this.nextStep.bind(this,index)}>
+                      <div className="listItem" onClick={this.nextStep.bind(this,index,"deployed",item.id)} key={index}>
                         <div className="icon"></div>
                         <div className="box">
                             <span className="label">Symbol:</span>
-                            <span className="item">{item.symbol}</span>
+                            <span className="item">{item.deployedToken.symbol}</span>
                             <br/>
                             <span className="label">Name:</span>
-                            <span className="item">{item.name}</span>
+                            <span className="item">{item.deployedToken.name}</span>
                         </div>
                         <div className="addr">TokenAddress:</div>
-                        <div className="addrCont">{item.contractAddress}</div>
+                        <div className="addrCont">{item.deployedToken.contractAddress}</div>
                     </div>
                     )
                   })
                 }
-                {/* <div className="listItem">
-                    <div className="icon"></div>
-                    <div className="box">
-                        <span className="label">Symbol:</span>
-                        <span className="item">bc</span>
-                        <br/>
-                        <span className="label">Name:</span>
-                        <span className="item">BBCoin</span>
-                    </div>
-                    <div className="addr">TokenAddress:</div>
-                    <div className="addrCont">0x413f1890Ef3223B34b6FE70Ac6c86c3DfdF56785</div>
-                </div> */}
                 {/* 新增入口 */}
                 <div className="listItem">
                     <NavLink to="/register/index/new/pid"><img className="add" src={add} alt="新增icon"/></NavLink>

@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, NavLink } from "react-router-dom";
 import { DrizzleContext } from "@drizzle/react-plugin";
 import Header from "../../../components/common/guideHeader"
 import Guide from "../../../components/common/guideMenu"

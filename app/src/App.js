@@ -4,13 +4,6 @@ import { BrowserRouter as Router, NavLink, Route, Switch } from "react-router-do
 
 // import "./App.css";
 import drizzle from "./store/MyDrizzleAndStore"
-import ComponentContainer from "./components/ComponentContainer";
-
-import TokenManage from "./components/TokenManage/TokenManage"
-import Compliance from "./components/tokenComplianceConfigure/compliance"
-import ERC1400Deploy from "./components/token/Erc1400DeployComponent"
-import ERC1400Issue from "./components/token/TokenIssueComponent"
-// import Configure from "./components/compliance/ComplianceComponent"
 
 import LoginController from "./components/LoginController/LoginController";
 import Home from "./components/home/Home"

@@ -1,14 +1,17 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, NavLink } from "react-router-dom";
 import Header from "../../../components/common/guideHeader"
 import Guide from "../../../components/common/guideMenu"
 import select from "../../../assets/下拉@2x.png"
 import "./issue.css"
 import { DrizzleContext } from "@drizzle/react-plugin";
+import ERC1400 from "../../../contracts/ERC1400.json"
+var contract = require("@truffle/contract");
 
 class Issue extends Component {
   constructor(props) {
     super(props);
+
+
     this.state = {
         optionBox:false,
         partition: "",
@@ -16,7 +19,9 @@ class Issue extends Component {
         tookenAddress:"",
         pid:"",
         baseURL:"http://13.229.205.74:2006",
-        params:{}
+        params:{},
+        partitionList:[],
+        partitionIndex:""
     };
     this.handleSelect = this.handleSelect.bind(this);
     this.handleIssue = this.handleIssue.bind(this);
@@ -27,22 +32,61 @@ class Issue extends Component {
         optionBox: !this.state.optionBox
     })
   }
-  option(e){
+  option(index,e){
     this.setState({
         optionBox: false,
-        partition: e.target.innerHTML
+        partition: e.target.innerHTML,
+        partitionIndex: index
     })
   }
-  handleIssue(){
-      var partition = this.state.partition;
+  async handleIssue(){
+      var partition = this.state.partitionList[this.state.partitionIndex].label;
       var amount = this.amount.value;
       var receiver = this.receiver.value;
       console.log(partition);
       console.log(amount);
       console.log(receiver);
+    
+      //调用发行合约 
+    var MyContract = contract(ERC1400)
+    this.utils = this.props.drizzle.web3.utils;
+    this.MyContract = MyContract;
+    let web3 = this.props.drizzle.web3;
+    this.MyContract.setProvider(web3.currentProvider);
+
+      if(!this.utils.isAddress( this.state.tookenAddr)){
+        alert("token address ot found!")
+        return
+      }
+  
+      if(!this.utils.isAddress( receiver)){
+        alert("input token holder please!")
+        return
+      }
+   
+      if(!this.utils.isHex( partition)){
+        alert("input correct partition please!")
+        return
+      }
+      let inst = await this.MyContract.at(this.state.tookenAddr)
+      console.log(inst)
+
+      await inst.issueByPartition(
+        partition,
+        receiver,
+        amount,
+        "0x0000",
+        { from: this.props.drizzleState.accounts[0] }).then(()=>{
+          //调接口存储发行信息
+          this.saveIssue(partition,amount,receiver)
+        });
+
+      return;
   }
   componentWillMount(){
-      //路由配置
+      console.log(this.props)
+      
+      //guideMenu路由配置
       var index = this.props.match.params.index;
       var type = this.props.match.params.type;
       var pidParams = this.props.match.params.pid;
@@ -55,6 +99,9 @@ class Issue extends Component {
                 pid:pidParams
             }
         })
+        //获取partition
+        this.getPartitionList(type,index);
+
       }else{
         this.setState({
           params:{
@@ -62,24 +109,34 @@ class Issue extends Component {
         }
         })
       }
-    //获取partition
-    
 
     //获取pid
-        let pid = this.props.drizzle.store.getState().pid;
-        console.log("仓库取pid",pid)
+    //从redux仓库获取pid,适用于新建入口进入的情况
+      let pid = this.props.drizzle.store.getState().pid;
+      console.log("仓库取pid",pid)
+    
+      if( !pid && type != "new"){
+        //若redux仓库中不存在pid,则从路由中取
+        pid = this.props.match.params.pid;
+        console.log("从路由参数取pid",pid)
+      }
         this.setState({
             pid: pid
         })
 
     //获取部署的token地址
-        console.log("仓库获取部署的已部署token列表",this.props.drizzle.store.getState().deployedTokens)
-        let tookenAddr = this.props.drizzle.store.getState().deployedTokens;
-        if(tookenAddr.length!=0){
-            this.setState({
-                tookenAddr:tookenAddr[0].contractAddress
-            })
-        }
+    console.log("仓库获取部署的token列表",this.props.drizzle.store.getState().deployedTokens)
+    let tookenAddr = this.props.drizzle.store.getState().deployedTokens;
+    if(tookenAddr.length!=0){
+      this.setState({
+        tookenAddress:tookenAddr[0].contractAddress
+      })
+    }else{
+      if(type == "deployed"){
+          //对已部署ST,获取合约地址
+       this.getDeployedData(index,type);
+      }
+    }
     
 
     //获取发行信息列表
@@ -88,6 +145,82 @@ class Issue extends Component {
     //收起下拉框
         document.addEventListener('click', this.cancelOptionBox)
   }
+  async getDeployedData(index,type){
+    try {
+      //入库后传pid
+      let url = this.state.baseURL+"/issue_project/list?status="+type;
+
+      let response = await fetch(url, {
+        credentials: 'include',
+        method: 'GET'
+      })
+      let json = response.json() // parses response to JSON
+      json.then(res=>{
+          if(res.success){
+              this.setState({
+                tookenAddress:res.data[index].deployedToken.contractAddress
+              })
+              
+          }else{
+              console.log(type+"失败")
+          }
+        })
+    } catch (err) {
+      alert(err);
+    } finally {
+
+    }
+  }
+  async saveIssue(partition,amount,receiver) {
+    let url = this.state.baseURL+"/issurance/record?projectId="+this.state.pid+"&tokenAddress="+this.state.tookenAddress+"&partition="+partition
+              +"&amount="+amount+"&receiverAddress="+receiver;
+
+  try {
+    let response = await fetch(url, {
+      credentials: 'include',
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    })
+    let json = response.json() // parses response to JSON
+    json.then(res=>{
+        if(res.success){
+            console.log("存储成功")
+        }else{
+            console.log("存储失败")
+        }
+      })
+  } catch (err) {
+    alert(err);
+  } finally {
+
+  }
+}
+  async getPartitionList(type,index) {
+    let url = this.state.baseURL+"/issue_project/list?status="+type;
+
+  try {
+    let response = await fetch(url, {
+      credentials: 'include',
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    })
+    let json = response.json() // parses response to JSON
+    json.then(res=>{
+        if(res.success){
+            console.log("获取token list成功",res.data[index].tokenConfig)
+            if(res.data[index].tokenConfig){
+              this.setState({
+                partitionList:res.data[index].tokenConfig.partitions
+              })
+            }
+        }else{
+            console.log("获取token list失败")
+        }
+      })
+  } catch (err) {
+    alert(err);
+  } finally {
+
+  }
+}
   async getIssuedList(pid) {
     let url = this.state.baseURL+"/issurance/list"
     //拼接pid
@@ -128,7 +261,6 @@ class Issue extends Component {
     }
   }
   render(){
-      const Asset = ["11111111111","222222222","33333333333333"];
       return (
         <div className="issue">
             <div className="header">
@@ -168,11 +300,16 @@ class Issue extends Component {
                                 </div>
                                 <ul className="optionBox" style={{display: this.state.optionBox ? "block" : "none"}}>
                                     {
-                                        Asset.map((item,index)=>{
+                                        this.state.partitionList.length != 0?(
+                                          this.state.partitionList.map((item,index)=>{
                                             return(
-                                                <li key={index} className="option" onClick={this.option.bind(this)}>{item}</li>
+                                                <li key={index} className="option" onClick={this.option.bind(this,index)}>{item.name}</li>
                                             )
-                                        })
+                                          })
+                                        ):(
+                                          <li>If you want to issue by partition,Please add partition during deployment</li>
+                                        )
+                                        
                                     }
                                 </ul>
                             </div>

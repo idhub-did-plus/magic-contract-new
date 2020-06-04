@@ -164,7 +164,7 @@
 .stContent .informRow .optionBox li{
     list-style: none;
     padding: 3px 15px;
-
+    min-height: 38px;
 }
 .stContent .informRow .optionBox li:hover{
     background-color: rgba(214,214,214,.5);

@@ -14,7 +14,8 @@ export default class LoginController extends Component {
     this.state = {
       claim: "",
       selItem: 1,
-      baseURL:"http://13.229.205.74:2006"
+      baseURL:"http://13.229.205.74:2006",
+      // baseURL:"http://dhgzq9.natappfree.cc"
     };
 
     // this.handleClaimChange = this.handleClaimChange.bind(this);

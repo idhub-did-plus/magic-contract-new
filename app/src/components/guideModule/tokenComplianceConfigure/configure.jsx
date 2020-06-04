@@ -33,9 +33,9 @@ class Configure extends Component {
         and: [],
         or: [],
         tookenAddr:"",
-        params:{}
+        params:{},
+        baseURL:"http://13.229.205.74:2006"
     };
-    this.Register = this.Register.bind(this);
     this.handleAddAnd = this.handleAddAnd.bind(this);
     this.handleAddOr = this.handleAddOr.bind(this);
     this.handleFinalCondition = this.handleFinalCondition.bind(this);
@@ -120,6 +120,35 @@ class Configure extends Component {
   handleFinalCondition(){
     console.log("111")
   }
+  Configure(){
+    this.contracts = this.props.drizzle.contracts;
+    this.utils = this.props.drizzle.web3.utils;
+
+    // Get the contract ABI
+    const abi = this.contracts["ComplianceServiceRegistry"].abi;
+    const address = this.contracts["ComplianceServiceRegistry"].address;
+    var web3 = this.props.drizzle.web3;
+    var ComplianceServiceRegistry = new web3.eth.Contract(abi,address);
+
+    var contractAddr = this.addr.innerText;
+    var configuration = this.state.finalCondition;
+
+    if(!this.utils.isAddress(contractAddr)){
+        alert("Please deploy the contract first")
+        return
+    }
+    if(!configuration){
+        alert("Please enter configuration")
+        return
+    }
+    ComplianceServiceRegistry.methods.setConfiguration(contractAddr,configuration).send({
+        from: this.props.drizzleState.accounts[0],
+        gas: 3000000
+    }).then(function(receipt){
+        // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
+        console.log(receipt)
+    });
+  }
   Register(){
     this.contracts = this.props.drizzle.contracts;
     this.utils = this.props.drizzle.web3.utils;
@@ -155,6 +184,16 @@ class Configure extends Component {
     
   }
   componentWillMount(){
+      //从redux仓库获取pid,适用于新建入口进入的情况
+      let pid = this.props.drizzle.store.getState().pid;
+      console.log("仓库取pid",pid)
+    
+      if( !pid && type != "new"){
+        //若redux仓库中不存在pid,则从路由中取
+        pid = this.props.match.params.pid;
+        console.log("从路由参数取pid",pid)
+      }
+      
       //路由配置
       var index = this.props.match.params.index;
       var type = this.props.match.params.type;
@@ -184,6 +223,11 @@ class Configure extends Component {
         this.setState({
             tookenAddr:tookenAddr[0].contractAddress
         })
+      }else{
+        if(type == "deployed"){
+            //对已部署ST,获取合约地址
+         this.getDeployedData(index,type);
+        }
       }
 
     //点击任意位置收起下拉框
@@ -215,6 +259,32 @@ class Configure extends Component {
     // myContract.methods.getDefaultService().call({
     //     from: this.props.drizzleState.accounts[0]
     // }).then(console.log)
+  }
+  async getDeployedData(index,type){
+    try {
+      //入库后传pid
+      let url = this.state.baseURL+"/issue_project/list?status="+type;
+
+      let response = await fetch(url, {
+        credentials: 'include',
+        method: 'GET'
+      })
+      let json = response.json() // parses response to JSON
+      json.then(res=>{
+          if(res.success){
+              this.setState({
+                tookenAddr:res.data[index].deployedToken.contractAddress
+              })
+              
+          }else{
+              console.log(type+"失败")
+          }
+        })
+    } catch (err) {
+      alert(err);
+    } finally {
+
+    }
   }
   componentWillUnmount() {
     //组件结构时，移除下拉框的事件监听
@@ -360,13 +430,13 @@ class Configure extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="configSub" style={{display: this.state.tabIndex == 1 ? "block" : "none"}}>Submit</div>
+                        <div className="configSub" style={{display: this.state.tabIndex == 1 ? "block" : "none"}} onClick={this.Configure.bind(this)}>Submit</div>
                         <form action="" autoComplete="off" style={{display: this.state.tabIndex == 2 ? "flex" : "none"}}>
                             <div className="formRow">
                                 <label htmlFor="personalise">Compliance service address: </label>
                                 <input  ref={el=>this.personalise=el} type="text" id="personalise"/>
                             </div>
-                            <div className="sub" onClick={this.Register}>Submit</div>
+                            <div className="sub" onClick={this.Register.bind(this)}>Submit</div>
                         </form>
                     </div>
                 </div>

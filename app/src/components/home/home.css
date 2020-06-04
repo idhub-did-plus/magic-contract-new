@@ -1,8 +1,7 @@
 .all{
  background:#fff;
- height:100%;
+ height: 100%;
 }
-
 .first {
   float: top;
 }
@@ -113,7 +112,7 @@
   overflow: hidden;
 }
 .second .content .listItem .addrCont{
-  font-size: 13px;
+  font-size: 16px;
   color:rgba(32,32,32,1);
   margin: 10px 0 0 10px;
   max-width: 90%;

@@ -34,8 +34,15 @@ class Deploy extends Component {
     this.deployParti = this.deployParti.bind(this);
   }
   componentWillMount(){
+    //从redux仓库获取pid,适用于新建入口进入的情况
     let pid = this.props.drizzle.store.getState().pid;
     console.log("仓库取pid",pid)
+    
+    if( !pid && type != "new"){
+      //若redux仓库中不存在pid,则从路由中取
+      pid = this.props.match.params.pid;
+      console.log("从路由参数取pid",pid)
+    }
       
       var index = this.props.match.params.index;
       var type = this.props.match.params.type;
@@ -57,7 +64,9 @@ class Deploy extends Component {
         }
         })
       }
+     
   }
+
   changeTab(index){
     this.setState({
         index: index
@@ -166,14 +175,7 @@ class Deploy extends Component {
           };
           this.props.drizzle.store.dispatch(deployFinished1400(payload))
           this.save(payload);
-          //存储partitionList
-          let config = {
-            name: this.state.name,
-            symbol: this.state.symbol,
-            decimals: this.utils.toBN(this.state.decimal),
-            partitions:this.state.partiList
-          }
-          this.saveTokenConfig(config);
+          
         }).then(
             //部署成功
               setTimeout(()=>{
@@ -210,7 +212,15 @@ class Deploy extends Component {
       let json = response.json() // parses response to JSON
       json.then(res=>{
         if(res.success){
-            console.log("save部署成功",res.data)
+            console.log("save部署成功")
+            //存储partitionList
+            let config = {
+              name: this.state.name,
+              symbol: this.state.symbol,
+              decimals: this.utils.toBN(this.state.decimal),
+              partitions:this.state.partiList
+            }
+            this.saveTokenConfig(config);
         }else{
             console.log("save部署失败")
         }
