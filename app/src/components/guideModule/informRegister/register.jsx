@@ -179,9 +179,6 @@ class InformRegister extends Component {
             }
         })
       }
-
-    let test = this.props.drizzle.store.getState().pid;
-    console.log("从仓库取pid",test)
     
     //点击任意位置收起下拉框
     document.addEventListener('click', this.cancelOptionBox)
@@ -279,7 +276,6 @@ class InformRegister extends Component {
   }
   handleChange(key,e){
     //处理react input text的onChange方法
-    console.log(key,e.target.value)
       this.setState({
         [key]:e.target.value
       })
@@ -693,15 +689,6 @@ class InformRegister extends Component {
                                             {/* <img src={select} alt="下拉按钮" onClick={this.handleSelect.bind(this,1)} className="selectIcon"/> */}
                                             <label htmlFor="asset">Tokenized Asset Type: </label>
                                         </div>
-                                        {/* <ul className="optionBox" style={{display: this.state.optionBox1 ? "block" : "none"}}>
-                                            {
-                                                Asset.map((item,index)=>{
-                                                    return(
-                                                        <li key={index} className="option" onClick={this.option.bind(this,1)}>{item}</li>
-                                                    )
-                                                })
-                                            }
-                                        </ul> */}
                                     </div>
                                     <p></p>
                                     <div className="informRow">
@@ -710,15 +697,6 @@ class InformRegister extends Component {
                                             {/* <img src={select} alt="下拉按钮" onClick={this.handleSelect.bind(this,2)} className="selectIcon"/> */}
                                             <label htmlFor="Jurisdiction">Jurisdiction of company establishment: </label>
                                         </div>
-                                        {/* <ul className="optionBox" style={{display: this.state.optionBox2 ? "block" : "none"}}>
-                                        {
-                                                Judicial.map((item,index)=>{
-                                                    return(
-                                                        <li key={index} className="option" onClick={this.option.bind(this,2)}>{item}</li>
-                                                    )
-                                                })
-                                            }
-                                        </ul> */}
                                     </div>
                                     <p></p>
                                     <div className="informRow">
@@ -727,15 +705,6 @@ class InformRegister extends Component {
                                             {/* <img src={select} alt="下拉按钮" onClick={this.handleSelect.bind(this,3)} className="selectIcon"/> */}
                                             <label htmlFor="financialPartners">Are you working with a financial regulator?</label>
                                         </div>
-                                        {/* <ul className="optionBox" style={{display: this.state.optionBox3 ? "block" : "none"}}>
-                                        {
-                                                Partners.map((item,index)=>{
-                                                    return(
-                                                        <li key={index} className="option" onClick={this.option.bind(this,3)}>{item}</li>
-                                                    )
-                                                })
-                                            }
-                                        </ul> */}
                                     </div>
                                     <p></p>
                                     <div className="informRow">
@@ -749,15 +718,6 @@ class InformRegister extends Component {
                                             {/* <img src={select} alt="下拉按钮" onClick={this.handleSelect.bind(this,4)} className="selectIcon"/> */}
                                             <label htmlFor="raiseBefore">Have you raised funds before？</label>
                                         </div>
-                                        {/* <ul className="optionBox" style={{display: this.state.optionBox4 ? "block" : "none"}}>
-                                        {
-                                                RaiseBefore.map((item,index)=>{
-                                                    return(
-                                                        <li key={index} className="option" onClick={this.option.bind(this,4)}>{item}</li>
-                                                    )
-                                                })
-                                            }
-                                        </ul> */}
                                     </div>
                                     <p></p>
                                     <div className="informRow">
@@ -766,15 +726,6 @@ class InformRegister extends Component {
                                             {/* <img src={select} alt="下拉按钮" onClick={this.handleSelect.bind(this,5)} className="selectIcon"/> */}
                                             <label htmlFor="steps">Which of the following steps have you completed to raise money？</label>
                                         </div>
-                                        {/* <ul className="optionBox" style={{display: this.state.optionBox5 ? "block" : "none"}}>
-                                        {
-                                                Steps.map((item,index)=>{
-                                                    return(
-                                                        <li key={index} className="option" onClick={this.option.bind(this,5)}>{item}</li>
-                                                    )
-                                                })
-                                            }
-                                        </ul> */}
                                     </div>
                                     <p></p>
                                 </div>
@@ -993,104 +944,6 @@ class InformRegister extends Component {
                  }
                  </div>
                  
-                 {/* <div className="content">
-                    <div className="informRow">
-                        <input type="text" id="company" ref={el=>this.company=el}/>
-                        <label htmlFor="company">Company Name: </label>
-                    </div>
-                    <p></p>
-                    <div className="informRow">
-                        <div className="select">
-                            <input type="text" id="asset" value={this.state.asset} readOnly/>
-                            <img src={select} alt="下拉按钮" onClick={this.handleSelect.bind(this,1)} className="selectIcon"/>
-                            <label htmlFor="asset">Tokenized Asset Type: </label>
-                        </div>
-                        <ul className="optionBox" style={{display: this.state.optionBox1 ? "block" : "none"}}>
-                            {
-                                 Asset.map((item,index)=>{
-                                    return(
-                                        <li key={index} className="option" onClick={this.option.bind(this,1)}>{item}</li>
-                                    )
-                                })
-                            }
-                        </ul>
-                    </div>
-                    <p></p>
-                    <div className="informRow">
-                        <div className="select">
-                            <input type="text" id="Jurisdiction" value={this.state.Judicial} readOnly/>
-                            <img src={select} alt="下拉按钮" onClick={this.handleSelect.bind(this,2)} className="selectIcon"/>
-                            <label htmlFor="Jurisdiction">Jurisdiction of company establishment: </label>
-                        </div>
-                        <ul className="optionBox" style={{display: this.state.optionBox2 ? "block" : "none"}}>
-                        {
-                                 Judicial.map((item,index)=>{
-                                    return(
-                                        <li key={index} className="option" onClick={this.option.bind(this,2)}>{item}</li>
-                                    )
-                                })
-                            }
-                        </ul>
-                    </div>
-                    <p></p>
-                    <div className="informRow">
-                        <div className="select">
-                            <input type="text" id="financialPartners" value={this.state.financialPartners} readOnly/>
-                            <img src={select} alt="下拉按钮" onClick={this.handleSelect.bind(this,3)} className="selectIcon"/>
-                            <label htmlFor="financialPartners">Are you working with a financial regulator?</label>
-                        </div>
-                        <ul className="optionBox" style={{display: this.state.optionBox3 ? "block" : "none"}}>
-                        {
-                                 Partners.map((item,index)=>{
-                                    return(
-                                        <li key={index} className="option" onClick={this.option.bind(this,3)}>{item}</li>
-                                    )
-                                })
-                            }
-                        </ul>
-                    </div>
-                    <p></p>
-                    <div className="informRow">
-                        <input ref={el=>this.mini_amount=el}type="text" id="amount"/>
-                        <label htmlFor="amount">What is the minimum amount of capital you plan to raise？</label>
-                    </div>
-                    <p></p>
-                    <div className="informRow">
-                        <div className="select">
-                            <input type="text" id="raiseBefore" value={this.state.raiseBefore} readOnly/>
-                            <img src={select} alt="下拉按钮" onClick={this.handleSelect.bind(this,4)} className="selectIcon"/>
-                            <label htmlFor="raiseBefore">Have you raised funds before？</label>
-                        </div>
-                        <ul className="optionBox" style={{display: this.state.optionBox4 ? "block" : "none"}}>
-                        {
-                                 RaiseBefore.map((item,index)=>{
-                                    return(
-                                        <li key={index} className="option" onClick={this.option.bind(this,4)}>{item}</li>
-                                    )
-                                })
-                            }
-                        </ul>
-                    </div>
-                    <p></p>
-                    <div className="informRow">
-                        <div className="select">
-                            <input type="text" id="steps" value={this.state.steps} readOnly/>
-                            <img src={select} alt="下拉按钮" onClick={this.handleSelect.bind(this,5)} className="selectIcon"/>
-                            <label htmlFor="steps">Which of the following steps have you completed to raise money？</label>
-                        </div>
-                        <ul className="optionBox" style={{display: this.state.optionBox5 ? "block" : "none"}}>
-                        {
-                                 Steps.map((item,index)=>{
-                                    return(
-                                        <li key={index} className="option" onClick={this.option.bind(this,5)}>{item}</li>
-                                    )
-                                })
-                            }
-                        </ul>
-                    </div>
-                    <p></p>
-                </div>
-                <div className="submit projSub" onClick={this.projectSubmit}>Submit</div> */}
 
                 <div className="content">
                     {/* 上传文件1 */}
@@ -1431,72 +1284,6 @@ class InformRegister extends Component {
                         )
                     )
                 }
-                 {/* <div className="titl">Company Information</div>
-                 <div className="content">
-                    <div className="informRow">
-                        <input type="text" id="legalPerson" value={this.state.legalPerson} onChange={this.handleChange.bind(this,"legalPerson")}/>
-                        <label htmlFor="legalPerson">Legal Entity Name: </label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="CompRegNum" value={this.state.CompRegNum} onChange={this.handleChange.bind(this,"CompRegNum")}/>
-                        <label htmlFor="CompRegNum">Company Registration Number:</label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="VAT" value={this.state.VAT} onChange={this.handleChange.bind(this,"VAT")}/>
-                        <label htmlFor="VAT">VAT Registration Number:</label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="webAddr" value={this.state.webAddr} onChange={this.handleChange.bind(this,"webAddr")}/>
-                        <label htmlFor="webAddr">Website address:</label>
-                    </div>
-                 </div>
-                 <div className="titl">Company Address</div>
-                 <div className="content">
-                    <div className="informRow">
-                        <input type="text" id="country" value={this.state.country} onChange={this.handleChange.bind(this,"country")}/>
-                        <label htmlFor="country">Country:</label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="city" value={this.state.city} onChange={this.handleChange.bind(this,"city")}/>
-                        <label htmlFor="city">City:</label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="comAddr" value={this.state.comAddr} onChange={this.handleChange.bind(this,"comAddr")}/>
-                        <label htmlFor="comAddr">Address:</label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="postalCode" value={this.state.postalCode} onChange={this.handleChange.bind(this,"postalCode")}/>
-                        <label htmlFor="postalCode">Postal Code:</label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="establishCountry" value={this.state.establishCountry} onChange={this.handleChange.bind(this,"establishCountry")}/>
-                        <label htmlFor="establishCountry">Country of Incorporation:</label>
-                    </div>
-                 </div>
-                 <div className="titl">Contact Person</div>
-                 <div className="content">
-                    <div className="informRow">
-                        <input type="text" id="firstName" value={this.state.firstName} onChange={this.handleChange.bind(this,"firstName")}/>
-                        <label htmlFor="firstName">Contact Person‘s First Name: </label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="lastName" value={this.state.lastName} onChange={this.handleChange.bind(this,"lastName")}/>
-                        <label htmlFor="lastName">Contact Person‘s Last Name:</label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="position" value={this.state.position} onChange={this.handleChange.bind(this,"position")}/>
-                        <label htmlFor="position">Contact Person‘s Title/Position:</label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="phone" value={this.state.phone} onChange={this.handleChange.bind(this,"phone")}/>
-                        <label htmlFor="phone">Contact Person‘s Phone:</label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="email" value={this.state.email} onChange={this.handleChange.bind(this,"email")}/>
-                        <label htmlFor="email">Contact Person‘s Email:</label>
-                    </div>
-                 </div>
-                 <div className="infoSub" onClick={this.informSubmit}>Submit</div> */}
                  <div className="titl">Security Token ICON</div>
                  <div className="content">
                      {/* 上传图片ICON */}

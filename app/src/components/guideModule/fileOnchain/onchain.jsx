@@ -17,11 +17,27 @@ class Online extends Component {
         onchain: false,
         fileName: "",
         baseURL:"http://13.229.205.74:2006",
-        params:{}
+        params:{},
+        pid:"",
+        fileList:[]
     };
     this.fileSub = this.fileSub.bind(this);
   }
   componentWillMount(){
+      //从redux仓库获取pid,适用于新建入口进入的情况
+    let pid = this.props.drizzle.store.getState().pid;
+    // console.log("仓库取pid",pid)
+    
+    if( !pid && type != "new"){
+      //若redux仓库中不存在pid,则从路由中取
+      pid = this.props.match.params.pid;
+    //   console.log("从路由参数取pid",pid)
+    }
+    if(type!="new"){
+        this.setState({
+            pid:pid
+        })
+    }
     //路由配置
       var index = this.props.match.params.index;
       var type = this.props.match.params.type;
@@ -42,6 +58,9 @@ class Online extends Component {
         }
         })
       }
+      //获取文件列表
+      this.getFileList(pid);
+
       console.log(this.props)
   }
   handleChange(e){
@@ -52,16 +71,13 @@ class Online extends Component {
     this.setState({
         fileName: name 
     })
-    //调用文件存储方法
-    this.fileSub(e);
   }
-  async fileSub(event){
-
+  async fileSub(){
+      let file = this.file.files[0];
       let url = this.state.baseURL+"/material/upload_material";
-      url += ("?content="+this.desc.value);
+      url += ("?pid="+this.state.pid+"&type="+this.type.value+"&name="+this.type.value+"&content="+this.desc.value);
 
       var formData = new FormData();
-      var file = event.target.files[0];
       formData.append("file",file);
       try {
         let response = await fetch(url, {
@@ -85,25 +101,76 @@ class Online extends Component {
 
     }
   }
-  async getFileList(){
+  async getFileList(pid){
      //请求文件列表数据
      let url = this.state.baseURL+"/material/retrieve_materials"
      //拼接pid
+     if(pid){
+        url += ("?pid="+pid)
+      }else{
+        alert("pid Not Found");
+        return;
+      }
+      try {
+        let response = await fetch(url, {
+          credentials: 'include',
+          method: 'GET'
+        })
+        let json = response.json() // parses response to JSON
+        json.then(res=>{
+          if(res.success){
+              console.log("获取文件列表成功",res.data)
+              this.setState({
+                fileList:res.data
+              })
+              //存数据渲染 获得文件哈希
+              //成功后 点击上链 /material/material_stream_id 获取url用于上链
+          }else{ 
+              console.log("获取文件列表失败")
+          }
+        })
+      } catch (err) {
+        alert(err);
+      } finally {
+  
+      }
   }
-  async onChain(){
-      //接收index
-      //调用上链合约
-      //调用成功后调接口更新列表信息
-      //调用发行合约 
+  async getURL(fileId,index){
+    let url = this.state.baseURL+"/material/material_stream_id?id="+fileId;
+    try {
+        let response = await fetch(url, {
+          credentials: 'include',
+          method: 'GET'
+        })
+        let json = response.json() // parses response to JSON
+        json.then(res=>{
+          if(res.success){
+              console.log("获取URL成功",res.data)
+              var uri = "";
+              //得到后上链
+            //   this.onChain(uri,index)
+          }else{ 
+              console.log("获取URL失败")
+          }
+        })
+      } catch (err) {
+        alert(err);
+      } finally {
+  
+      }
+  }
+  async onChain(uri,index){
+      //调用上链合约 成功后调用onchain接口
       var MyContract = contract(ERC1400)
       this.utils = this.props.drizzle.web3.utils;
       this.MyContract = MyContract;
       let web3 = this.props.drizzle.web3;
       this.MyContract.setProvider(web3.currentProvider);
 
-    //   name = web3.utils.sha3(name)
-    //   uri = uri
-    //   hash = document hash
+      var name = this.state.fileList[index].name;
+      var url = uri;
+      var hash = this.state.fileList[index].hash;
+
     //   let inst = await this.MyContract.at(this.state.tookenAddress)
     //   console.log(inst)
     //   await inst.setDocument(
@@ -118,7 +185,6 @@ class Online extends Component {
       return;
   }
   render(){
-      const Asset = ["11111111111","222222222","33333333333333"];
       return (
         <div className="onchain">
             <div className="header">
@@ -139,36 +205,36 @@ class Online extends Component {
                                 <div className="td">Wind up time</div>
                                 <div className="td"></div>
                             </div>
-                            <div className="tr">
-                                <div className="td">whitepaper</div>
-                                <div className="td">whitepaper desc</div>
-                                <div className="td">2020.05.30  12:24:33</div>
-                                <div className="td">2020.05.30  23:45:45</div>
-                                <div className="td">
-                                    <div className="on" style={{display: this.state.onchain?"block":"none"}}>已上链</div>
-                                    <div className="un" onClick={this.onChain.bind(this)} style={{display: this.state.onchain?"none":"block",cursor:'pointer'}}>上链</div>
-                                </div>
-                            </div>
-                            <div className="tr">
-                                <div className="td">legal</div>
-                                <div className="td">legal desc</div>
-                                <div className="td">2020.05.29  12:24:33</div>
-                                <div className="td">2020.05.29 23:45:45</div>
-                                <div className="td">
-                                    <div className="on" style={{display: this.state.onchain?"block":"none"}}>已上链</div>
-                                    <div className="un" style={{display: this.state.onchain?"none":"block",cursor:'pointer'}}>上链</div>
-                                </div>
-                            </div>
+                            {
+                                this.state.fileList.map((item,index)=>{
+                                    return (
+                                    <div className="tr" key={index}>
+                                        <div className="td">{item.name}</div>
+                                        <div className="td">{item.contentDescription}</div>
+                                        <div className="td">{item.uploadTime}</div>
+                                        <div className="td">2020.05.30  23:45:45</div>
+                                        <div className="td">
+                                            <div className="on" style={{display: item.onchain?"block":"none"}}>已上链</div>
+                                            <div className="un" onClick={this.getURL.bind(this,item.id,index)} style={{display: item.onchain?"none":"block",cursor:'pointer'}}>上链</div>
+                                        </div>
+                                    </div>
+                                    )
+                                })
+                            }
                         </div>
                         <form action="" autoComplete="off">
                             <div className="uploadRow">
                                 <div className="upload" >
                                     <img className="up" src={Upload} alt="上传图标"style={{display: !this.state.fileName ? "block" : "none"}}/>
                                     <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName ? "none" : "block"}}/>
-                                    <input type="file" id="file1" className="upInput" onChange={this.handleChange.bind(this)}/>
+                                    <input type="file" id="file1" className="upInput" ref={el=>this.file=el} onChange={this.handleChange.bind(this)}/>
                                     <div className="fileName" style={{display: !this.state.fileName ? "none" : "block"}}>{this.state.fileName}</div>
                                 </div>
                                 <label htmlFor="file1">Upload documents:</label>
+                            </div>
+                            <div className="informRow">
+                                <label htmlFor="desc">File Type: </label>
+                                <input type="text" id="desc" ref={el=>this.type=el} placeholder="lagal/marketting/whitepaper/token_icon/other"/>
                             </div>
                             <div className="informRow">
                                 <label htmlFor="desc">Content description: </label>

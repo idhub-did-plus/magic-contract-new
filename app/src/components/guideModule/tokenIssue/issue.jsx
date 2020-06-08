@@ -15,14 +15,15 @@ class Issue extends Component {
     this.state = {
         optionBox:false,
         partition: "",
-        issued: true,
+        issued: false,
         tookenAddress:"",
         pid:"",
         baseURL:"http://13.229.205.74:2006",
         params:{},
         partitionList:[],
         partitionIndex:"",
-        issueByPartitionOrNot:true
+        issueByPartitionOrNot:true,
+        issueList:[]
     };
     this.handleSelect = this.handleSelect.bind(this);
     this.handleIssue = this.handleIssue.bind(this);
@@ -48,24 +49,8 @@ class Issue extends Component {
       let web3 = this.props.drizzle.web3;
       this.MyContract.setProvider(web3.currentProvider);
 
-    console.log(this.state.partition)
-    if(this.state.partition){
-      var partition = this.state.partitionList[this.state.partitionIndex].label;
-      
-      if(!this.utils.isHex( partition)){
-        alert("input correct partition please!")
-        return
-      }
-    }else{
-      var partition = ""
-    }
       var amount = this.amount.value;
       var receiver = this.receiver.value;
-      console.log(partition);
-      console.log(amount);
-      console.log(receiver);
-    
-    
 
       if(!this.utils.isAddress( this.state.tookenAddress)){
         alert("token address ot found!")
@@ -77,12 +62,29 @@ class Issue extends Component {
         return
       }
    
+    if(this.state.partition){
+      var partition = this.state.partitionList[this.state.partitionIndex].label;
       
+      if(!this.utils.isHex( partition)){
+        alert("input correct partition please!")
+        return
+      }
       let inst = await this.MyContract.at(this.state.tookenAddress)
-      console.log(inst)
-      console.log(partition,receiver,amount)
-      await inst.issueByPartition(
+      await inst.IssuedByPartition(
         partition,
+        receiver,
+        amount,
+        "0x0000",
+        { from: this.props.drizzleState.accounts[0] }).then(()=>{
+          //调接口存储发行信息
+          this.saveIssue(partition,amount,receiver);
+          //列表更新
+        });
+
+      return;
+    }else{
+      let inst = await this.MyContract.at(this.state.tookenAddress)
+      await inst.IssuedByPartition(
         receiver,
         amount,
         "0x0000",
@@ -92,9 +94,12 @@ class Issue extends Component {
         });
 
       return;
+    }
+
+    
+      
   }
   componentWillMount(){
-      console.log(this.props)
       //guideMenu路由配置
       var index = this.props.match.params.index;
       var type = this.props.match.params.type;
@@ -122,19 +127,19 @@ class Issue extends Component {
     //获取pid
     //从redux仓库获取pid,适用于新建入口进入的情况
       let pid = this.props.drizzle.store.getState().pid;
-      console.log("仓库取pid",pid)
+      // console.log("仓库取pid",pid)
     
       if( !pid && type != "new"){
         //若redux仓库中不存在pid,则从路由中取
         pid = this.props.match.params.pid;
-        console.log("从路由参数取pid",pid)
+        // console.log("从路由参数取pid",pid)
       }
         this.setState({
             pid: pid
         })
 
     //获取部署的token地址
-    console.log("仓库获取部署的token列表",this.props.drizzle.store.getState().deployedTokens)
+    // console.log("仓库获取部署的token列表",this.props.drizzle.store.getState().deployedTokens)
     let tookenAddr = this.props.drizzle.store.getState().deployedTokens;
     if(tookenAddr.length!=0){
       this.setState({
@@ -215,7 +220,7 @@ class Issue extends Component {
     let json = response.json() // parses response to JSON
     json.then(res=>{
         if(res.success){
-            console.log("获取tokenConfig成功",res.data[index].tokenConfig)
+            // console.log("获取tokenConfig成功",res.data[index].tokenConfig)
             if(res.data[index].tokenConfig){
               this.setState({
                 partitionList:!res.data[index].tokenConfig||!res.data[index].tokenConfig.partitions?[]:res.data[index].tokenConfig.partitions
@@ -249,8 +254,18 @@ class Issue extends Component {
     let json = response.json() // parses response to JSON
     json.then(res=>{
         if(res.success){
-            console.log("获取发行列表成功",res.data)
+            // console.log("获取发行列表成功",res.data)
             //若不为空 set issued 为true,默认为false
+            if(res.data.length==0||!res.data){
+              this.setState({
+                issued:false
+              })
+            }else{
+              this.setState({
+                issued:true,
+                issueList:res.data
+              })
+            }
         }else{
             console.log("获取发行列表失败")
         }
@@ -297,11 +312,18 @@ class Issue extends Component {
                                 <div className="td">Receiver address</div>
                             </div>
                             {/* map渲染issue list */}
-                            <div className="tr">
-                                <div className="td">0X4c000E507bE6663e264a1A21507a69Bfa5035D950X4c000E507bE6663e264a1A21507a69Bfa5035D95</div>
-                                <div className="td">2000</div>
-                                <div className="td">0X4c000E507bE6663e264a1A21507a69Bfa5035D95</div>
-                            </div>
+                            {
+                              this.state.issueList.map((item,index)=>{
+                                return (
+                                  <div className="tr" key={index}>
+                                    <div className="td">{item.partition}</div>
+                                    <div className="td">{item.amount}</div>
+                                    <div className="td">{item.receiverAddress}</div>
+                                </div>
+                                )
+                              })
+                            }
+                            
                         </div>
                         <form action="" autoComplete="off">
                             <div className="informRow">
@@ -319,7 +341,7 @@ class Issue extends Component {
                                             )
                                           })
                                         ):(
-                                          <li>If you want to issue by partition,Please add partition during deployment.If you don’t choose, you won’t be issued by partition.</li>
+                                          <li>If you want to issue by partition,Please add partition during deployment.</li>
                                         )
                                         
                                     }

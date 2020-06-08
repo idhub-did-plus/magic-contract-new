@@ -18,7 +18,7 @@ class Deploy extends Component {
     this.MyContract = MyContract;
 
     this.state = {
-        index: 1,
+        index: 2,
         deployed: false,
         arrList: [],
         partiList: [],
@@ -103,7 +103,7 @@ class Deploy extends Component {
                   cDecimal:res.data[index].deployedToken.decimals,
                   name:res.data[index].deployedToken.name,
                   symbol:res.data[index].deployedToken.symbol,
-                  deciaml:res.data[index].deployedToken.decimals,
+                  decimal:res.data[index].deployedToken.decimals,
                   partitions:!res.data[index].tokenConfig||!res.data[index].tokenConfig.partitions?[]:res.data[index].tokenConfig.partitions,
                   index:res.data[index].tokenConfig==null||res.data[index].tokenConfig.partitions==null?"1":"2"
               })
@@ -179,7 +179,7 @@ handleChange(key,e){
     this.MyContract.setProvider(web3.currentProvider);
     this.MyContract.new(
         this.cName.value,
-        this.cSymbol.value,
+        this.cSymbol.value, 
         this.utils.toBN(this.cDecimal.value),
         this.state.controllers,
         this.props.drizzle.contracts.ComplianceServiceRegistry.address, { from: this.props.drizzleState.accounts[0] }).then(inst => {

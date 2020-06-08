@@ -8,6 +8,7 @@ import del from "../../../assets/delete@2x (1).png"
 import "./configure.css"
 import { DrizzleContext } from "@drizzle/react-plugin";
 import ComplianceServiceRegistry from "../../../contracts/ComplianceServiceRegistry.json";
+import ComplianceConfiguration from "../../../contracts/ComplianceConfiguration.json";
 var contract = require("@truffle/contract");
 
 class Configure extends Component {
@@ -113,16 +114,24 @@ class Configure extends Component {
   }
   Configure(){
     //默认服务地址合规配置
-    this.contracts = this.props.drizzle.contracts;
-    this.utils = this.props.drizzle.web3.utils;
+    // this.contracts = this.props.drizzle.contracts;
+    // this.utils = this.props.drizzle.web3.utils;
 
     // Get the contract ABI
-    const abi = this.contracts["ComplianceConfiguration"].abi;
-    const address = this.contracts["ComplianceConfiguration"].address;
-    var web3 = this.props.drizzle.web3;
-    var ComplianceConfiguration = new web3.eth.Contract(abi,address);
+    // const abi = this.contracts["ComplianceConfiguration"].abi;
+    // const address = this.contracts["ComplianceConfiguration"].address;
+    // var web3 = this.props.drizzle.web3;
+    // var ComplianceConfiguration = new web3.eth.Contract(abi,address);
 
-    ComplianceConfiguration.setProvider(web3.currentProvider);
+    // ComplianceConfiguration.setProvider(web3.currentProvider);
+    var MyContract = contract(ComplianceConfiguration)
+    this.utils = this.props.drizzle.web3.utils;
+    this.MyContract = MyContract;
+    let web3 = this.props.drizzle.web3;
+    this.MyContract.setProvider(web3.currentProvider);
+    this.MyContract.defaults({
+        from : this.props.drizzleState.accounts[0]
+      });
 
     var contractAddr = this.addr.innerText;
     var configuration = this.state.finalCondition;
@@ -135,13 +144,22 @@ class Configure extends Component {
         alert("Please enter configuration")
         return
     }
-    console.log(contractAddr,configuration)
-    ComplianceConfiguration.methods.setConfiguration(contractAddr,configuration).send({
-        from: this.props.drizzleState.accounts[0],
-        gas: 3000000
-    }).then(function(receipt){
-        console.log(receipt)
+    this.MyContract.deployed().then(function(instance){
+        return instance.setConfiguration(contractAddr,configuration);
+    })
+    .then(function(result){
+        console.log(result)
+    })
+    .catch(function(err){
+        console.log("Error:", err.message);
     });
+
+    // ComplianceConfiguration.methods.setConfiguration(contractAddr,configuration).send({
+    //     from: this.props.drizzleState.accounts[0],
+    //     gas: 3000000
+    // }).then(function(receipt){
+    //     console.log(receipt)
+    // });
   }
   Register(){
     //合规服务注册
@@ -171,7 +189,6 @@ class Configure extends Component {
         alert("Please enter the address type")
         return
     }
-    
     ComplianceServiceRegistry.methods.register(contractAddr,configuration).send({
         from: this.props.drizzleState.accounts[0],
         gas: 3000000
@@ -184,12 +201,12 @@ class Configure extends Component {
   componentWillMount(){
       //从redux仓库获取pid,适用于新建入口进入的情况
       let pid = this.props.drizzle.store.getState().pid;
-      console.log("仓库取pid",pid)
+    //   console.log("仓库取pid",pid)
     
       if( !pid && type != "new"){
         //若redux仓库中不存在pid,则从路由中取
         pid = this.props.match.params.pid;
-        console.log("从路由参数取pid",pid)
+        // console.log("从路由参数取pid",pid)
       }
       
       //guideMenu路由配置
@@ -214,7 +231,7 @@ class Configure extends Component {
       }
       console.log(this.props)
       //获取部署的token地址
-      console.log("仓库获取部署的token列表",this.props.drizzle.store.getState().deployedTokens)
+    //   console.log("仓库获取部署的token列表",this.props.drizzle.store.getState().deployedTokens)
       let tookenAddr = this.props.drizzle.store.getState().deployedTokens;
       if(tookenAddr.length!=0){
         this.setState({
@@ -241,6 +258,7 @@ class Configure extends Component {
             var meta = instance
             return meta.getDefaultService.call()
         }).then((value)=>{
+            console.log("default",value)
             this.setState({
                 defaultService: value
             })
