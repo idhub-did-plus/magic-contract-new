@@ -32,6 +32,9 @@ class Guide extends Component {
     }
     
   }
+  disabled(){
+    alert("Please review first");
+  }
   render(){
     let pathRegister = {pathname:"/register/" + this.state.index+ "/" + this.state.type+ "/" + this.state.pid}
     let pathDeploy = {pathname:"/deploy/" + this.state.index+ "/" + this.state.type+ "/" + this.state.pid}
@@ -42,7 +45,7 @@ class Guide extends Component {
     return (
         <div className="guide">
             <ul>
-              {
+              {/* {
                 this.state.type=="new"?(
                   <div>
                     <NavLink to="/register/index/new/pid" exact><li className={this.state.path == "/re" ? "active" : ""}>Information Registration</li></NavLink>
@@ -60,6 +63,25 @@ class Guide extends Component {
                     <NavLink to={pathDisclosure}><li className={this.state.path == "/di" ? "active" : ""}>Onchain Disclosure</li></NavLink>
                   </div>
                 )
+              } */}
+              {
+                  this.state.type=="audit_passed"||this.state.type=="deployed"?(
+                    <div>
+                    <NavLink to={pathRegister} exact><li className={this.state.path == "/re" ? "active" : ""}>Information Registration</li></NavLink>
+                    <NavLink to={pathDeploy} exact><li className={this.state.path == "/de" ? "active" : ""}>Deploy Contract</li></NavLink>
+                    <NavLink to={pathConfig} exact><li className={this.state.path == "/co" ? "active" : ""}>Compliance Configuration</li></NavLink>
+                    <NavLink to={pathIssue}><li className={this.state.path == "/is" ? "active" : ""}>Security Tokenization</li></NavLink>
+                    <NavLink to={pathDisclosure}><li className={this.state.path == "/di" ? "active" : ""}>Onchain Disclosure</li></NavLink>
+                  </div>
+                  ):(
+                    <div>
+                      <NavLink to="/register/index/new/pid" exact><li className={this.state.path == "/re" ? "active" : ""}>Information Registration</li></NavLink>
+                      <li className="disabled" onClick={this.disabled.bind(this)}>Deploy Contract</li>
+                      <li className="disabled" onClick={this.disabled.bind(this)}>Compliance Configuration</li>
+                      <li className="disabled" onClick={this.disabled.bind(this)}>Security Tokenization</li>
+                      <li className="disabled" onClick={this.disabled.bind(this)}>Onchain Disclosure</li>
+                    </div>
+                  )
               }
                 
             </ul>

@@ -24,3 +24,6 @@
     background:rgba(51,129,255,1);
     box-shadow:0px 1px 7px 0px rgba(44,97,182,0.66);
 }
+.guide ul .disabled{
+    cursor: default;
+}

@@ -18,16 +18,25 @@ class Deploy extends Component {
     this.MyContract = MyContract;
 
     this.state = {
-        index: 2,
+        index: 1,
         deployed: false,
         arrList: [],
         partiList: [],
+        cName:"",
+        cSymbol:"",
+        cDeciaml:"",
         name: "",
         symbol: "",
         decimal: 0,
         controllers: [],
         baseURL:"http://13.229.205.74:2006",
-        pid:""
+        pid:"",
+        dataIndex:"",
+        deployedData:[],
+        type:"",
+        partitions:[],
+        partiName:"",
+        identifier:""
     };
     this.addToList = this.addToList.bind(this);
     this.deployCommon = this.deployCommon.bind(this);
@@ -51,12 +60,21 @@ class Deploy extends Component {
       if(type != "new"){
         this.setState({
             pid:pid,
+            dataIndex:index,
             params:{
                 index:index,
                 type:type,
                 pid:pidParams
             }
         })
+        if(type=="deployed"){
+          //获取部署信息展示
+          this.showData(index,type)
+          this.setState({
+            type:type,
+            deployed:true
+          })
+        }
       }else{
         this.setState({
           params:{
@@ -66,7 +84,46 @@ class Deploy extends Component {
       }
      
   }
+  async showData(index,type){
+    try {
+      //入库后传pid
+      let url = this.state.baseURL+"/issue_project/list?status="+type;
 
+      let response = await fetch(url, {
+        credentials: 'include',
+        method: 'GET'
+      })
+      let json = response.json() // parses response to JSON
+      json.then(res=>{
+          if(res.success){
+              this.setState({
+                  deployedData:res.data[index].deployedToken,
+                  cName:res.data[index].deployedToken.name,
+                  cSymbol:res.data[index].deployedToken.symbol,
+                  cDecimal:res.data[index].deployedToken.decimals,
+                  name:res.data[index].deployedToken.name,
+                  symbol:res.data[index].deployedToken.symbol,
+                  deciaml:res.data[index].deployedToken.decimals,
+                  partitions:!res.data[index].tokenConfig||!res.data[index].tokenConfig.partitions?[]:res.data[index].tokenConfig.partitions,
+                  index:res.data[index].tokenConfig==null||res.data[index].tokenConfig.partitions==null?"1":"2"
+              })
+              
+          }else{
+              console.log(type+"失败")
+          }
+        })
+    } catch (err) {
+      alert(err);
+    } finally {
+
+    }
+}
+handleChange(key,e){
+  //处理react input text的onChange方法
+    this.setState({
+      [key]:e.target.value
+    })
+}
   changeTab(index){
     this.setState({
         index: index
@@ -114,7 +171,6 @@ class Deploy extends Component {
     })
   }
   deployCommon(){
-    console.log(this.cName.value,this.cSymbol.value,this.cDecimal.value);
     if(!this.cName.value||!this.cSymbol.value||!this.cDecimal.value){
         alert("Please enter value")
         return
@@ -138,7 +194,7 @@ class Deploy extends Component {
             tokenType: "erc1400"
         };
         this.props.drizzle.store.dispatch(deployFinished1400(payload))
-          this.save(payload)
+          this.save(payload,false)
         }).then(
             //部署成功
             setTimeout(()=>{
@@ -174,7 +230,7 @@ class Deploy extends Component {
             tokenType: "erc1400"
           };
           this.props.drizzle.store.dispatch(deployFinished1400(payload))
-          this.save(payload);
+          this.save(payload,true);
           
         }).then(
             //部署成功
@@ -185,7 +241,7 @@ class Deploy extends Component {
       return;
   }
 //   调用接口存储已部署ST
-  async save(token) {
+  async save(token,hasPartition) {
       let url = this.state.baseURL+"/issue_project/token_deployed"
       console.log(this.state.pid)
       //拼接pid
@@ -213,14 +269,20 @@ class Deploy extends Component {
       json.then(res=>{
         if(res.success){
             console.log("save部署成功")
-            //存储partitionList
-            let config = {
-              name: this.state.name,
-              symbol: this.state.symbol,
-              decimals: this.utils.toBN(this.state.decimal),
-              partitions:this.state.partiList
+            if(hasPartition==true){
+              //存储partitionList
+              let config = {
+                name: this.state.name,
+                symbol: this.state.symbol,
+                decimals: this.utils.toBN(this.state.decimal),
+                partitions:this.state.partiList
+              }
+              this.saveTokenConfig(config);
+            }else{
+              //状态更新
+              this.props.history.push({pathname:"/"})
             }
-            this.saveTokenConfig(config);
+            
         }else{
             console.log("save部署失败")
         }
@@ -255,6 +317,8 @@ class Deploy extends Component {
     json.then(res=>{
         if(res.success){
             console.log("save config成功",res.data)
+            //状态更新
+            this.props.history.push({pathname:"/"})
         }else{
             console.log("save config失败")
         }
@@ -303,19 +367,19 @@ class Deploy extends Component {
                         <form action="" autoComplete="off" className="comForm" style={{display: this.state.index == 1 ? "flex" : "none"}}>
                             <div className="formRow">
                                 <label htmlFor="cName">Name:</label>
-                                <input ref={el=>this.cName=el} type="text" id="cName"/>
+                                <input ref={el=>this.cName=el} type="text" id="cName" value={this.state.cName||''} onChange={this.handleChange.bind(this,"cName")}/>
                             </div>
                             <div className="formRow">
                                 <label htmlFor="cSymbol">Symbol:</label>
-                                <input ref={el=>this.cSymbol=el} type="text" id="cSymbol"/>
+                                <input ref={el=>this.cSymbol=el} type="text" id="cSymbol" value={this.state.cSymbol||''} onChange={this.handleChange.bind(this,"cSymbol")}/>
                             </div>
                             <div className="formRow">
                                 <label htmlFor="cDecimal">Decimal:</label>
-                                <input ref={el=>this.cDecimal=el} type="text" id="cDecimal"/>
+                                <input ref={el=>this.cDecimal=el} type="text" id="cDecimal" value={this.state.cDecimal||''} onChange={this.handleChange.bind(this,"cDecimal")}/>
                             </div>
-                            <div className="sub" onClick={this.deployCommon}>Submit</div>
+                            <div className="sub" onClick={this.deployCommon} style={{display:this.state.type=="deployed"?"none":"block"}}>Submit</div>
                         </form>
-                        <div className="table" style={{display: this.state.index == 2&&this.state.partiList.length ? "flex" : "none"}}>
+                        <div className="table" style={{display: this.state.index == 2&&(this.state.partiList.length||this.state.partitions.length) ? "flex" : "none"}}>
                             <div className="thead">
                                 <div className="del"></div>
                                 <div className="td">Partition Identifier</div>
@@ -324,48 +388,89 @@ class Deploy extends Component {
                                 <div className="td">Decimal</div>
                             </div>
                             {
-                                this.state.arrList.map((tr,index)=>{
-                                    return(
-                                        <div className="tr" key={index}> 
-                                            <div className="del">
-                                                <img src={del} alt="删除" onClick={this.delFromList.bind(this,index)}/>
-                                            </div>
-                                            {
-                                                tr.map((item,index)=>{
-                                                    return(
-                                                        <div className="td" key={index}>{item}</div>
-                                                    )
-                                                })
-                                            }
-                                        </div>
+                              this.state.deployed?(
+                                  this.state.partitions.map((item,index)=>{
+                                    return (
+                                      <div className="tr" key={index}>
+                                        <div className="del"></div>
+                                        <div className="td">{item.label}</div>
+                                        <div className="td">{this.state.name}</div>
+                                        <div className="td">{this.state.symbol}</div>
+                                        <div className="td">{this.state.decimal}</div>
+                                      </div>
                                     )
-                                })
+                                  })
+                              ):(
+                                    this.state.arrList.map((tr,index)=>{
+                                      return(
+                                          <div className="tr" key={index}> 
+                                              <div className="del">
+                                                  <img src={del} alt="删除" onClick={this.delFromList.bind(this,index)}/>
+                                              </div>
+                                              {
+                                                  tr.map((item,index)=>{
+                                                      return(
+                                                          <div className="td" key={index}>{item}</div>
+                                                      )
+                                                  })
+                                              }
+                                          </div>
+                                      )
+                                  })
+                              )
+                               
                             }
                         </div>
                         <form  ref={el=>this.partiForm=el} action="" autoComplete="off" className="partiForm" style={{display: this.state.index == 2&&!this.state.deployed ? "flex" : "none"}}>
                             <div className="partiList"></div>
-                            <div className="formRow">
-                                <label htmlFor="identifier">Partition Name: </label>
-                                <input ref={el=>this.pPName=el} type="text" id="partiName"/>
-                            </div>
-                            <div className="formRow">
-                                <label htmlFor="identifier">Identifier: </label>
-                                <input ref={el=>this.pId=el} type="text" id="identifier"/>
-                            </div>
+                            {
+                                  this.state.partitions.length==0?(
+                                      <div className="formRow">
+                                        <label htmlFor="partiName">Partition Name: </label>
+                                        <input ref={el=>this.pPName=el} type="text" id="partiName" value={this.state.partiName} onChange={this.handleChange.bind(this,"partiName")}/>
+                                      </div>
+                                  ):(
+                                    this.state.partitions.map((item,index)=>{
+                                      return (
+                                          <div className="formRow" key={index}>
+                                            <label htmlFor="partiName">Partition Name: </label>
+                                            <input ref={el=>this.pPName=el} type="text" id="partiName" value={item.name} onChange={this.handleChange.bind(this,"partiName")}/>
+                                          </div>
+                                      )
+                                    })
+                                  )
+                          }
+                          {
+                                  this.state.partitions.length==0?(
+                                      <div className="formRow">
+                                        <label htmlFor="identifier">Identifier: </label>
+                                        <input ref={el=>this.pId=el} type="text" id="identifier" value={this.state.identifier} onChange={this.handleChange.bind(this,"identifier")}/>
+                                      </div>
+                                  ):(
+                                    this.state.partitions.map((item,index)=>{
+                                      return (
+                                          <div className="formRow" key={index}>
+                                            <label htmlFor="identifier">Identifier: </label>
+                                            <input ref={el=>this.pId=el} type="text" id="identifier" value={item.label} onChange={this.handleChange.bind(this,"identifier")}/>
+                                          </div>
+                                      )
+                                    })
+                                  )
+                          }
                             <div className="formRow">
                                 <label htmlFor="pName">Name:</label>
-                                <input ref={el=>this.pName=el} type="text" id="pName"/>
+                                <input ref={el=>this.pName=el} type="text" id="pName" value={this.state.name||''} onChange={this.handleChange.bind(this,"name")}/>
                             </div>
                             <div className="formRow">
                                 <label htmlFor="pSymbol">Symbol:</label>
-                                <input ref={el=>this.pSymbol=el} type="text" id="pSymbol"/>
+                                <input ref={el=>this.pSymbol=el} type="text" id="pSymbol" value={this.state.symbol||''} onChange={this.handleChange.bind(this,"symbol")}/>
                             </div>
                             <div className="formRow">
                                 <label htmlFor="pDecimal">Decimal:</label>
-                                <input ref={el=>this.pDecimal=el} type="text" id="pDecimal"/>
+                                <input ref={el=>this.pDecimal=el} type="text" id="pDecimal" value={this.state.decimal||''} onChange={this.handleChange.bind(this,"decimal")}/>
                             </div>
-                            <div className="add" onClick={this.addToList}>+</div>
-                            <div className="sub" onClick={this.deployParti}>Submit</div>
+                            <div className="add" onClick={this.addToList} style={{display:this.state.type=="deployed"?"none":"block"}}>+</div>
+                            <div className="sub" onClick={this.deployParti} style={{display:this.state.type=="deployed"?"none":"block"}}>Submit</div>
                         </form>
                     </div>
                 </div>

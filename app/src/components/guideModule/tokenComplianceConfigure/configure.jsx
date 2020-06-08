@@ -7,16 +7,12 @@ import arrow from "../../../assets/Group 5@2x.png"
 import del from "../../../assets/delete@2x (1).png"
 import "./configure.css"
 import { DrizzleContext } from "@drizzle/react-plugin";
-import ERC1400 from "../../../contracts/ERC1400.json";
+import ComplianceServiceRegistry from "../../../contracts/ComplianceServiceRegistry.json";
 var contract = require("@truffle/contract");
 
 class Configure extends Component {
   constructor(props) {
     super(props);
-    
-    var MyContract = contract(ERC1400)
-    this.utils = props.drizzle.web3.utils;
-    this.MyContract = MyContract;
     
     this.state = {
         tabIndex: 1,
@@ -38,7 +34,6 @@ class Configure extends Component {
     };
     this.handleAddAnd = this.handleAddAnd.bind(this);
     this.handleAddOr = this.handleAddOr.bind(this);
-    this.handleFinalCondition = this.handleFinalCondition.bind(this);
     this.cancelOptionBox = this.cancelOptionBox.bind(this);
   }
   changeTab(index){
@@ -101,7 +96,7 @@ class Configure extends Component {
     }
 
     let or = [...this.state.or, rst + " "];
-    console.log(or);
+    // console.log(or);
     let final = "";
     for (let i = 0; i < or.length; i++) {
         if (i == 0)
@@ -109,26 +104,25 @@ class Configure extends Component {
         else
             final += ("|| " + or[i]);
     }
-    console.log(final)
+    // console.log(final)
     this.setState({ 
         or: [...this.state.or, rst + " "],
         finalCondition: final  
     })
         
-    this.handleFinalCondition()
-  }
-  handleFinalCondition(){
-    console.log("111")
   }
   Configure(){
+    //默认服务地址合规配置
     this.contracts = this.props.drizzle.contracts;
     this.utils = this.props.drizzle.web3.utils;
 
     // Get the contract ABI
-    const abi = this.contracts["ComplianceServiceRegistry"].abi;
-    const address = this.contracts["ComplianceServiceRegistry"].address;
+    const abi = this.contracts["ComplianceConfiguration"].abi;
+    const address = this.contracts["ComplianceConfiguration"].address;
     var web3 = this.props.drizzle.web3;
-    var ComplianceServiceRegistry = new web3.eth.Contract(abi,address);
+    var ComplianceConfiguration = new web3.eth.Contract(abi,address);
+
+    ComplianceConfiguration.setProvider(web3.currentProvider);
 
     var contractAddr = this.addr.innerText;
     var configuration = this.state.finalCondition;
@@ -141,15 +135,16 @@ class Configure extends Component {
         alert("Please enter configuration")
         return
     }
-    ComplianceServiceRegistry.methods.setConfiguration(contractAddr,configuration).send({
+    console.log(contractAddr,configuration)
+    ComplianceConfiguration.methods.setConfiguration(contractAddr,configuration).send({
         from: this.props.drizzleState.accounts[0],
         gas: 3000000
     }).then(function(receipt){
-        // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
         console.log(receipt)
     });
   }
   Register(){
+    //合规服务注册
     this.contracts = this.props.drizzle.contracts;
     this.utils = this.props.drizzle.web3.utils;
 
@@ -158,10 +153,12 @@ class Configure extends Component {
     const address = this.contracts["ComplianceServiceRegistry"].address;
     var web3 = this.props.drizzle.web3;
     var ComplianceServiceRegistry = new web3.eth.Contract(abi,address);
-
+    
+    ComplianceServiceRegistry.setProvider(web3.currentProvider);
+    
     var contractAddr = this.addr.innerText;
-    var configuration = this.personalise.value;
-
+    var configuration = this.personalise.value; 
+    
     if(!this.utils.isAddress(contractAddr)){
         alert("Please deploy the contract first")
         return
@@ -174,6 +171,7 @@ class Configure extends Component {
         alert("Please enter the address type")
         return
     }
+    
     ComplianceServiceRegistry.methods.register(contractAddr,configuration).send({
         from: this.props.drizzleState.accounts[0],
         gas: 3000000
@@ -194,7 +192,7 @@ class Configure extends Component {
         console.log("从路由参数取pid",pid)
       }
       
-      //路由配置
+      //guideMenu路由配置
       var index = this.props.match.params.index;
       var type = this.props.match.params.type;
       var pidParams = this.props.match.params.pid;
@@ -214,7 +212,6 @@ class Configure extends Component {
         }
         })
       }
-
       console.log(this.props)
       //获取部署的token地址
       console.log("仓库获取部署的token列表",this.props.drizzle.store.getState().deployedTokens)
@@ -224,6 +221,7 @@ class Configure extends Component {
             tookenAddr:tookenAddr[0].contractAddress
         })
       }else{
+        //若redux仓库中无法得到，则通过路由从列表中获取
         if(type == "deployed"){
             //对已部署ST,获取合约地址
          this.getDeployedData(index,type);
@@ -234,22 +232,37 @@ class Configure extends Component {
     document.addEventListener('click', this.cancelOptionBox)
     
     //获取默认服务地址
-    this.contracts = this.props.drizzle.contracts;
-    this.utils = this.props.drizzle.web3.utils;
-
-    // Get the contract ABI
-    const abi = this.contracts["ComplianceServiceRegistry"].abi;
-    const address = this.contracts["ComplianceServiceRegistry"].address;
-    var web3 = this.props.drizzle.web3;
-    var ComplianceServiceRegistry = new web3.eth.Contract(abi,address);
-    ComplianceServiceRegistry.methods.getDefaultService().call({
-        from: this.props.drizzleState.accounts[0]
-    }).then((receipt)=>{
-        console.log("default service",receipt)
-        this.setState({
-            defaultService: receipt
+    //尝试一 使用truffle contract
+        this.MyContract = contract(ComplianceServiceRegistry);
+        var web3 = this.props.drizzle.web3;
+        this.MyContract.setProvider(web3.currentProvider);
+        
+        this.MyContract.deployed().then(function(instance) {
+            var meta = instance
+            return meta.getDefaultService.call()
+        }).then((value)=>{
+            this.setState({
+                defaultService: value
+            })
         })
-    })
+
+    //尝试二 
+        // this.contracts = this.props.drizzle.contracts;
+        // this.utils = this.props.drizzle.web3.utils;
+
+        // // Get the contract ABI
+        // const abi = this.contracts["ComplianceServiceRegistry"].abi;
+        // const address = this.contracts["ComplianceServiceRegistry"].address;
+        // var web3 = this.props.drizzle.web3;
+
+        // var ComplianceServiceRegistry = new web3.eth.Contract(abi,address);
+        // ComplianceServiceRegistry.methods.getDefaultService().call({
+        //     from: this.props.drizzleState.accounts[0]
+        // }).then((receipt)=>{
+        //     this.setState({
+        //         defaultService: receipt
+        //     })
+        // })
 
     // 文档1.2.8
     // var myContract = new web3.eth.Contract( abi,address, {
@@ -420,7 +433,7 @@ class Configure extends Component {
                                                     )
                                                 }
                                                 return(
-                                                    <li key={index}>{e}<img src={del} alt="删除"/></li>
+                                                    <li key={index}>{e}<img src={del} alt="删除" onClick={remove}/></li>
                                                 )
                                             })
                                         }

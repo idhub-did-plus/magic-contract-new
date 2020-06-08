@@ -83,7 +83,6 @@ export default class Home extends Component {
       let json = response.json() 
       json.then(res=>{
         if(res.success){
-            console.log("获取已部署成功",res.data)
             this.setState({
               deployedData:res.data
             })

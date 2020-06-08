@@ -279,6 +279,7 @@ class InformRegister extends Component {
   }
   handleChange(key,e){
     //处理react input text的onChange方法
+    console.log(key,e.target.value)
       this.setState({
         [key]:e.target.value
       })
@@ -329,8 +330,6 @@ class InformRegister extends Component {
                 alert("Not Found PID , Please submit project details first");
                 return;
             }
-            console.log(this.state.pid)
-            console.log(jsonData)
       let response = await fetch(url, {
         body: JSON.stringify(jsonData), 
             credentials: 'include', //支持跨域或同源请求 可携带cookies
@@ -375,7 +374,6 @@ class InformRegister extends Component {
     var jsonData = {};
     data.forEach((value, key) => jsonData[key] = value);
     
-    console.log(jsonData)
     //调用接口存储项目信息
     this.saveProjDetails(jsonData);
   }
@@ -437,7 +435,7 @@ class InformRegister extends Component {
         let json = response.json() // parses response to JSON
         json.then(res=>{
             if(res.success){
-                console.log("audit成功")
+                alert("audit success!")
                 this.props.history.push({pathname:"/"})
             }else{
                 console.log("audit失败")
@@ -451,8 +449,6 @@ class InformRegister extends Component {
   }
   fileSubmit(type){
       var fileType = type;
-      console.log(this.state.pid);
-      console.log(type);
       if(!this.state.pid){
           alert("PID Not Found , Please submit project details first");
           return;
@@ -577,12 +573,12 @@ class InformRegister extends Component {
                  <div className="titl">Project details</div>
                  <div>
                  {
-                     this.state.type==undefined?(
+                     this.state.type=="new"?(
                         // 新建入口进入
                         <div>
                             <div className="content">
                                 <div className="informRow">
-                                    <input type="text" id="company" ref={el=>this.company=el}/>
+                                    <input type="text" id="company" ref={el=>this.company=el} value={this.state.companyName} onChange={this.handleChange.bind(this,"companyName")}/>
                                     <label htmlFor="company">Company Name: </label>
                                 </div>
                                 <p></p>
@@ -638,7 +634,7 @@ class InformRegister extends Component {
                                 </div>
                                 <p></p>
                                 <div className="informRow">
-                                    <input ref={el=>this.mini_amount=el}type="text" id="amount"/>
+                                    <input ref={el=>this.mini_amount=el}type="text" id="amount" value={this.state.plannedRasedCapital} onChange={this.handleChange.bind(this,"plannedRasedCapital")}/>
                                     <label htmlFor="amount">What is the minimum amount of capital you plan to raise？</label>
                                 </div>
                                 <p></p>

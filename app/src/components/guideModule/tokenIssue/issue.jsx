@@ -15,13 +15,14 @@ class Issue extends Component {
     this.state = {
         optionBox:false,
         partition: "",
-        deployed: true,
+        issued: true,
         tookenAddress:"",
         pid:"",
         baseURL:"http://13.229.205.74:2006",
         params:{},
         partitionList:[],
-        partitionIndex:""
+        partitionIndex:"",
+        issueByPartitionOrNot:true
     };
     this.handleSelect = this.handleSelect.bind(this);
     this.handleIssue = this.handleIssue.bind(this);
@@ -40,21 +41,33 @@ class Issue extends Component {
     })
   }
   async handleIssue(){
+      //调用发行合约 
+      var MyContract = contract(ERC1400)
+      this.utils = this.props.drizzle.web3.utils;
+      this.MyContract = MyContract;
+      let web3 = this.props.drizzle.web3;
+      this.MyContract.setProvider(web3.currentProvider);
+
+    console.log(this.state.partition)
+    if(this.state.partition){
       var partition = this.state.partitionList[this.state.partitionIndex].label;
+      
+      if(!this.utils.isHex( partition)){
+        alert("input correct partition please!")
+        return
+      }
+    }else{
+      var partition = ""
+    }
       var amount = this.amount.value;
       var receiver = this.receiver.value;
       console.log(partition);
       console.log(amount);
       console.log(receiver);
     
-      //调用发行合约 
-    var MyContract = contract(ERC1400)
-    this.utils = this.props.drizzle.web3.utils;
-    this.MyContract = MyContract;
-    let web3 = this.props.drizzle.web3;
-    this.MyContract.setProvider(web3.currentProvider);
+    
 
-      if(!this.utils.isAddress( this.state.tookenAddr)){
+      if(!this.utils.isAddress( this.state.tookenAddress)){
         alert("token address ot found!")
         return
       }
@@ -64,13 +77,10 @@ class Issue extends Component {
         return
       }
    
-      if(!this.utils.isHex( partition)){
-        alert("input correct partition please!")
-        return
-      }
-      let inst = await this.MyContract.at(this.state.tookenAddr)
+      
+      let inst = await this.MyContract.at(this.state.tookenAddress)
       console.log(inst)
-
+      console.log(partition,receiver,amount)
       await inst.issueByPartition(
         partition,
         receiver,
@@ -85,7 +95,6 @@ class Issue extends Component {
   }
   componentWillMount(){
       console.log(this.props)
-      
       //guideMenu路由配置
       var index = this.props.match.params.index;
       var type = this.props.match.params.type;
@@ -140,7 +149,7 @@ class Issue extends Component {
     
 
     //获取发行信息列表
-        // this.getIssuedList(pid);
+        this.getIssuedList(pid);
     
     //收起下拉框
         document.addEventListener('click', this.cancelOptionBox)
@@ -158,7 +167,8 @@ class Issue extends Component {
       json.then(res=>{
           if(res.success){
               this.setState({
-                tookenAddress:res.data[index].deployedToken.contractAddress
+                tookenAddress:res.data[index].deployedToken.contractAddress,
+                issueByPartitionOrNot:res.data[index].tokenConfig==null||res.data[index].tokenConfig.partitions==null?false:true
               })
               
           }else{
@@ -205,10 +215,10 @@ class Issue extends Component {
     let json = response.json() // parses response to JSON
     json.then(res=>{
         if(res.success){
-            console.log("获取token list成功",res.data[index].tokenConfig)
+            console.log("获取tokenConfig成功",res.data[index].tokenConfig)
             if(res.data[index].tokenConfig){
               this.setState({
-                partitionList:res.data[index].tokenConfig.partitions
+                partitionList:!res.data[index].tokenConfig||!res.data[index].tokenConfig.partitions?[]:res.data[index].tokenConfig.partitions
               })
             }
         }else{
@@ -240,6 +250,7 @@ class Issue extends Component {
     json.then(res=>{
         if(res.success){
             console.log("获取发行列表成功",res.data)
+            //若不为空 set issued 为true,默认为false
         }else{
             console.log("获取发行列表失败")
         }
@@ -279,12 +290,13 @@ class Issue extends Component {
                                 <div className="td">{this.state.tookenAddress}</div>
                             </div>
                         </div>
-                        <div className="table" style={{display: this.state.deployed ? "flex":"none"}}>
+                        <div className="table" style={{display: this.state.issued ? "flex":"none"}}>
                             <div className="thead">
                                 <div className="td">Partition</div>
                                 <div className="td">Amount</div>
                                 <div className="td">Receiver address</div>
                             </div>
+                            {/* map渲染issue list */}
                             <div className="tr">
                                 <div className="td">0X4c000E507bE6663e264a1A21507a69Bfa5035D950X4c000E507bE6663e264a1A21507a69Bfa5035D95</div>
                                 <div className="td">2000</div>
@@ -307,7 +319,7 @@ class Issue extends Component {
                                             )
                                           })
                                         ):(
-                                          <li>If you want to issue by partition,Please add partition during deployment</li>
+                                          <li>If you want to issue by partition,Please add partition during deployment.If you don’t choose, you won’t be issued by partition.</li>
                                         )
                                         
                                     }

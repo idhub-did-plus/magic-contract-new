@@ -6,11 +6,15 @@ import Upload from "../../../assets/上传@2x.png"
 import file from "../../../assets/文件@2x.png"
 import "./onchain.css"
 
-export default class Online extends Component {
+import { DrizzleContext } from "@drizzle/react-plugin";
+import ERC1400 from "../../../contracts/ERC1400.json"
+var contract = require("@truffle/contract");
+
+class Online extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        onchain: true,
+        onchain: false,
         fileName: "",
         baseURL:"http://13.229.205.74:2006",
         params:{}
@@ -19,25 +23,26 @@ export default class Online extends Component {
   }
   componentWillMount(){
     //路由配置
-    var index = this.props.match.params.index;
-    var type = this.props.match.params.type;
-    var pidParams = this.props.match.params.pid;
-    
-    if(type != "new"){
-      this.setState({
+      var index = this.props.match.params.index;
+      var type = this.props.match.params.type;
+      var pidParams = this.props.match.params.pid;
+      
+      if(type != "new"){
+        this.setState({
+            params:{
+                index:index,
+                type:type,
+                pid:pidParams
+            }
+        })
+      }else{
+        this.setState({
           params:{
-              index:index,
-              type:type,
-              pid:pidParams
-          }
-      })
-    }else{
-      this.setState({
-        params:{
-          type:"new"
+            type:"new"
+        }
+        })
       }
-      })
-    }
+      console.log(this.props)
   }
   handleChange(e){
     //file input onChange处理方法
@@ -69,6 +74,7 @@ export default class Online extends Component {
             if(res.success){
                 console.log("上传成功")
                 //返回上传时间 返回http地址准备上链 1400 更新列表 /material/retrieve_materials?pid=
+                //若返回状态onchain为false点击列表中上链按钮上链
             }else{
                 console.log("上传失败")
             }
@@ -83,6 +89,33 @@ export default class Online extends Component {
      //请求文件列表数据
      let url = this.state.baseURL+"/material/retrieve_materials"
      //拼接pid
+  }
+  async onChain(){
+      //接收index
+      //调用上链合约
+      //调用成功后调接口更新列表信息
+      //调用发行合约 
+      var MyContract = contract(ERC1400)
+      this.utils = this.props.drizzle.web3.utils;
+      this.MyContract = MyContract;
+      let web3 = this.props.drizzle.web3;
+      this.MyContract.setProvider(web3.currentProvider);
+
+    //   name = web3.utils.sha3(name)
+    //   uri = uri
+    //   hash = document hash
+    //   let inst = await this.MyContract.at(this.state.tookenAddress)
+    //   console.log(inst)
+    //   await inst.setDocument(
+    //     name,
+    //     uri,
+    //     hash,
+    //     { from: this.props.drizzleState.accounts[0] }).then(()=>{
+    //       //调接口存储发行信息
+    //       this.saveIssue(partition,amount,receiver)
+    //     });
+
+      return;
   }
   render(){
       const Asset = ["11111111111","222222222","33333333333333"];
@@ -113,7 +146,7 @@ export default class Online extends Component {
                                 <div className="td">2020.05.30  23:45:45</div>
                                 <div className="td">
                                     <div className="on" style={{display: this.state.onchain?"block":"none"}}>已上链</div>
-                                    <div className="un" style={{display: this.state.onchain?"none":"block",cursor:'pointer'}}>上链</div>
+                                    <div className="un" onClick={this.onChain.bind(this)} style={{display: this.state.onchain?"none":"block",cursor:'pointer'}}>上链</div>
                                 </div>
                             </div>
                             <div className="tr">
@@ -151,3 +184,15 @@ export default class Online extends Component {
   }
   
 }
+export default (props) => {
+    return (
+      <DrizzleContext.Consumer>
+        {drizzleContext => {
+          return (
+            <Online {...drizzleContext} {...props} />
+          );
+        }}
+      </DrizzleContext.Consumer>
+  
+    )
+  }
