@@ -16,6 +16,9 @@ class InformRegister extends Component {
         fileName2: "",
         fileName3: "",
         fileName4: "",
+        desc1:"",
+        desc2:"",
+        desc3:"",
         optionBoxIndex: 1,
         optionBox1: false,
         optionBox2: false,
@@ -47,7 +50,8 @@ class InformRegister extends Component {
         baseURL:"http://13.229.205.74:2006",
         showData:[],
         type:"",
-        params:{}
+        params:{},
+        fileList:[]
     };
     this.cancelOptionBox = this.cancelOptionBox.bind(this);
     this.informSubmit = this.informSubmit.bind(this);
@@ -171,7 +175,7 @@ class InformRegister extends Component {
         
           //请求数据渲染
         this.showData(index,type)
-        // this.getFile(pid);
+        this.getFile(pid);
       }else{
         this.setState({
             params:{
@@ -247,7 +251,30 @@ class InformRegister extends Component {
       let json = response.json() // parses response to JSON
       json.then(res=>{
           if(res.success){
-              console.log("文件成功",res.data)
+            //   console.log("文件成功",res.data)
+              this.setState({
+                fileList:res.data
+              })
+              this.state.fileList.map((item)=>{
+                if(item.type=="lagal"){
+                    this.setState({
+                      fileName1: item.name,
+                      desc1:item.contentDescription
+                    })
+                }
+                if(item.type=="whitepaper文件"){
+                  this.setState({
+                      fileName3: item.name,
+                      desc3:item.contentDescription
+                    })
+                }
+                if(item.type=="marketting"){
+                  this.setState({
+                      fileName2: item.name,
+                      desc2:item.contentDescription
+                    })
+                }
+            })
           }else{
               console.log("文件失败")
           }
@@ -556,6 +583,8 @@ class InformRegister extends Component {
       const Partners = ["Yes","No"];
       const RaiseBefore = ["Yes","No"];
       const Steps = ["聘请证券律师","筹款的最终条款","准备了法律文件","准备了营销文件"];
+
+      
       return (
         <div className="register">
           <div className="navig">
@@ -944,60 +973,173 @@ class InformRegister extends Component {
                  }
                  </div>
                  
-
-                <div className="content">
-                    {/* 上传文件1 */}
-                    <div className="uploadRow">
-                        <div className="upload">
-                            <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName1 ? "block" : "none"}}/>
-                            <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName1 ? "none" : "block"}}/>
-                            <input ref={el=>this.file1=el} type="file" id="file1" className="upInput" onChange={this.handle_Change.bind(this,"fileName1")}/>
-                            <div className="fileName" style={{display: !this.state.fileName1 ? "none" : "block"}}>{this.state.fileName1}</div>
-                        </div>
-                        <label htmlFor="file1">Upload legal documents:</label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="description1" ref={el=>this.desc1=el}/>
-                        <label htmlFor="description1">Content description: </label>
-                    </div>
-                    <div className="fileSub" onClick={this.fileSubmit.bind(this,"lagal")}>submit</div>
-                    <p></p>
-                    {/* 上传文件2 */}
-                    <div className="uploadRow">
-                        <div className="upload">
-                            <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName2 ? "block" : "none"}}/>
-                            <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName2 ? "none" : "block"}}/>
-                            <input ref={el=>this.file2=el} type="file" id="file2" className="upInput" onChange={this.handle_Change.bind(this,"fileName2")}/>
-                            <div className="fileName" style={{display: !this.state.fileName2 ? "none" : "block"}}>{this.state.fileName2}</div>
-                        </div>
-                        <label htmlFor="file2">Upload marketing files:</label>
-                    </div>
-                    <p></p>
-                    <div className="informRow">
-                        <input type="text" id="description2" ref={el=>this.desc2=el}/>
-                        <label htmlFor="description2">Content description: </label>
-                    </div>
-                    <div className=" fileSub" onClick={this.fileSubmit.bind(this,"marketting")}>submit</div>
-                    <p></p>
-                    {/* 上传文件3 */}
-                    <div className="uploadRow">
-                        <div className="upload">
-                            <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName3 ? "block" : "none"}}/>
-                            <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName3 ? "none" : "block"}}/>
-                            <input ref={el=>this.file3=el} type="file" id="file3" className="upInput" onChange={this.handle_Change.bind(this,"fileName3")}/>
-                            <div className="fileName" style={{display: !this.state.fileName3 ? "none" : "block"}}>{this.state.fileName3}</div>
-                        </div>
-                        <label htmlFor="file3">Upload white paper:</label>
-                    </div>
-                    <div className="informRow">
-                        <input type="text" id="description3" ref={el=>this.desc3=el}/>
-                        <label htmlFor="description3">Content description: </label>
-                    </div>
-                    <div className="fileSub" onClick={this.fileSubmit.bind(this,"whitepaper")}>submit</div>
-                    <p></p>
-                </div>
                 {
-                    this.state.type==undefined?(
+                    //新建入口进入
+                    this.state.type=="new"?(
+                        <div className="content">
+                            {/* 上传文件1 */}
+                            <div className="uploadRow">
+                                <div className="upload">
+                                    <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName1 ? "block" : "none"}}/>
+                                    <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName1 ? "none" : "block"}}/>
+                                    <input ref={el=>this.file1=el} type="file" id="file1" className="upInput" onChange={this.handle_Change.bind(this,"fileName1")}/>
+                                    <div className="fileName" style={{display: !this.state.fileName1 ? "none" : "block"}}>{this.state.fileName1}</div>
+                                </div>
+                                <label htmlFor="file1">Upload legal documents:</label>
+                            </div>
+                            <div className="informRow">
+                                <input type="text" id="description1" ref={el=>this.desc1=el}/>
+                                <label htmlFor="description1">Content description: </label>
+                            </div>
+                            <div className="fileSub" onClick={this.fileSubmit.bind(this,"lagal")}>submit</div>
+                            <p></p>
+                            {/* 上传文件2 */}
+                            <div className="uploadRow">
+                                <div className="upload">
+                                    <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName2 ? "block" : "none"}}/>
+                                    <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName2 ? "none" : "block"}}/>
+                                    <input ref={el=>this.file2=el} type="file" id="file2" className="upInput" onChange={this.handle_Change.bind(this,"fileName2")}/>
+                                    <div className="fileName" style={{display: !this.state.fileName2 ? "none" : "block"}}>{this.state.fileName2}</div>
+                                </div>
+                                <label htmlFor="file2">Upload marketing files:</label>
+                            </div>
+                            <p></p>
+                            <div className="informRow">
+                                <input type="text" id="description2" ref={el=>this.desc2=el}/>
+                                <label htmlFor="description2">Content description: </label>
+                            </div>
+                            <div className=" fileSub" onClick={this.fileSubmit.bind(this,"marketting")}>submit</div>
+                            <p></p>
+                            {/* 上传文件3 */}
+                            <div className="uploadRow">
+                                <div className="upload">
+                                    <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName3 ? "block" : "none"}}/>
+                                    <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName3 ? "none" : "block"}}/>
+                                    <input ref={el=>this.file3=el} type="file" id="file3" className="upInput" onChange={this.handle_Change.bind(this,"fileName3")}/>
+                                    <div className="fileName" style={{display: !this.state.fileName3 ? "none" : "block"}}>{this.state.fileName3}</div>
+                                </div>
+                                <label htmlFor="file3">Upload white paper:</label>
+                            </div>
+                            <div className="informRow">
+                                <input type="text" id="description3" ref={el=>this.desc3=el}/>
+                                <label htmlFor="description3">Content description: </label>
+                            </div>
+                            <div className="fileSub" onClick={this.fileSubmit.bind(this,"whitepaper")}>submit</div>
+                            <p></p>
+                        </div>
+                    ):(
+                        //状态为edtiing
+                        this.state.type=="editing"?(
+                            <div className="content">
+                                {/* 上传文件1 */}
+                                <div className="uploadRow">
+                                    <div className="upload">
+                                        <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName1 ? "block" : "none"}}/>
+                                        <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName1 ? "none" : "block"}}/>
+                                        <input ref={el=>this.file1=el} type="file" id="file1" className="upInput" onChange={this.handle_Change.bind(this,"fileName1")}/>
+                                        <div className="fileName" style={{display: !this.state.fileName1 ? "none" : "block"}}>{this.state.fileName1}</div>
+                                    </div>
+                                    <label htmlFor="file1">Upload legal documents:</label>
+                                </div>
+                                <div className="informRow">
+                                    <input type="text" id="description1" ref={el=>this.desc1=el} value={this.state.desc1||''} onChange={this.handleChange.bind(this,"desc1")}/>
+                                    <label htmlFor="description1">Content description: </label>
+                                </div>
+                                <div className="fileSub" onClick={this.fileSubmit.bind(this,"lagal")}>submit</div>
+                                <p></p>
+                                {/* 上传文件2 */}
+                                <div className="uploadRow">
+                                    <div className="upload">
+                                        <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName2 ? "block" : "none"}}/>
+                                        <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName2 ? "none" : "block"}}/>
+                                        <input ref={el=>this.file2=el} type="file" id="file2" className="upInput" onChange={this.handle_Change.bind(this,"fileName2")}/>
+                                        <div className="fileName" style={{display: !this.state.fileName2 ? "none" : "block"}}>{this.state.fileName2}</div>
+                                    </div>
+                                    <label htmlFor="file2">Upload marketing files:</label>
+                                </div>
+                                <p></p>
+                                <div className="informRow">
+                                    <input type="text" id="description2" ref={el=>this.desc2=el} value={this.state.desc2||''} onChange={this.handleChange.bind(this,"desc2")}/>
+                                    <label htmlFor="description2">Content description: </label>
+                                </div>
+                                <div className=" fileSub" onClick={this.fileSubmit.bind(this,"marketting")}>submit</div>
+                                <p></p>
+                                {/* 上传文件3 */}
+                                <div className="uploadRow">
+                                    <div className="upload">
+                                        <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName3 ? "block" : "none"}}/>
+                                        <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName3 ? "none" : "block"}}/>
+                                        <input ref={el=>this.file3=el} type="file" id="file3" className="upInput" onChange={this.handle_Change.bind(this,"fileName3")}/>
+                                        <div className="fileName" style={{display: !this.state.fileName3 ? "none" : "block"}}>{this.state.fileName3}</div>
+                                    </div>
+                                    <label htmlFor="file3">Upload white paper:</label>
+                                </div>
+                                <div className="informRow">
+                                    <input type="text" id="description3" ref={el=>this.desc3=el} value={this.state.desc3||''} onChange={this.handleChange.bind(this,"desc3")}/>
+                                    <label htmlFor="description3">Content description: </label>
+                                </div>
+                                <div className="fileSub" onClick={this.fileSubmit.bind(this,"whitepaper")}>submit</div>
+                                <p></p>
+                            </div>
+                        ):(
+                            //只做展示
+                            <div className="content">
+                                {/* 上传文件1 */}
+                                <div className="uploadRow">
+                                    <div className="upload">
+                                        <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName1 ? "block" : "none"}}/>
+                                        <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName1 ? "none" : "block"}}/>
+                                        {/* <input ref={el=>this.file1=el} type="file" id="file1" className="upInput" onChange={this.handle_Change.bind(this,"fileName1")}/> */}
+                                        <div className="fileName" style={{display: !this.state.fileName1 ? "none" : "block"}}>{this.state.fileName1}</div>
+                                    </div>
+                                    <label htmlFor="file1">Upload legal documents:</label>
+                                </div>
+                                <div className="informRow">
+                                    <input type="text" id="description1" ref={el=>this.desc1=el} value={this.state.desc1||''} readOnly/>
+                                    <label htmlFor="description1">Content description: </label>
+                                </div>
+                                <div className="fileSub" onClick={this.fileSubmit.bind(this,"lagal")} style={{display: this.state.type=="deployed"||this.state.type=="audit_passed"?"none":"block"}}>submit</div>
+                                <p></p>
+                                {/* 上传文件2 */}
+                                <div className="uploadRow">
+                                    <div className="upload">
+                                        <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName2 ? "block" : "none"}}/>
+                                        <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName2 ? "none" : "block"}}/>
+                                        {/* <input ref={el=>this.file2=el} type="file" id="file2" className="upInput" onChange={this.handle_Change.bind(this,"fileName2")}/> */}
+                                        <div className="fileName" style={{display: !this.state.fileName2 ? "none" : "block"}}>{this.state.fileName2}</div>
+                                    </div>
+                                    <label htmlFor="file2">Upload marketing files:</label>
+                                </div>
+                                <p></p>
+                                <div className="informRow">
+                                    <input type="text" id="description2" ref={el=>this.desc2=el} value={this.state.desc2||''}  readOnly/>
+                                    <label htmlFor="description2">Content description: </label>
+                                </div>
+                                <div className=" fileSub" onClick={this.fileSubmit.bind(this,"marketting")} style={{display: this.state.type=="deployed"||this.state.type=="audit_passed"?"none":"block"}}>submit</div>
+                                <p></p>
+                                {/* 上传文件3 */}
+                                <div className="uploadRow">
+                                    <div className="upload">
+                                        <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName3 ? "block" : "none"}}/>
+                                        <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName3 ? "none" : "block"}}/>
+                                        {/* <input ref={el=>this.file3=el} type="file" id="file3" className="upInput" onChange={this.handle_Change.bind(this,"fileName3")}/> */}
+                                        <div className="fileName" style={{display: !this.state.fileName3 ? "none" : "block"}}>{this.state.fileName3}</div>
+                                    </div>
+                                    <label htmlFor="file3">Upload white paper:</label>
+                                </div>
+                                <div className="informRow">
+                                    <input type="text" id="description3" ref={el=>this.desc3=el} value={this.state.desc3||''} readOnly/>
+                                    <label htmlFor="description3">Content description: </label>
+                                </div>
+                                <div className="fileSub" onClick={this.fileSubmit.bind(this,"whitepaper")} style={{display: this.state.type=="deployed"||this.state.type=="audit_passed"?"none":"block"}}>submit</div>
+                                <p></p>
+                            </div>
+                        )
+                    )
+                }
+                
+                {
+                    this.state.type=="new"?(
                         //新建入口进入
                         <div>
                             <div className="titl">Company Information</div>

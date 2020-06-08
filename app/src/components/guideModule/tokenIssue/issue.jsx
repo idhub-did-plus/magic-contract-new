@@ -78,7 +78,6 @@ class Issue extends Component {
         { from: this.props.drizzleState.accounts[0] }).then(()=>{
           //调接口存储发行信息
           this.saveIssue(partition,amount,receiver);
-          //列表更新
         });
 
       return;
@@ -199,6 +198,7 @@ class Issue extends Component {
     json.then(res=>{
         if(res.success){
             console.log("存储成功")
+            this.getIssuedList(this.state.pid);
         }else{
             console.log("存储失败")
         }
@@ -254,7 +254,7 @@ class Issue extends Component {
     let json = response.json() // parses response to JSON
     json.then(res=>{
         if(res.success){
-            // console.log("获取发行列表成功",res.data)
+            console.log("获取发行列表成功",res.data)
             //若不为空 set issued 为true,默认为false
             if(res.data.length==0||!res.data){
               this.setState({

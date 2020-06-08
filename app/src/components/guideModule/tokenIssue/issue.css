@@ -12,7 +12,7 @@
     min-height: 700px;
     background:rgba(244,246,252,1);
     padding: 30px;
-    padding-bottom: 40px;
+    padding-bottom: 80px;
 }
 .issueBox .contentBox .stContent{
     width: 100%;
@@ -206,7 +206,8 @@
     font-weight:500;
     color:rgba(255,255,255,1);
     margin-top: 30px;
+    margin-bottom: 20px;
     cursor: pointer;
     position: absolute;
-    bottom: -80px;
+    bottom: -90px;
 }

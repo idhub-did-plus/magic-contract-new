@@ -89,6 +89,7 @@ class Online extends Component {
         json.then(res=>{
             if(res.success){
                 console.log("上传成功")
+                this.getFileList(this.state.pid);
                 //返回上传时间 返回http地址准备上链 1400 更新列表 /material/retrieve_materials?pid=
                 //若返回状态onchain为false点击列表中上链按钮上链
             }else{
@@ -171,6 +172,7 @@ class Online extends Component {
       var url = uri;
       var hash = this.state.fileList[index].hash;
 
+    //成功后 调用this.getFileList(this.state.pid);更新
     //   let inst = await this.MyContract.at(this.state.tookenAddress)
     //   console.log(inst)
     //   await inst.setDocument(
