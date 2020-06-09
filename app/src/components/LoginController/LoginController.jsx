@@ -14,7 +14,7 @@ export default class LoginController extends Component {
     this.state = {
       claim: "",
       selItem: 1,
-      baseURL:"http://13.229.205.74:2006",
+      baseURL: process.env.REACT_APP_API_ROOT,
       // baseURL:"http://dhgzq9.natappfree.cc"
     };
 
@@ -71,7 +71,6 @@ export default class LoginController extends Component {
   }
   async request(identity, tp,claim, sig) {
     try {
-
       let url = this.state.baseURL+'/auth/login?identity='+identity+'&timestamp='+tp + '&claim=' + claim+ '&signature=' + sig;
       
       let response = await fetch(url, {
@@ -133,7 +132,7 @@ export default class LoginController extends Component {
           <img className="bg" src={loginBG}></img>
           <div className="container">
               <p>Welcome!</p>
-              <p>Please select your indetity...</p>
+              <p>Please select your identity...</p>
               <div className="login">
                   <div className="select" onClick={this.handleCheck.bind(this,1)}>
                       Magic Circle Manager
@@ -144,7 +143,7 @@ export default class LoginController extends Component {
                       <span className="icon" style={{display: this.state.selItem == 2 ? "block" : "none"}}></span>
                   </div>
                   <div className="select" onClick={this.handleCheck.bind(this,3)}>
-                      Magic Circle BD
+                      Broker Dealer
                       <span className="icon" style={{display: this.state.selItem == 3 ? "block" : "none"}}></span>
                   </div>
                   <div className="select" onClick={this.handleCheck.bind(this,4)}>

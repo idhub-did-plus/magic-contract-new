@@ -18,7 +18,7 @@ class Issue extends Component {
         issued: false,
         tookenAddress:"",
         pid:"",
-        baseURL:"http://13.229.205.74:2006",
+        baseURL:process.env.REACT_APP_API_ROOT,
         params:{},
         partitionList:[],
         partitionIndex:"",
@@ -70,7 +70,7 @@ class Issue extends Component {
         return
       }
       let inst = await this.MyContract.at(this.state.tookenAddress)
-      await inst.IssuedByPartition(
+      await inst.issueByPartition(
         partition,
         receiver,
         amount,

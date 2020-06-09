@@ -29,7 +29,7 @@ class Deploy extends Component {
         symbol: "",
         decimal: 0,
         controllers: [],
-        baseURL:"http://13.229.205.74:2006",
+        baseURL:process.env.REACT_APP_API_ROOT,
         pid:"",
         dataIndex:"",
         deployedData:[],

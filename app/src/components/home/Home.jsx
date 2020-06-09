@@ -10,7 +10,7 @@ export default class Home extends Component {
     super(props);
     this.state = {
       selTab: 1,
-      baseURL:"http://13.229.205.74:2006",
+      baseURL:process.env.REACT_APP_API_ROOT,
       editingData:[],
       audit_passedData:[],
       deployedData:[]

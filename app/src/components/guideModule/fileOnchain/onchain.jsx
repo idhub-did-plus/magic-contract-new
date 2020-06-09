@@ -16,10 +16,11 @@ class Online extends Component {
     this.state = {
         onchain: false,
         fileName: "",
-        baseURL:"http://13.229.205.74:2006",
+        baseURL:process.env.REACT_APP_API_ROOT,
         params:{},
         pid:"",
-        fileList:[]
+        fileList:[],
+        tookenAddress:""
     };
     this.fileSub = this.fileSub.bind(this);
   }
@@ -60,8 +61,49 @@ class Online extends Component {
       }
       //获取文件列表
       this.getFileList(pid);
-
+      
+      //获取部署的token地址
+      // console.log("仓库获取部署的token列表",this.props.drizzle.store.getState().deployedTokens)
+      let tookenAddr = this.props.drizzle.store.getState().deployedTokens;
+      if(tookenAddr.length!=0){
+        this.setState({
+          tookenAddress:tookenAddr[0].contractAddress
+        })
+      }else{
+        if(type == "deployed"){
+            //对已部署ST,获取合约地址
+        this.getDeployedData(index,type);
+        }
+      }
+      
       console.log(this.props)
+  }
+  async getDeployedData(index,type){
+    try {
+      //入库后传pid
+      let url = this.state.baseURL+"/issue_project/list?status="+type;
+
+      let response = await fetch(url, {
+        credentials: 'include',
+        method: 'GET'
+      })
+      let json = response.json() // parses response to JSON
+      json.then(res=>{
+          if(res.success){
+              this.setState({
+                tookenAddress:res.data[index].deployedToken.contractAddress,
+                issueByPartitionOrNot:res.data[index].tokenConfig==null||res.data[index].tokenConfig.partitions==null?false:true
+              })
+              
+          }else{
+              console.log(type+"失败")
+          }
+        })
+    } catch (err) {
+      alert(err);
+    } finally {
+
+    }
   }
   handleChange(e){
     //file input onChange处理方法
@@ -136,8 +178,57 @@ class Online extends Component {
   
       }
   }
-  async getURL(fileId,index){
-    let url = this.state.baseURL+"/material/material_stream_id?id="+fileId;
+  // 获取文件流
+  // async getURL(fileId,index){
+  //   let url = this.state.baseURL+"/material/material_stream_id?id="+fileId;
+  //   try {
+  //       let response = await fetch(url, {
+  //         credentials: 'include',
+  //         method: 'GET'
+  //       })
+  //       let json = response.json() // parses response to JSON
+  //       json.then(res=>{
+  //         if(res.success){
+  //             console.log("获取URL成功",res)
+  //             var uri = "";
+  //           //得到后上链
+  //           //this.onChain(uri,index)
+  //         }else{ 
+  //             console.log("获取URL失败")
+  //         }
+  //       })
+  //     } catch (err) {
+  //       alert(err);
+  //     } finally {
+  
+  //     }
+  // }
+  async onChain(fileId,index){
+      var MyContract = contract(ERC1400)
+      this.MyContract = MyContract;
+      let web3 = this.props.drizzle.web3;
+      
+      this.MyContract.setProvider(web3.currentProvider);
+      this.MyContract.defaults({
+        from: this.props.drizzleState.accounts[0]
+      });
+
+      var name = this.state.fileList[index].name;
+      var url = this.state.baseURL+"/material/material_stream_id?id="+fileId;
+      var hash = this.state.fileList[index].hash;
+      name = web3.utils.sha3(name);
+      hash = web3.utils.sha3(name);
+      
+      console.log(name,url,hash,this.state.tookenAddress)
+      
+      let inst = await this.MyContract.at(this.state.tookenAddress)
+      await inst.setDocument(name,url,hash).then(()=>{
+          //调接口存储发行信息
+          this.onChainTime();
+      });
+  }
+  async onChainTime(){
+    let url = this.state.baseURL+"/material/onchain?pid="+this.state.pid;
     try {
         let response = await fetch(url, {
           credentials: 'include',
@@ -146,12 +237,10 @@ class Online extends Component {
         let json = response.json() // parses response to JSON
         json.then(res=>{
           if(res.success){
-              console.log("获取URL成功",res.data)
-              var uri = "";
-              //得到后上链
-            //   this.onChain(uri,index)
+              console.log("tiem成功",res.data)
+              this.getFileList(this.state.pid)
           }else{ 
-              console.log("获取URL失败")
+              console.log("time失败")
           }
         })
       } catch (err) {
@@ -159,32 +248,6 @@ class Online extends Component {
       } finally {
   
       }
-  }
-  async onChain(uri,index){
-      //调用上链合约 成功后调用onchain接口
-      var MyContract = contract(ERC1400)
-      this.utils = this.props.drizzle.web3.utils;
-      this.MyContract = MyContract;
-      let web3 = this.props.drizzle.web3;
-      this.MyContract.setProvider(web3.currentProvider);
-
-      var name = this.state.fileList[index].name;
-      var url = uri;
-      var hash = this.state.fileList[index].hash;
-
-    //成功后 调用this.getFileList(this.state.pid);更新
-    //   let inst = await this.MyContract.at(this.state.tookenAddress)
-    //   console.log(inst)
-    //   await inst.setDocument(
-    //     name,
-    //     uri,
-    //     hash,
-    //     { from: this.props.drizzleState.accounts[0] }).then(()=>{
-    //       //调接口存储发行信息
-    //       this.saveIssue(partition,amount,receiver)
-    //     });
-
-      return;
   }
   render(){
       return (
@@ -217,7 +280,7 @@ class Online extends Component {
                                         <div className="td">2020.05.30  23:45:45</div>
                                         <div className="td">
                                             <div className="on" style={{display: item.onchain?"block":"none"}}>已上链</div>
-                                            <div className="un" onClick={this.getURL.bind(this,item.id,index)} style={{display: item.onchain?"none":"block",cursor:'pointer'}}>上链</div>
+                                            <div className="un" onClick={this.onChain.bind(this,item.id,index)} style={{display: item.onchain?"none":"block",cursor:'pointer'}}>上链</div>
                                         </div>
                                     </div>
                                     )

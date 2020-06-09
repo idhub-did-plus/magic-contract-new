@@ -47,7 +47,7 @@ class InformRegister extends Component {
         phone: "",
         email: "",
         pid: "",
-        baseURL:"http://13.229.205.74:2006",
+        baseURL:process.env.REACT_APP_API_ROOT,
         showData:[],
         type:"",
         params:{},

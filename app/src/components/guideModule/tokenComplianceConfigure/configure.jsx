@@ -31,7 +31,7 @@ class Configure extends Component {
         or: [],
         tookenAddr:"",
         params:{},
-        baseURL:"http://13.229.205.74:2006"
+        baseURL:process.env.REACT_APP_API_ROOT
     };
     this.handleAddAnd = this.handleAddAnd.bind(this);
     this.handleAddOr = this.handleAddOr.bind(this);
@@ -112,14 +112,14 @@ class Configure extends Component {
     })
         
   }
-  Configure(){
+  async Configure(){
     //默认服务地址合规配置
-    // this.contracts = this.props.drizzle.contracts;
+    this.contracts = this.props.drizzle.contracts;
     // this.utils = this.props.drizzle.web3.utils;
 
     // Get the contract ABI
     // const abi = this.contracts["ComplianceConfiguration"].abi;
-    // const address = this.contracts["ComplianceConfiguration"].address;
+    const address = this.contracts["ComplianceConfiguration"].address;
     // var web3 = this.props.drizzle.web3;
     // var ComplianceConfiguration = new web3.eth.Contract(abi,address);
 
@@ -144,6 +144,14 @@ class Configure extends Component {
         alert("Please enter configuration")
         return
     }
+    // let inst = await this.MyContract.at(address)
+    // await inst.setConfiguration(
+    // contractAddr,
+    // configuration
+    // ).then((result)=>{
+    //     console.log(result)
+    // });
+    
     this.MyContract.deployed().then(function(instance){
         return instance.setConfiguration(contractAddr,configuration);
     })
