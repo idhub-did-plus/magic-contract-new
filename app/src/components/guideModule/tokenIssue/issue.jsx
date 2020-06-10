@@ -69,6 +69,7 @@ class Issue extends Component {
         alert("input correct partition please!")
         return
       }
+      console.log(partition,amount,receiver);
       let inst = await this.MyContract.at(this.state.tookenAddress)
       await inst.issueByPartition(
         partition,
@@ -83,7 +84,7 @@ class Issue extends Component {
       return;
     }else{
       let inst = await this.MyContract.at(this.state.tookenAddress)
-      await inst.IssuedByPartition(
+      await inst.issueByPartition(
         receiver,
         amount,
         "0x0000",
@@ -170,6 +171,7 @@ class Issue extends Component {
       let json = response.json() // parses response to JSON
       json.then(res=>{
           if(res.success){
+            console.log(res.data[index])
               this.setState({
                 tookenAddress:res.data[index].deployedToken.contractAddress,
                 issueByPartitionOrNot:res.data[index].tokenConfig==null||res.data[index].tokenConfig.partitions==null?false:true
@@ -349,11 +351,11 @@ class Issue extends Component {
                             </div>
                             <div className="informRow">
                                 <label htmlFor="amount">Amount: </label>
-                                <input ref={(el)=>this.amount = el} type="text" id="amount"/>
+                                <input ref={el=>this.amount = el} type="text" id="amount"/>
                             </div>
                             <div className="informRow">
                                 <label htmlFor="receiver">Receiver address:</label>
-                                <input ref={(el)=>this.receiver = el} type="text" id="receiver" defaultValue="0x08229c18a228989ce016c37fEEB1F875Bab0b4C8"/>
+                                <input ref={el=>this.receiver = el} type="text" id="receiver"/>
                             </div>
                         </form>
                         <div className="submit" onClick={this.handleIssue}>Submit</div>

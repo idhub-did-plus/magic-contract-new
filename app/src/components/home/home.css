@@ -46,7 +46,7 @@
 }
 .second .content .listItem{
   width: 29%;
-  min-width: 310px;
+  min-width: 360px;
   height: 190px;
   background-color: pink;
   float: left;

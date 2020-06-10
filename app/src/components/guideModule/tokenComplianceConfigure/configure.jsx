@@ -114,16 +114,6 @@ class Configure extends Component {
   }
   async Configure(){
     //默认服务地址合规配置
-    this.contracts = this.props.drizzle.contracts;
-    // this.utils = this.props.drizzle.web3.utils;
-
-    // Get the contract ABI
-    // const abi = this.contracts["ComplianceConfiguration"].abi;
-    const address = this.contracts["ComplianceConfiguration"].address;
-    // var web3 = this.props.drizzle.web3;
-    // var ComplianceConfiguration = new web3.eth.Contract(abi,address);
-
-    // ComplianceConfiguration.setProvider(web3.currentProvider);
     var MyContract = contract(ComplianceConfiguration)
     this.utils = this.props.drizzle.web3.utils;
     this.MyContract = MyContract;
@@ -144,43 +134,36 @@ class Configure extends Component {
         alert("Please enter configuration")
         return
     }
-    // let inst = await this.MyContract.at(address)
-    // await inst.setConfiguration(
-    // contractAddr,
-    // configuration
-    // ).then((result)=>{
-    //     console.log(result)
-    // });
     
     this.MyContract.deployed().then(function(instance){
         return instance.setConfiguration(contractAddr,configuration);
     })
-    .then(function(result){
-        console.log(result)
+    .then(function(value){
+        if(value.receipt.status){
+            alert("configure successful")
+        }else{
+            alert("configure failed")
+        }
+        console.log(value)
     })
     .catch(function(err){
         console.log("Error:", err.message);
     });
 
-    // ComplianceConfiguration.methods.setConfiguration(contractAddr,configuration).send({
-    //     from: this.props.drizzleState.accounts[0],
-    //     gas: 3000000
-    // }).then(function(receipt){
-    //     console.log(receipt)
-    // });
+    //合规配置后做控制权转移
+    
   }
   Register(){
-    //合规服务注册
-    this.contracts = this.props.drizzle.contracts;
+    // 合规服务注册
+    var MyContract = contract(ComplianceServiceRegistry)
     this.utils = this.props.drizzle.web3.utils;
-
-    // Get the contract ABI
-    const abi = this.contracts["ComplianceServiceRegistry"].abi;
-    const address = this.contracts["ComplianceServiceRegistry"].address;
-    var web3 = this.props.drizzle.web3;
-    var ComplianceServiceRegistry = new web3.eth.Contract(abi,address);
-    
-    ComplianceServiceRegistry.setProvider(web3.currentProvider);
+    this.MyContract = MyContract;
+    let web3 = this.props.drizzle.web3;
+    this.MyContract.setProvider(web3.currentProvider);
+    this.MyContract.defaults({
+        from : this.props.drizzleState.accounts[0],
+        gas: 300000
+      });
     
     var contractAddr = this.addr.innerText;
     var configuration = this.personalise.value; 
@@ -197,12 +180,16 @@ class Configure extends Component {
         alert("Please enter the address type")
         return
     }
-    ComplianceServiceRegistry.methods.register(contractAddr,configuration).send({
-        from: this.props.drizzleState.accounts[0],
-        gas: 3000000
-    }).then(function(receipt){
-        // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
-        console.log(receipt)
+    console.log(contractAddr,configuration)
+
+    this.MyContract.deployed().then(function(instance){
+        return instance.register(contractAddr,configuration);
+    })
+    .then(function(result){
+        console.log(result)
+    })
+    .catch(function(err){
+        console.log("Error:", err.message);
     });
     
   }
@@ -299,6 +286,34 @@ class Configure extends Component {
     //     from: this.props.drizzleState.accounts[0]
     // }).then(console.log)
   }
+  async getConfigure(addr){
+    var MyContract = contract(ComplianceConfiguration)
+    this.utils = this.props.drizzle.web3.utils;
+    this.MyContract = MyContract;
+    let web3 = this.props.drizzle.web3;
+    this.MyContract.setProvider(web3.currentProvider);
+    this.MyContract.defaults({
+        from : this.props.drizzleState.accounts[0]
+      });
+
+      if(!this.utils.isAddress(addr)){
+        alert("Please deploy the contract first")
+        return
+     }
+
+    this.MyContract.deployed().then(function(instance){
+        return instance.getConfiguration(addr);
+    })
+    .then((value)=>{
+        this.setState({
+            finalCondition:value
+        })
+    })
+    .catch(function(err){
+        console.log("Error:", err.message);
+    });
+
+  }
   async getDeployedData(index,type){
     try {
       //入库后传pid
@@ -311,6 +326,7 @@ class Configure extends Component {
       let json = response.json() // parses response to JSON
       json.then(res=>{
           if(res.success){
+            this.getConfigure(res.data[index].deployedToken.contractAddress);
               this.setState({
                 tookenAddr:res.data[index].deployedToken.contractAddress
               })

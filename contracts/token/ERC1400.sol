@@ -794,8 +794,10 @@ contract ERC1400 is IERC1400,IERC20  {
   * [NOT MANDATORY FOR ERC1400 STANDARD]
   * @dev Set list of token controllers.
   * @param _operators Controller addresses.
+  * onlyOwner
   */
-  function setControllers(address[] calldata _operators) external onlyOwner {
+
+  function setControllers(address[] calldata _operators) external {
     _setControllers(_operators);
   }
 

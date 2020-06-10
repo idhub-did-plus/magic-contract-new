@@ -1,0 +1,55 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.changeBox{
+    display: flex;
+    justify-content: flex-start;
+}
+.changeBox .contentBox{
+    width: 100%;
+    min-height: 700px;
+    background:rgba(244,246,252,1);
+    padding: 30px;
+    padding-bottom: 40px;
+    color:#000;
+}
+.changeBox .contentBox .title{
+    padding-left: 15px;
+    border-left: 3px solid rgba(51,129,255,1);
+    margin-bottom: 20px;
+    color:rgba(90,104,114,1);
+    font-size: 18px;
+    font-weight: 400;
+}
+.changeBox .contentBox .article{
+    width: 100%;
+    background:rgba(255,255,255,1);
+    box-shadow:0px 2px 12px 0px rgba(228,233,247,1);
+    border-radius:8px;
+    margin-bottom: 20px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 50px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    min-width: 950px;
+}
+.changeBox .contentBox .article div{
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(90,104,114,1);
+    margin-left: 10px;
+}
+.changeBox .contentBox .article p {
+    width: 120px;
+    height: 38px;
+    line-height: 38px;
+    background: linear-gradient(129deg,rgba(111,178,255,1) 0%,rgba(9,95,255,1) 100%);
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    color: white;
+    margin-left: 50px;
+}

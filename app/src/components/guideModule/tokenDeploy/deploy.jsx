@@ -36,7 +36,8 @@ class Deploy extends Component {
         type:"",
         partitions:[],
         partiName:"",
-        identifier:""
+        identifier:"",
+        agentIdentity:""
     };
     this.addToList = this.addToList.bind(this);
     this.deployCommon = this.deployCommon.bind(this);
@@ -58,6 +59,7 @@ class Deploy extends Component {
       var pidParams = this.props.match.params.pid;
       
       if(type != "new"){
+        this.getAgentIdentity(index,type);
         this.setState({
             pid:pid,
             dataIndex:index,
@@ -105,7 +107,8 @@ class Deploy extends Component {
                   symbol:res.data[index].deployedToken.symbol,
                   decimal:res.data[index].deployedToken.decimals,
                   partitions:!res.data[index].tokenConfig||!res.data[index].tokenConfig.partitions?[]:res.data[index].tokenConfig.partitions,
-                  index:res.data[index].tokenConfig==null||res.data[index].tokenConfig.partitions==null?"1":"2"
+                  index:res.data[index].tokenConfig==null||res.data[index].tokenConfig.partitions==null?"1":"2",
+                  agentIdentity:res.data[index].agentIdentity
               })
               
           }else{
@@ -117,6 +120,33 @@ class Deploy extends Component {
     } finally {
 
     }
+}
+async getAgentIdentity(index,type){
+  try {
+    //入库后传pid
+    let url = this.state.baseURL+"/issue_project/list?status="+type;
+
+    let response = await fetch(url, {
+      credentials: 'include',
+      method: 'GET'
+    })
+    let json = response.json() // parses response to JSON
+    json.then(res=>{
+        if(res.success){
+          console.log(res.data[index])
+            this.setState({
+                agentIdentity:res.data[index].agentIdentity
+            })
+            
+        }else{
+            console.log(type+"失败")
+        }
+      })
+  } catch (err) {
+    alert(err);
+  } finally {
+
+  }
 }
 handleChange(key,e){
   //处理react input text的onChange方法
@@ -177,17 +207,19 @@ handleChange(key,e){
     }
     let web3 = this.props.drizzle.web3;
     this.MyContract.setProvider(web3.currentProvider);
+    var controllers = [this.props.drizzleState.accounts[0],this.state.agentIdentity];
+    console.log(controllers);
     this.MyContract.new(
         this.cName.value,
         this.cSymbol.value, 
         this.utils.toBN(this.cDecimal.value),
-        this.state.controllers,
+        controllers,
         this.props.drizzle.contracts.ComplianceServiceRegistry.address, { from: this.props.drizzleState.accounts[0] }).then(inst => {
         let payload = {
             name: this.cName.value,
             symbol: this.cSymbol.value,
             decimals: this.utils.toBN(this.cDecimal.value),
-            controllers: this.state.controllers,
+            controllers: controllers,
             registryAddress: this.props.drizzle.contracts.ComplianceServiceRegistry.address,
             contractAddress: inst.address,
             deployAccount: this.props.drizzleState.accounts[0],
@@ -209,21 +241,25 @@ handleChange(key,e){
         alert("Please add to the list first")
         return
     }
-    console.log(this.state.partiList);
+    // console.log(this.state.partiList);
     let web3 = this.props.drizzle.web3;
     this.MyContract.setProvider(web3.currentProvider);
+    var controllers = [this.props.drizzleState.accounts[0],this.state.agentIdentity];
+    console.log(controllers);
+    console.log(this.state.name,this.state.symbol)
+    console.log(typeof(Number(this.state.decimal)));
     this.MyContract.new(
         this.state.name,
         this.state.symbol,
-        this.utils.toBN(this.state.decimal),
-        this.state.controllers,
+        Number(this.state.decimal),
+        controllers,
         this.props.drizzle.contracts.ComplianceServiceRegistry.address, { from: this.props.drizzleState.accounts[0] }).then(inst => {
           //生成json数据
           let payload = {
             name: this.state.name,
             symbol: this.state.symbol,
-            decimals: this.utils.toBN(this.state.decimal),
-            controllers: this.state.controllers,
+            decimals: Number(this.state.decimal),
+            controllers: controllers,
             registryAddress: this.props.drizzle.contracts.ComplianceServiceRegistry.address,
             contractAddress: inst.address,
             deployAccount: this.props.drizzleState.accounts[0],
@@ -232,13 +268,7 @@ handleChange(key,e){
           this.props.drizzle.store.dispatch(deployFinished1400(payload))
           this.save(payload,true);
           
-        }).then(
-            //部署成功
-              setTimeout(()=>{
-                console.log(this.props.drizzleState.deployedTokens)
-              },10000)
-          )
-      return;
+        })
   }
 //   调用接口存储已部署ST
   async save(token,hasPartition) {
@@ -251,7 +281,7 @@ handleChange(key,e){
         alert("pid Not Found");
         return;
       }
-
+      console.log(token,hasPartition)
     try {
       let response = await fetch(url, {
         body: JSON.stringify(token), // must match 'Content-Type' header
@@ -268,13 +298,13 @@ handleChange(key,e){
       let json = response.json() // parses response to JSON
       json.then(res=>{
         if(res.success){
-            console.log("save部署成功")
+            alert("部署成功")
             if(hasPartition==true){
               //存储partitionList
               let config = {
                 name: this.state.name,
                 symbol: this.state.symbol,
-                decimals: this.utils.toBN(this.state.decimal),
+                decimals: Number(this.state.decimal),
                 partitions:this.state.partiList
               }
               this.saveTokenConfig(config);
@@ -302,6 +332,7 @@ handleChange(key,e){
       alert("pid Not Found");
       return;
     }
+    console.log(config)
 
   try {
     let response = await fetch(url, {

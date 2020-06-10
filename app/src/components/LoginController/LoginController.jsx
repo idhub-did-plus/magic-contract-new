@@ -43,11 +43,13 @@ export default class LoginController extends Component {
   async login(event) {
     
     if(this.state.selItem == 1){
-      this.claim = "complianceManager"
+      this.claim = "complianceManager";
+      window.localStorage.setItem("claim","complianceManager");
     }else if(this.state.selItem == 2){
       this.claim = "tokenIssuer"
     }else if(this.state.selItem == 3){
       this.claim = "BD"
+      window.localStorage.setItem("claim","BD");
     }else if(this.state.selItem == 4){
       this.claim = "Supervisor"
     }else{
@@ -64,7 +66,10 @@ export default class LoginController extends Component {
       
       let json = await this.request(identity, timestamp, this.claim, signature);
       if(json != undefined && json.success){
+        alert("login success")
         this.props.drizzle.store.dispatch(loginFinished(json)); 
+      }else{
+        alert("login failed")
       }
     });
 

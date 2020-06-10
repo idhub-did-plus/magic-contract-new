@@ -10,7 +10,8 @@ class Guide extends Component {
         path: "/register",
         index:"",
         type:"",
-        pid:""
+        pid:"",
+        claim: window.localStorage["claim"]
       };
   }
   componentWillMount(){
@@ -33,7 +34,7 @@ class Guide extends Component {
     
   }
   disabled(){
-    alert("Please review first");
+    alert("Please audit first");
   }
   render(){
     let pathRegister = {pathname:"/register/" + this.state.index+ "/" + this.state.type+ "/" + this.state.pid}
@@ -41,30 +42,45 @@ class Guide extends Component {
     let pathConfig = {pathname:"/configure/" + this.state.index+ "/" + this.state.type+ "/" + this.state.pid}
     let pathIssue = {pathname:"/issue/" + this.state.index+ "/" + this.state.type+ "/" + this.state.pid}
     let pathDisclosure = {pathname:"/disclosure/" + this.state.index+ "/" + this.state.type+ "/" + this.state.pid}
+    let pathChangeOwner = {pathname:"/changeOwner/" + this.state.index+ "/" + this.state.type+ "/" + this.state.pid}
     
     return (
         <div className="guide">
             <ul>
-              {/* {
-                this.state.type=="new"?(
-                  <div>
-                    <NavLink to="/register/index/new/pid" exact><li className={this.state.path == "/re" ? "active" : ""}>Information Registration</li></NavLink>
-                    <NavLink to="/deploy/index/new/pid" exact><li className={this.state.path == "/de" ? "active" : ""}>Deploy Contract</li></NavLink>
-                    <NavLink to="/configure/index/new/pid" exact><li className={this.state.path == "/co" ? "active" : ""}>Compliance Configuration</li></NavLink>
-                    <NavLink to="/issue/index/new/pid"><li className={this.state.path == "/is" ? "active" : ""}>Security Tokenization</li></NavLink>
-                    <NavLink to="/disclosure/index/new/pid"><li className={this.state.path == "/di" ? "active" : ""}>Onchain Disclosure</li></NavLink>
-                  </div>
-                ):(
+              {
+                this.state.claim=="BD"&&(this.state.type=="audit_passed"||this.state.type=="deployed")?(
                   <div>
                     <NavLink to={pathRegister} exact><li className={this.state.path == "/re" ? "active" : ""}>Information Registration</li></NavLink>
-                    <NavLink to={pathDeploy} exact><li className={this.state.path == "/de" ? "active" : ""}>Deploy Contract</li></NavLink>
-                    <NavLink to={pathConfig} exact><li className={this.state.path == "/co" ? "active" : ""}>Compliance Configuration</li></NavLink>
                     <NavLink to={pathIssue}><li className={this.state.path == "/is" ? "active" : ""}>Security Tokenization</li></NavLink>
                     <NavLink to={pathDisclosure}><li className={this.state.path == "/di" ? "active" : ""}>Onchain Disclosure</li></NavLink>
                   </div>
+                ):(
+                  this.state.claim=="complianceManager"&&(this.state.type=="audit_passed"||this.state.type=="deployed")?(
+                    <div>
+                    <NavLink to={pathRegister} exact><li className={this.state.path == "/re" ? "active" : ""}>Audit</li></NavLink>
+                    <NavLink to={pathDeploy} exact><li className={this.state.path == "/de" ? "active" : ""}>Deploy Contract</li></NavLink>
+                    <NavLink to={pathConfig} exact><li className={this.state.path == "/co" ? "active" : ""}>Compliance Configuration</li></NavLink>
+                    <NavLink to={pathChangeOwner} exact><li className={this.state.path == "/ch" ? "active" : ""}>Owner Change</li></NavLink>
+                  </div>
+                  ):(
+                    this.state.claim=="BD"&&(this.state.type=="editing"||this.state.type=="ready_for_audit"||this.state.type=="audit_denied")?(
+                      <div>
+                        <NavLink to="/register/index/new/pid" exact><li className={this.state.path == "/re" ? "active" : ""}>Information Registration</li></NavLink>
+                        <li className="disabled" onClick={this.disabled.bind(this)}>Security Tokenization</li>
+                        <li className="disabled" onClick={this.disabled.bind(this)}>Onchain Disclosure</li>
+                      </div>
+                    ):(
+                      <div>
+                        <NavLink to="/register/index/new/pid" exact><li className={this.state.path == "/re" ? "active" : ""}>Audit</li></NavLink>
+                        <li className="disabled" onClick={this.disabled.bind(this)}>Deploy Contract</li>
+                        <li className="disabled" onClick={this.disabled.bind(this)}>Compliance Configuration</li>
+                        <li className="disabled" onClick={this.disabled.bind(this)}>Owner Change</li>
+                      </div>
+                    )
+                  )
                 )
-              } */}
-              {
+              }
+              {/* {
                   this.state.type=="audit_passed"||this.state.type=="deployed"?(
                     <div>
                     <NavLink to={pathRegister} exact><li className={this.state.path == "/re" ? "active" : ""}>Information Registration</li></NavLink>
@@ -82,7 +98,7 @@ class Guide extends Component {
                       <li className="disabled" onClick={this.disabled.bind(this)}>Onchain Disclosure</li>
                     </div>
                   )
-              }
+              } */}
                 
             </ul>
         </div>

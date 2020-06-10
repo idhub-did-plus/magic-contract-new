@@ -20,7 +20,8 @@ class Online extends Component {
         params:{},
         pid:"",
         fileList:[],
-        tookenAddress:""
+        tookenAddress:"",
+        controllers:[]
     };
     this.fileSub = this.fileSub.bind(this);
   }
@@ -89,10 +90,12 @@ class Online extends Component {
       })
       let json = response.json() // parses response to JSON
       json.then(res=>{
+        console.log(res.data[index])
           if(res.success){
               this.setState({
                 tookenAddress:res.data[index].deployedToken.contractAddress,
-                issueByPartitionOrNot:res.data[index].tokenConfig==null||res.data[index].tokenConfig.partitions==null?false:true
+                issueByPartitionOrNot:res.data[index].tokenConfig==null||res.data[index].tokenConfig.partitions==null?false:true,
+                controllers:res.data[index].deployedToken.controllers
               })
               
           }else{
@@ -130,12 +133,12 @@ class Online extends Component {
         let json = response.json() // parses response to JSON
         json.then(res=>{
             if(res.success){
-                console.log("上传成功")
+                alert("upload success")
                 this.getFileList(this.state.pid);
                 //返回上传时间 返回http地址准备上链 1400 更新列表 /material/retrieve_materials?pid=
                 //若返回状态onchain为false点击列表中上链按钮上链
             }else{
-                console.log("上传失败")
+                console.log("upload fail")
             }
         })
     } catch (err) {
@@ -178,54 +181,41 @@ class Online extends Component {
   
       }
   }
-  // 获取文件流
-  // async getURL(fileId,index){
-  //   let url = this.state.baseURL+"/material/material_stream_id?id="+fileId;
-  //   try {
-  //       let response = await fetch(url, {
-  //         credentials: 'include',
-  //         method: 'GET'
-  //       })
-  //       let json = response.json() // parses response to JSON
-  //       json.then(res=>{
-  //         if(res.success){
-  //             console.log("获取URL成功",res)
-  //             var uri = "";
-  //           //得到后上链
-  //           //this.onChain(uri,index)
-  //         }else{ 
-  //             console.log("获取URL失败")
-  //         }
-  //       })
-  //     } catch (err) {
-  //       alert(err);
-  //     } finally {
-  
-  //     }
-  // }
   async onChain(fileId,index){
+    //调用文件上链合约
       var MyContract = contract(ERC1400)
       this.MyContract = MyContract;
       let web3 = this.props.drizzle.web3;
       
       this.MyContract.setProvider(web3.currentProvider);
       this.MyContract.defaults({
-        from: this.props.drizzleState.accounts[0]
+        from: this.props.drizzleState.accounts[0],
+        gas: 300000000
       });
 
       var name = this.state.fileList[index].name;
       var url = this.state.baseURL+"/material/material_stream_id?id="+fileId;
       var hash = this.state.fileList[index].hash;
       name = web3.utils.sha3(name);
-      hash = web3.utils.sha3(name);
+      hash = web3.utils.sha3(hash);
       
       console.log(name,url,hash,this.state.tookenAddress)
       
       let inst = await this.MyContract.at(this.state.tookenAddress)
+      // console.log(this.state.controllers)
+      // await inst.setControllers(this.state.controllers).then(()=>{
+      //   //调接口存储发行信息
+      //   console.log("设置controller成功")
+      // });
       await inst.setDocument(name,url,hash).then(()=>{
           //调接口存储发行信息
           this.onChainTime();
       });
+      // await inst.controllers().then((value)=>{
+      //     //调接口存储发行信息
+      //     // this.onChainTime();
+      //     console.log(value)
+      // });
   }
   async onChainTime(){
     let url = this.state.baseURL+"/material/onchain?pid="+this.state.pid;
@@ -237,10 +227,10 @@ class Online extends Component {
         let json = response.json() // parses response to JSON
         json.then(res=>{
           if(res.success){
-              console.log("tiem成功",res.data)
+              alert("onchain success",res.data)
               this.getFileList(this.state.pid)
           }else{ 
-              console.log("time失败")
+              alert("onchain failed")
           }
         })
       } catch (err) {

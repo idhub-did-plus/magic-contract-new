@@ -9,7 +9,7 @@ contract ComplianceConfiguration is Ownable{
         return configuations[token];
     }
     
-    function setConfiguration(address token, string memory configuation) public onlyOwner {
+    function setConfiguration(address token, string memory configuation) public {
         configuations[token] = configuation;
     }
 }

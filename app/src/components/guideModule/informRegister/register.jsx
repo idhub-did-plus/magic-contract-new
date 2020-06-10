@@ -51,12 +51,14 @@ class InformRegister extends Component {
         showData:[],
         type:"",
         params:{},
-        fileList:[]
+        fileList:[],
+        claim: window.localStorage["claim"],
+        comment:""
     };
     this.cancelOptionBox = this.cancelOptionBox.bind(this);
     this.informSubmit = this.informSubmit.bind(this);
-    this.review = this.review.bind(this);
     this.projectSubmit = this.projectSubmit.bind(this);
+    this.readyFor =  this.readyFor.bind(this);
   }
   async handle_Change(key,e){
       //file input 处理方法
@@ -67,7 +69,6 @@ class InformRegister extends Component {
       })
       if(key=="fileName4"){
           //存储ICON
-          console.log("调接口传icon")
           var iconFormData = new FormData();
           iconFormData.append("file",e.target.files[0])
           try {
@@ -86,9 +87,9 @@ class InformRegister extends Component {
             let json = response.json() // parses response to JSON
             json.then(res=>{
                 if(res.success){
-                    console.log("上传ICON成功")
+                    alert("upload success")
                 }else{
-                    console.log("上传ICON失败")
+                    alert("upload failed")
                 }
             })
         } catch (err) {
@@ -200,6 +201,7 @@ class InformRegister extends Component {
         let json = response.json() // parses response to JSON
         json.then(res=>{
             if(res.success){
+                // console.log(res.data[index])
                 this.setState({
                     showData:res.data[index]
                 })
@@ -350,7 +352,7 @@ class InformRegister extends Component {
             if(this.state.pid){
                 url += ("?pid="+this.state.pid)
             }else{
-                alert("Not Found PID , Please submit project details first");
+                alert("pid not found , Please submit project details first");
                 return;
             }
       let response = await fetch(url, {
@@ -365,9 +367,9 @@ class InformRegister extends Component {
       let json = response.json() // parses response to JSON
       json.then(res=>{
         if(res.success){
-            console.log("issInfo成功")
+            alert("submit sucessful")
         }else{
-            console.log("issInfo失败")
+            alert("submit failed")
         }
       })
     } catch (err) {
@@ -419,6 +421,7 @@ class InformRegister extends Component {
       let json = response.json() 
       json.then(res=>{
         if(res.success){
+            alert("submit sucessful")
             console.log("pid",res.data)
             //存返回的pid值
             this.setState({
@@ -428,7 +431,7 @@ class InformRegister extends Component {
           let pid = this.props.drizzle.store.getState().pid;
           console.log("仓库取pid",pid)
         }else{
-            console.log("存储项目详细信息失败")
+            alert("submit failed")
         }
       })
     } catch (err) {
@@ -437,8 +440,40 @@ class InformRegister extends Component {
 
     }
   }
+  //调用准备审核接口
+  async readyFor(){
+    if(!this.state.pid){
+        alert("PID Not Found , Please submit project details first");
+        return;
+    }
+  try {
+    //入库后传pid
+    let url = this.state.baseURL+"/issue_project/submit_to_audit"
+    if(this.state.pid){
+        url += ("?pid="+this.state.pid)
+    }
+
+    let response = await fetch(url, {
+      credentials: 'include',
+      method: 'GET'
+    })
+    let json = response.json() // parses response to JSON
+    json.then(res=>{
+        if(res.success){
+            alert("submit successful!")
+            this.props.history.push({pathname:"/"})
+        }else{
+            console.log("submit failed")
+        }
+      })
+  } catch (err) {
+    alert(err);
+  } finally {
+
+  }
+}
   //调用审核接口
-  async review(){
+  async review(boolean){
         if(!this.state.pid){
             alert("PID Not Found , Please submit project details first");
             return;
@@ -449,8 +484,8 @@ class InformRegister extends Component {
         if(this.state.pid){
             url += ("?pid="+this.state.pid)
         }
-        url += "&agree="+true;
-
+        url += "&agree="+boolean+"&comment="+this.state.comment;
+        console.log(url);
         let response = await fetch(url, {
           credentials: 'include',
           method: 'GET'
@@ -458,10 +493,10 @@ class InformRegister extends Component {
         let json = response.json() // parses response to JSON
         json.then(res=>{
             if(res.success){
-                alert("audit success!")
+                alert("audit successful!")
                 this.props.history.push({pathname:"/"})
             }else{
-                console.log("audit失败")
+                alert("audit failed")
             }
           })
       } catch (err) {
@@ -473,7 +508,7 @@ class InformRegister extends Component {
   fileSubmit(type){
       var fileType = type;
       if(!this.state.pid){
-          alert("PID Not Found , Please submit project details first");
+          alert("pid not found , Please submit project details first");
           return;
       }
     //生成各个文件的表单数据
@@ -509,9 +544,9 @@ class InformRegister extends Component {
             let json = response.json() // parses response to JSON
             json.then(res=>{
                 if(res.success){
-                    console.log("lagal成功")
+                    alert("Upload successful")
                 }else{
-                    console.log("lagal失败")
+                    alert("upload failed")
                 }
             })
         } catch (err) {
@@ -537,9 +572,9 @@ class InformRegister extends Component {
             let json = response.json() // parses response to JSON
             json.then(res=>{
                 if(res.success){
-                    console.log("market成功")
+                    alert("Upload successful")
                 }else{
-                    console.log("market失败")
+                    alert("upload failed")
                 }
             })
         } catch (err) {
@@ -565,9 +600,9 @@ class InformRegister extends Component {
             let json = response.json() // parses response to JSON
             json.then(res=>{
                 if(res.success){
-                    console.log("whitepaper成功")
+                    alert("Upload successful")
                 }else{
-                    console.log("whitepaper失败")
+                    alert("upload failed")
                 }
             })
         } catch (err) {
@@ -578,14 +613,19 @@ class InformRegister extends Component {
     }
   }
   render(){
-      const Asset = ["产权","债务","债券","艺术","房地产","基金","其他"];
-      const Judicial = ["美国","加拿大","亚洲","欧洲","澳大利亚","拉丁美洲","非洲","其他"];
-      const Partners = ["Yes","No"];
-      const RaiseBefore = ["Yes","No"];
-      const Steps = ["聘请证券律师","筹款的最终条款","准备了法律文件","准备了营销文件"];
-
-      
-      return (
+    //   const Asset = ["产权","债务","债券","艺术","房地产","基金","其他"];
+    //   const Judicial = ["美国","加拿大","亚洲","欧洲","澳大利亚","拉丁美洲","非洲","其他"];
+    //   const Partners = ["Yes","No"];
+    //   const RaiseBefore = ["Yes","No"];
+    //   const Steps = ["聘请证券律师","筹款的最终条款","准备了法律文件","准备了营销文件"];
+    
+    const Asset = ["property","debt","Bond","art","real estate","fund","other"];
+    const Judicial = ["USA","Canada","Asia","Europe","Australia","Latin America","Africa","other"];
+    const Partners = ["Yes","No"];
+    const RaiseBefore = ["Yes","No"];
+    const Steps = ["Hire Securities lawyer","Fundraising final terms","Prepared legal documents","Prepared marketing documents"];
+    
+    return (
         <div className="register">
           <div className="navig">
             <Header/>
@@ -598,7 +638,7 @@ class InformRegister extends Component {
                  <div className="titl">Project details</div>
                  <div>
                  {
-                     this.state.type=="new"?(
+                     this.state.type=="new"&&this.state.claim=="BD"?(
                         // 新建入口进入
                         <div>
                             <div className="content">
@@ -702,7 +742,7 @@ class InformRegister extends Component {
                         </div>
                      ):(
                         //从列表点击进入
-                        this.state.showData.length != "0"&&(this.state.type=="deployed"||this.state.type=="audit_passed")?(
+                        this.state.showData.length != "0"&&(this.state.type=="deployed"||this.state.type=="audit_passed"||this.state.type=="ready_for_audit")?(
                             //只做展示 不可编辑
                             <div>
                                 <div className="content">
@@ -762,7 +802,7 @@ class InformRegister extends Component {
                             </div>
                         ):(
                             //状态为editing 做展示 且可编辑
-                            this.state.showData.length != "0"&&this.state.type=="editing"?(
+                            this.state.showData.length != "0"&&this.state.type=="editing"&&this.state.claim=="BD"?(
                                 <div>
                                     <div className="content">
                                         <p></p>
@@ -975,7 +1015,7 @@ class InformRegister extends Component {
                  
                 {
                     //新建入口进入
-                    this.state.type=="new"?(
+                    this.state.type=="new"&&this.state.claim=="BD"?(
                         <div className="content">
                             {/* 上传文件1 */}
                             <div className="uploadRow">
@@ -1029,7 +1069,7 @@ class InformRegister extends Component {
                         </div>
                     ):(
                         //状态为edtiing
-                        this.state.type=="editing"?(
+                        this.state.type=="editing"&&this.state.claim=="BD"?(
                             <div className="content">
                                 {/* 上传文件1 */}
                                 <div className="uploadRow">
@@ -1098,7 +1138,7 @@ class InformRegister extends Component {
                                     <input type="text" id="description1" ref={el=>this.desc1=el} value={this.state.desc1||''} readOnly/>
                                     <label htmlFor="description1">Content description: </label>
                                 </div>
-                                <div className="fileSub" onClick={this.fileSubmit.bind(this,"lagal")} style={{display: this.state.type=="deployed"||this.state.type=="audit_passed"?"none":"block"}}>submit</div>
+                                <div className="fileSub" onClick={this.fileSubmit.bind(this,"lagal")} style={{display: this.state.type=="deployed"||this.state.type=="audit_passed"||this.state.type=="ready_for_audit"?"none":"block"}}>submit</div>
                                 <p></p>
                                 {/* 上传文件2 */}
                                 <div className="uploadRow">
@@ -1115,7 +1155,7 @@ class InformRegister extends Component {
                                     <input type="text" id="description2" ref={el=>this.desc2=el} value={this.state.desc2||''}  readOnly/>
                                     <label htmlFor="description2">Content description: </label>
                                 </div>
-                                <div className=" fileSub" onClick={this.fileSubmit.bind(this,"marketting")} style={{display: this.state.type=="deployed"||this.state.type=="audit_passed"?"none":"block"}}>submit</div>
+                                <div className=" fileSub" onClick={this.fileSubmit.bind(this,"marketting")} style={{display: this.state.type=="deployed"||this.state.type=="audit_passed"||this.state.type=="ready_for_audit"?"none":"block"}}>submit</div>
                                 <p></p>
                                 {/* 上传文件3 */}
                                 <div className="uploadRow">
@@ -1131,7 +1171,7 @@ class InformRegister extends Component {
                                     <input type="text" id="description3" ref={el=>this.desc3=el} value={this.state.desc3||''} readOnly/>
                                     <label htmlFor="description3">Content description: </label>
                                 </div>
-                                <div className="fileSub" onClick={this.fileSubmit.bind(this,"whitepaper")} style={{display: this.state.type=="deployed"||this.state.type=="audit_passed"?"none":"block"}}>submit</div>
+                                <div className="fileSub" onClick={this.fileSubmit.bind(this,"whitepaper")} style={{display: this.state.type=="deployed"||this.state.type=="audit_passed"||this.state.type=="ready_for_audit"?"none":"block"}}>submit</div>
                                 <p></p>
                             </div>
                         )
@@ -1139,7 +1179,7 @@ class InformRegister extends Component {
                 }
                 
                 {
-                    this.state.type=="new"?(
+                    this.state.type=="new"&&this.state.claim=="BD"?(
                         //新建入口进入
                         <div>
                             <div className="titl">Company Information</div>
@@ -1211,7 +1251,7 @@ class InformRegister extends Component {
                         </div>
                     ):(
                         //从首页列表点击进入
-                        this.state.showData.length!="0"&&(this.state.type=="deployed"||this.state.type=="audit_passed")?(
+                        this.state.showData.length!="0"&&(this.state.type=="deployed"||this.state.type=="audit_passed"||this.state.type=="ready_for_audit")?(
                             //只做展示 不可编辑
                             <div>
                                 <div className="titl">Company Information</div>
@@ -1282,7 +1322,7 @@ class InformRegister extends Component {
                                 <div className="infoSub" onClick={this.informSubmit} style={{display: this.state.type=="editing"||this.state.type=="new"?"block":"none"}}>Submit</div>
                             </div>
                         ):(
-                            this.state.showData.length != "0"&&this.state.type=="editing"?(
+                            this.state.showData.length != "0"&&this.state.type=="editing"&&this.state.claim=="BD"?(
                                 //做展示 且可编辑
                                 <div>
                                     <div className="titl">Company Information</div>
@@ -1358,65 +1398,65 @@ class InformRegister extends Component {
                                     <div className="titl">Company Information</div>
                                     <div className="content">
                                         <div className="informRow">
-                                            <input type="text" id="legalPerson" value={this.state.legalPerson} onChange={this.handleChange.bind(this,"legalPerson")}/>
+                                            <input type="text" id="legalPerson" value={this.state.legalPerson||''} onChange={this.handleChange.bind(this,"legalPerson")}/>
                                             <label htmlFor="legalPerson">Legal Entity Name: </label>
                                         </div>
                                         <div className="informRow">
-                                            <input type="text" id="CompRegNum" value={this.state.CompRegNum} onChange={this.handleChange.bind(this,"CompRegNum")}/>
+                                            <input type="text" id="CompRegNum" value={this.state.CompRegNum||''} onChange={this.handleChange.bind(this,"CompRegNum")}/>
                                             <label htmlFor="CompRegNum">Company Registration Number:</label>
                                         </div>
                                         <div className="informRow">
-                                            <input type="text" id="VAT" value={this.state.VAT} onChange={this.handleChange.bind(this,"VAT")}/>
+                                            <input type="text" id="VAT" value={this.state.VAT||''} onChange={this.handleChange.bind(this,"VAT")}/>
                                             <label htmlFor="VAT">VAT Registration Number:</label>
                                         </div>
                                         <div className="informRow">
-                                            <input type="text" id="webAddr" value={this.state.webAddr} onChange={this.handleChange.bind(this,"webAddr")}/>
+                                            <input type="text" id="webAddr" value={this.state.webAddr||''} onChange={this.handleChange.bind(this,"webAddr")}/>
                                             <label htmlFor="webAddr">Website address:</label>
                                         </div>
                                     </div>
                                     <div className="titl">Company Address</div>
                                     <div className="content">
                                         <div className="informRow">
-                                            <input type="text" id="country" value={this.state.country} onChange={this.handleChange.bind(this,"country")}/>
+                                            <input type="text" id="country" value={this.state.country||''} onChange={this.handleChange.bind(this,"country")}/>
                                             <label htmlFor="country">Country:</label>
                                         </div>
                                         <div className="informRow">
-                                            <input type="text" id="city" value={this.state.city} onChange={this.handleChange.bind(this,"city")}/>
+                                            <input type="text" id="city" value={this.state.city||''} onChange={this.handleChange.bind(this,"city")}/>
                                             <label htmlFor="city">City:</label>
                                         </div>
                                         <div className="informRow">
-                                            <input type="text" id="comAddr" value={this.state.comAddr} onChange={this.handleChange.bind(this,"comAddr")}/>
+                                            <input type="text" id="comAddr" value={this.state.comAddr||''} onChange={this.handleChange.bind(this,"comAddr")}/>
                                             <label htmlFor="comAddr">Address:</label>
                                         </div>
                                         <div className="informRow">
-                                            <input type="text" id="postalCode" value={this.state.postalCode} onChange={this.handleChange.bind(this,"postalCode")}/>
+                                            <input type="text" id="postalCode" value={this.state.postalCode||''} onChange={this.handleChange.bind(this,"postalCode")}/>
                                             <label htmlFor="postalCode">Postal Code:</label>
                                         </div>
                                         <div className="informRow">
-                                            <input type="text" id="establishCountry" value={this.state.establishCountry} onChange={this.handleChange.bind(this,"establishCountry")}/>
+                                            <input type="text" id="establishCountry" value={this.state.establishCountry||''} onChange={this.handleChange.bind(this,"establishCountry")}/>
                                             <label htmlFor="establishCountry">Country of Incorporation:</label>
                                         </div>
                                     </div>
                                     <div className="titl">Contact Person</div>
                                     <div className="content">
                                         <div className="informRow">
-                                            <input type="text" id="firstName" value={this.state.firstName} onChange={this.handleChange.bind(this,"firstName")}/>
+                                            <input type="text" id="firstName" value={this.state.firstName||''} onChange={this.handleChange.bind(this,"firstName")}/>
                                             <label htmlFor="firstName">Contact Person‘s First Name: </label>
                                         </div>
                                         <div className="informRow">
-                                            <input type="text" id="lastName" value={this.state.lastName} onChange={this.handleChange.bind(this,"lastName")}/>
+                                            <input type="text" id="lastName" value={this.state.lastName||''} onChange={this.handleChange.bind(this,"lastName")}/>
                                             <label htmlFor="lastName">Contact Person‘s Last Name:</label>
                                         </div>
                                         <div className="informRow">
-                                            <input type="text" id="position" value={this.state.position} onChange={this.handleChange.bind(this,"position")}/>
+                                            <input type="text" id="position" value={this.state.position||''} onChange={this.handleChange.bind(this,"position")}/>
                                             <label htmlFor="position">Contact Person‘s Title/Position:</label>
                                         </div>
                                         <div className="informRow">
-                                            <input type="text" id="phone" value={this.state.phone} onChange={this.handleChange.bind(this,"phone")}/>
+                                            <input type="text" id="phone" value={this.state.phone||''} onChange={this.handleChange.bind(this,"phone")}/>
                                             <label htmlFor="phone">Contact Person‘s Phone:</label>
                                         </div>
                                         <div className="informRow">
-                                            <input type="text" id="email" value={this.state.email} onChange={this.handleChange.bind(this,"email")}/>
+                                            <input type="text" id="email" value={this.state.email||''} onChange={this.handleChange.bind(this,"email")}/>
                                             <label htmlFor="email">Contact Person‘s Email:</label>
                                         </div>
                                     </div>
@@ -1433,24 +1473,27 @@ class InformRegister extends Component {
                         <div className="upload">
                             <img className="up" src={Upload} alt="上传图标" style={{display: !this.state.fileName4 ? "block" : "none"}}/>
                             <img className="file" src={file} alt="已上传图标" style={{display: !this.state.fileName4 ? "none" : "block"}}/>
-                            <input ref={el=>this.icon=el} type="file" id="file4" className="upInput" onChange={this.handle_Change.bind(this,"fileName4")}/>
+                            <input ref={el=>this.icon=el} type="file" id="file4" className="upInput" onChange={this.handle_Change.bind(this,"fileName4")} style={{display:this.state.type=="editing"||this.state.type=="new"?"block":"none"}}/>
                             <div className="fileName" style={{display: !this.state.fileName4 ? "none" : "block"}}>{this.state.fileName4}</div>
                         </div>
                         <label htmlFor="file4">Upload ICON:</label>
                     </div>
                  </div>
-                 <div className="submit audit" onClick={this.review} style={{display: this.state.type=="editing"||this.state.type=="new"?"block":"none"}}>Review</div>
+                 <div className="comment" style={{display: this.state.claim=="complianceManager"&&(this.state.type=="ready_for_audit")?"flex":"none"}}>
+                     {/* 审核批注 */}
+                    <div>Manager Comment: </div>
+                    <input type="text" value={this.state.comment} onChange={this.handleChange.bind(this,"comment")}/>
+                 </div>
+                 <div className="submit ready" onClick={this.readyFor} style={{display: this.state.claim=="BD"&&(this.state.type=="editing"||this.state.type=="new"||this.state.type=="audit_denied")?"block":"none"}}>Submit To Audit</div>
+                 <div className="submit audit" onClick={this.review.bind(this,true)} style={{display: this.state.claim=="complianceManager"&&(this.state.type=="ready_for_audit")?"block":"none"}}>Audit</div>
+                 <div className="submit deny" onClick={this.review.bind(this,false)} style={{display: this.state.claim=="complianceManager"&&(this.state.type=="ready_for_audit")?"block":"none"}}>Deny</div>
              </form>
           </div>
         </div>
     );
   }
 }
-// export default function Register(){
-//     return (
-//         <InformRegister/>
-//     );
-// }
+
 export default (props) => {
     return (
       <DrizzleContext.Consumer>
