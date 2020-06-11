@@ -64,7 +64,7 @@ class Guide extends Component {
                     <NavLink to={pathChangeOwner} exact><li className={this.state.path == "/ch" ? "active" : ""}>Owner Change</li></NavLink>
                   </div>
                   ):(
-                    this.state.claim=="BD"&&(this.state.type=="editing"||this.state.type=="ready_for_audit"||this.state.type=="audit_denied")?(
+                    this.state.claim=="BD"&&(this.state.type=="editing"||this.state.type=="ready_for_audit"||this.state.type=="audit_denied"||this.state.type=="new")?(
                       <div>
                         <NavLink to="/register/index/new/pid" exact><li className={this.state.path == "/re" ? "active" : ""}>Information Registration</li></NavLink>
                         <li className="disabled" onClick={this.disabled.bind(this)}>Security Tokenization</li>
