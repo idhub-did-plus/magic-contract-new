@@ -428,7 +428,7 @@ class Configure extends Component {
                                                 <img src={select} alt="下拉按钮" className="selIcon" onClick={this.select.bind(this,3)}/>
                                             </div>
                                             <div className="option" style={{display: this.state.optionBox3 ? "block" : "none"}}>
-                                                <div className="opt" onClick={this.option.bind(this,3)}>stCompliance-0.0.1-US</div>
+                                                <div className="opt" onClick={this.option.bind(this,3)}>stCompliance-0.0.1-USA</div>
                                             </div>
                                         </div>
                                     </div>
