@@ -182,7 +182,7 @@ export default class Home extends Component {
                     <div className={this.state.selTab == 1 ? "underline" : ""}></div>
                 </div>
                 <div className="tab2" onClick={this.handleCheck.bind(this,2)}>
-                    <div className={this.state.selTab == 2 ? "tab active" : "tab"}>Undeployed ST</div>
+                    <div className={this.state.selTab == 2 ? "tab active" : "tab"}>notdeployed ST</div>
                     <div className={this.state.selTab == 2 ? "underline" : ""}></div>
                     
                 </div>

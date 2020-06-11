@@ -409,6 +409,7 @@ class Configure extends Component {
                                             <div className="option" style={{display: this.state.optionBox1 ? "block" : "none"}}>
                                                 <div className="opt" onClick={this.option.bind(this,1)}>residence</div>
                                                 <div className="opt" onClick={this.option.bind(this,1)}>nationality</div>
+                                                <div className="opt" onClick={this.option.bind(this,1)}>jurisdictions</div>
                                             </div>
                                         </div>
                                         <div className="selBox">
