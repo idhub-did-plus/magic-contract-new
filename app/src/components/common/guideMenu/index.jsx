@@ -60,6 +60,7 @@ class Guide extends Component {
                     <NavLink to={pathRegister} exact><li className={this.state.path == "/re" ? "active" : ""}>Audit</li></NavLink>
                     <NavLink to={pathDeploy} exact><li className={this.state.path == "/de" ? "active" : ""}>Deploy Contract</li></NavLink>
                     <NavLink to={pathConfig} exact><li className={this.state.path == "/co" ? "active" : ""}>Compliance Configuration</li></NavLink>
+                    <NavLink to={pathDisclosure}><li className={this.state.path == "/di" ? "active" : ""}>Onchain Disclosure</li></NavLink>
                     <NavLink to={pathChangeOwner} exact><li className={this.state.path == "/ch" ? "active" : ""}>Owner Change</li></NavLink>
                   </div>
                   ):(
@@ -75,6 +76,7 @@ class Guide extends Component {
                         <li className="disabled" onClick={this.disabled.bind(this)}>Deploy Contract</li>
                         <li className="disabled" onClick={this.disabled.bind(this)}>Compliance Configuration</li>
                         <li className="disabled" onClick={this.disabled.bind(this)}>Owner Change</li>
+                        <li className="disabled" onClick={this.disabled.bind(this)}>Onchain Disclosure</li>
                       </div>
                     )
                   )
