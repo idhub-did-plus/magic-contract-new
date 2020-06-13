@@ -11,7 +11,7 @@ class Header extends Component {
   async handleLogin(){
     //退出登录
     try {
-      let response = await fetch('http://13.229.205.74:2006/auth/logout', {
+      let response = await fetch(process.env.REACT_APP_API_ROOT+'/auth/logout', {
         credentials: 'include', // include, same-origin, *omit
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
       })
@@ -19,7 +19,7 @@ class Header extends Component {
       json.then(res=>{
         if(res.success){
             window.location.reload();
-            this.props.history.push("/");
+            // this.props.history.push("/");
         }else{
           console.log("注销失败")
         }

@@ -61,7 +61,7 @@ class Guide extends Component {
                     <NavLink to={pathDeploy} exact><li className={this.state.path == "/de" ? "active" : ""}>Deploy Contract</li></NavLink>
                     <NavLink to={pathConfig} exact><li className={this.state.path == "/co" ? "active" : ""}>Compliance Configuration</li></NavLink>
                     <NavLink to={pathDisclosure}><li className={this.state.path == "/di" ? "active" : ""}>Onchain Disclosure</li></NavLink>
-                    <NavLink to={pathChangeOwner} exact><li className={this.state.path == "/ch" ? "active" : ""}>Owner Change</li></NavLink>
+                    <NavLink to={pathChangeOwner} exact><li className={this.state.path == "/ch" ? "active" : ""}>Transfer To Dealer</li></NavLink>
                   </div>
                   ):(
                     this.state.claim=="BD"&&(this.state.type=="editing"||this.state.type=="ready_for_audit"||this.state.type=="audit_denied"||this.state.type=="new")?(
@@ -75,7 +75,7 @@ class Guide extends Component {
                         <NavLink to="/register/index/new/pid" exact><li className={this.state.path == "/re" ? "active" : ""}>Audit</li></NavLink>
                         <li className="disabled" onClick={this.disabled.bind(this)}>Deploy Contract</li>
                         <li className="disabled" onClick={this.disabled.bind(this)}>Compliance Configuration</li>
-                        <li className="disabled" onClick={this.disabled.bind(this)}>Owner Change</li>
+                        <li className="disabled" onClick={this.disabled.bind(this)}>Transfer To Dealer</li>
                         <li className="disabled" onClick={this.disabled.bind(this)}>Onchain Disclosure</li>
                       </div>
                     )

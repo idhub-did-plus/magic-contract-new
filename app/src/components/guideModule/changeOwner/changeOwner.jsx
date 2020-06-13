@@ -119,11 +119,11 @@ class ChangeOwner extends Component {
                     <Guide params={this.state.params}/>
                 </div>
                 <div className="contentBox">
-                    <div className="title">Owner Change</div>
+                    <div className="title">Transfer To Dealer</div>
                     <div className="article">
                         <div className="label">Agent Identity:</div>
                         <div className="text">{this.state.agentIdentity}</div>
-                        <p className="button" onClick={this.ChangeOwner}>Change Owner</p>
+                        <p className="button" onClick={this.ChangeOwner}>Transfer To Dealer</p>
                     </div>
                 </div>
             </div>

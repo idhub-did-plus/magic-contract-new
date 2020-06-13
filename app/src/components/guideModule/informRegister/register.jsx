@@ -613,13 +613,13 @@ class InformRegister extends Component {
     }
   }
   render(){
-    //   const Asset = ["产权","债务","债券","艺术","房地产","基金","其他"];
+    //   const Asset = ["股权","产权","债务","债券","艺术","房地产","基金","其他"];
     //   const Judicial = ["美国","加拿大","亚洲","欧洲","澳大利亚","拉丁美洲","非洲","其他"];
     //   const Partners = ["Yes","No"];
     //   const RaiseBefore = ["Yes","No"];
     //   const Steps = ["聘请证券律师","筹款的最终条款","准备了法律文件","准备了营销文件"];
     
-    const Asset = ["property","debt","Bond","art","real estate","fund","other"];
+    const Asset = ["share","property","debt","Bond","art","real estate","fund","other"];
     const Judicial = ["USA","Canada","Asia","Europe","Australia","Latin America","Africa","other"];
     const Partners = ["Yes","No"];
     const RaiseBefore = ["Yes","No"];

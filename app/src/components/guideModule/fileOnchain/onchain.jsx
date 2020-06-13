@@ -120,7 +120,7 @@ class Online extends Component {
   async fileSub(){
       let file = this.file.files[0];
       let url = this.state.baseURL+"/material/upload_material";
-      url += ("?pid="+this.state.pid+"&type="+this.type.value+"&name="+this.type.value+"&content="+this.desc.value);
+      url += ("?pid="+this.state.pid+"&type="+this.type.value+"&name="+this.name.value+"&content="+this.desc.value);
 
       var formData = new FormData();
       formData.append("file",file);
@@ -209,7 +209,7 @@ class Online extends Component {
       // });
       await inst.setDocument(name,url,hash).then(()=>{
           //调接口存储发行信息
-          this.onChainTime();
+          this.onChainTime(fileId);
       });
       // await inst.controllers().then((value)=>{
       //     //调接口存储发行信息
@@ -217,8 +217,8 @@ class Online extends Component {
       //     console.log(value)
       // });
   }
-  async onChainTime(){
-    let url = this.state.baseURL+"/material/onchain?pid="+this.state.pid;
+  async onChainTime(fileId){
+    let url = this.state.baseURL+"/material/onchain?id="+fileId;
     try {
         let response = await fetch(url, {
           credentials: 'include',
@@ -267,7 +267,7 @@ class Online extends Component {
                                         <div className="td">{item.name}</div>
                                         <div className="td">{item.contentDescription}</div>
                                         <div className="td">{item.uploadTime}</div>
-                                        <div className="td">2020.05.30  23:45:45</div>
+                                        <div className="td">{item.onchainTime}</div>
                                         <div className="td">
                                             <div className="on" style={{display: item.onchain?"block":"none"}}>已上链</div>
                                             <div className="un" onClick={this.onChain.bind(this,item.id,index)} style={{display: item.onchain?"none":"block",cursor:'pointer'}}>上链</div>
@@ -290,6 +290,10 @@ class Online extends Component {
                             <div className="informRow">
                                 <label htmlFor="desc">File Type: </label>
                                 <input type="text" id="desc" ref={el=>this.type=el} placeholder="lagal/marketting/whitepaper/token_icon/other"/>
+                            </div>
+                            <div className="informRow">
+                                <label htmlFor="desc">File Name: </label>
+                                <input type="text" id="desc" ref={el=>this.name=el} />
                             </div>
                             <div className="informRow">
                                 <label htmlFor="desc">Content description: </label>
