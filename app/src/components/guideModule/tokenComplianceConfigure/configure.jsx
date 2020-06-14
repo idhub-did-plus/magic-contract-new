@@ -155,7 +155,7 @@ class Configure extends Component {
     //合规配置后做控制权转移
     
   }
-  Register(){
+  Register(param){
     // 合规服务注册
     var MyContract = contract(ComplianceServiceRegistry)
     this.utils = this.props.drizzle.web3.utils;
@@ -167,7 +167,13 @@ class Configure extends Component {
       });
     
     var contractAddr = this.addr.innerText;
-    var configuration = this.personalise.value; 
+
+    if(param=="check"){
+        var configuration = this.personalise.value; 
+    }
+    if(param=="nocheck"){
+        var configuration = this.noCheck.value; 
+    }
     
     if(!this.utils.isAddress(contractAddr)){
         alert("Please deploy the contract first")
@@ -388,6 +394,12 @@ class Configure extends Component {
                                 </div>
                                 <div className="tab">Compliance Service Address</div>
                             </div>
+                            <div className="noCheck" onClick={this.changeTab.bind(this,3)}>
+                                <div className="unCheck">
+                                    <div className="check" style={{display: this.state.tabIndex == 3 ? "block" : "none"}}></div>
+                                </div>
+                                <div className="tab">Nocheck Compliance Service Address</div>
+                            </div>
                         </div>
                         <div className="configureContent" style={{display: this.state.tabIndex == 1 ? "block" : "none"}}>
                             <div className="row">
@@ -492,13 +504,16 @@ class Configure extends Component {
                             <div className="formRow">
                                 <label htmlFor="personalise">Compliance service address: </label>
                                 <input  ref={el=>this.personalise=el} type="text" id="personalise"/>
-                                                          </div>
-                            <div className="formRow">
-                     
-                                    <label htmlFor="nocheck">Nocheck Compliance service address: {this.props.drizzle.contracts['NocheckComplianceService'].address}</label>
-                                
                             </div>
-                            <div className="sub" onClick={this.Register.bind(this)}>Submit</div>
+                            <div className="sub" onClick={this.Register.bind(this,"check")}>Submit</div>
+                        </form>
+                        <form action="" autoComplete="off" style={{display: this.state.tabIndex == 3 ? "flex" : "none"}}>
+                            <div className="formRow">
+                                <label htmlFor="nocheck">Nocheck Compliance service address:</label>
+                                {/* <input  ref={el=>this.noCheck=el} type="text" id="noCheck" defaultValue="取合约地址"/> */}
+                                <input  ref={el=>this.noCheck=el} type="text" id="noCheck" defaultValue={this.props.drizzle.contracts['NocheckComplianceService'].address}/>
+                            </div>
+                            <div className="sub" onClick={this.Register.bind(this,"nocheck")}>Submit</div>
                         </form>
                     </div>
                 </div>

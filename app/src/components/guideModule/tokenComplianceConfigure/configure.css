@@ -66,11 +66,13 @@
 }
 .section .configureTabBox{
     width: 100%;
-    padding-left: 18%;
+    padding-left: 15%;
     display: flex;
     justify-content: flex-start;
+    margin-top: 5px;
+    margin-bottom: 10px;
 }
-.section .configureTabBox .defaultService,.personalise{
+.section .configureTabBox .defaultService,.personalise,.noCheck{
     width: 30%;
     min-width: 200px;
     height: 26px;
@@ -80,9 +82,15 @@
     align-items: center;
     cursor: pointer;
 }
+.section .configureTabBox .defaultService,.personalise{
+    width: 20%;
+    margin-right: 2%;
+}
 .section .configureTabBox .defaultService{
-    justify-content: flex-end;
-    margin-right: 30px;
+    justify-content: center;
+}
+.section .configureTabBox .noCheck{
+    min-width: 260px;
 }
 .section .configureTabBox .unCheck{
     width:16px;
@@ -116,20 +124,20 @@
     position: relative;
 }
 .section form .formRow{
-    width: 60%;
+    width: 80%;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     margin-bottom: 15px;
-    padding-left: 35%;
 }
 .section form .formRow label{
-    width: 40%;
+    width: 48%;
     min-width: 180px;
     text-align: right;
     height:38px;
     line-height: 38px;
     font-weight:400;
     color:rgba(90,104,114,1);
+    white-space: nowrap;
 }
 .section form .formRow input{
     width: 50%;
@@ -195,7 +203,7 @@ form .sub{
     color: rgba(90,104,114,1);
     width: 20%;
     min-width: 200px;
-    margin-left: 18%;
+    margin-left: 15%;
     padding-right: 3%;
     overflow: hidden;
     text-overflow: ellipsis;
