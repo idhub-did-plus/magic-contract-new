@@ -9,6 +9,7 @@ import "./configure.css"
 import { DrizzleContext } from "@drizzle/react-plugin";
 import ComplianceServiceRegistry from "../../../contracts/ComplianceServiceRegistry.json";
 import ComplianceConfiguration from "../../../contracts/ConfigurableComplianceService.json";
+import Nocheck from "../../../contracts/NocheckComplianceService.json";
 var contract = require("@truffle/contract");
 
 class Configure extends Component {
@@ -36,6 +37,7 @@ class Configure extends Component {
     this.handleAddAnd = this.handleAddAnd.bind(this);
     this.handleAddOr = this.handleAddOr.bind(this);
     this.cancelOptionBox = this.cancelOptionBox.bind(this);
+
   }
   changeTab(index){
     this.setState({
@@ -490,6 +492,11 @@ class Configure extends Component {
                             <div className="formRow">
                                 <label htmlFor="personalise">Compliance service address: </label>
                                 <input  ref={el=>this.personalise=el} type="text" id="personalise"/>
+                                                          </div>
+                            <div className="formRow">
+                     
+                                    <label htmlFor="nocheck">Nocheck Compliance service address: {this.props.drizzle.contracts['NocheckComplianceService'].address}</label>
+                                
                             </div>
                             <div className="sub" onClick={this.Register.bind(this)}>Submit</div>
                         </form>
