@@ -124,7 +124,7 @@ contract ERC1400 is IERC1400,IERC20  {
     owner = msg.sender;
     _totalSupply = 0;
     csr = ComplianceServiceRegistry(ComplianceServiceRegistryAddr);
-    _controllers = controllers;
+    _setControllers(controllers);
   }
 
   /********************** ERC1400 EXTERNAL FUNCTIONS **************************/

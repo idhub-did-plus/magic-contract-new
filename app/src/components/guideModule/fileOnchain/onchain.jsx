@@ -189,8 +189,7 @@ class Online extends Component {
       
       this.MyContract.setProvider(web3.currentProvider);
       this.MyContract.defaults({
-        from: this.props.drizzleState.accounts[0],
-        gas: 300000000
+        from: this.props.drizzleState.accounts[0]
       });
 
       var name = this.state.fileList[index].name;
