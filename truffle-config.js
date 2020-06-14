@@ -8,12 +8,13 @@ module.exports = {
   networks: {
     develop: {
       port: 7545
-    },
+    }
+    /*
     live: {
       host:"39.105.90.35",
       port: 8099,
       network_id: 6777
-    }
+    }*/
   },
   compilers:{
     solc:{
