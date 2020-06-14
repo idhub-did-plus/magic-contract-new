@@ -12,8 +12,8 @@ const options = {
   web3: {
     block: false,
     fallback: {
-      type: "ws",
-      url: "ws://localhost:7545",
+      type: "http",
+      url: "http://39.105.90.35:8099",
     },
   },
   contracts: [EthereumClaimsRegistry,IdentityRegistry, EthereumDIDRegistry,ERC1056, ComplianceServiceRegistry, ConfigurableComplianceService, NocheckComplianceService],
