@@ -1,6 +1,5 @@
 const ComplianceServiceRegistry = artifacts.require("ComplianceServiceRegistry");
 const ConfigurableComplianceService = artifacts.require("ConfigurableComplianceService");
-const ComplianceConfiguration = artifacts.require("ComplianceConfiguration");
 
 const EthereumClaimsRegistry = artifacts.require("EthereumClaimsRegistry");
 const IdentityRegistry = artifacts.require("IdentityRegistry");
@@ -17,5 +16,8 @@ module.exports = function (deployer) {
     deployer.deploy(Strings);
     deployer.link(Strings, ConfigurableComplianceService);
 
-    deployer.deploy(ComplianceServiceRegistry);
+   deployer.deploy(ComplianceServiceRegistry).then(function(instance){
+    instance.setDefaultService(ConfigurableComplianceService.address);
+   })
+  
 }

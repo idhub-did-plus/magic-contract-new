@@ -1,7 +1,5 @@
 import ComplianceServiceRegistry from "../contracts/ComplianceServiceRegistry.json";
 import ConfigurableComplianceService from "../contracts/ConfigurableComplianceService.json";
-import ComplianceConfiguration from "../contracts/ComplianceConfiguration.json";
-
 import EthereumClaimsRegistry from "../contracts/EthereumClaimsRegistry.json";
 import IdentityRegistry  from "../contracts/IdentityRegistry.json";
 import EthereumDIDRegistry  from "../contracts/EthereumDIDRegistry.json";
@@ -16,7 +14,7 @@ const options = {
       url: "ws://localhost:7545",
     },
   },
-  contracts: [EthereumClaimsRegistry,IdentityRegistry, EthereumDIDRegistry,ERC1056, ComplianceServiceRegistry, ConfigurableComplianceService, ComplianceConfiguration],
+  contracts: [EthereumClaimsRegistry,IdentityRegistry, EthereumDIDRegistry,ERC1056, ComplianceServiceRegistry, ConfigurableComplianceService],
   events: {
    
   },

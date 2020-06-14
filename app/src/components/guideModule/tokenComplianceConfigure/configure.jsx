@@ -8,7 +8,7 @@ import del from "../../../assets/delete@2x (1).png"
 import "./configure.css"
 import { DrizzleContext } from "@drizzle/react-plugin";
 import ComplianceServiceRegistry from "../../../contracts/ComplianceServiceRegistry.json";
-import ComplianceConfiguration from "../../../contracts/ComplianceConfiguration.json";
+import ComplianceConfiguration from "../../../contracts/ConfigurableComplianceService.json";
 var contract = require("@truffle/contract");
 
 class Configure extends Component {
