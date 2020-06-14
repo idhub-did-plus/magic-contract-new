@@ -65,8 +65,7 @@ class TokenComplianceConfigurationComponent extends Component{
         }else{
             console.log(ComplianceServiceRegistry.methods)
             ComplianceServiceRegistry.methods.register(token,service).send({
-                from:this.props.drizzleState.accounts[0],
-                gas:30000
+                from:this.props.drizzleState.accounts[0]
             });
         }
         
@@ -98,8 +97,7 @@ class TokenComplianceConfigurationComponent extends Component{
             alert("please input right address");
         }else{
             ComplianceServiceRegistry.methods.setConfiguration(token,configuration).send({
-                from:this.props.drizzleState.accounts[0],
-                gas:300000
+                from:this.props.drizzleState.accounts[0]
             });
         }
     }

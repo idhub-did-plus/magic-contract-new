@@ -161,8 +161,7 @@ class Configure extends Component {
     let web3 = this.props.drizzle.web3;
     this.MyContract.setProvider(web3.currentProvider);
     this.MyContract.defaults({
-        from : this.props.drizzleState.accounts[0],
-        gas: 300000
+        from : this.props.drizzleState.accounts[0]
       });
     
     var contractAddr = this.addr.innerText;
