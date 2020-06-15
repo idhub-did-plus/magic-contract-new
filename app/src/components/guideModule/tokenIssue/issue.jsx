@@ -23,7 +23,8 @@ class Issue extends Component {
         partitionList:[],
         partitionIndex:"",
         issueByPartitionOrNot:true,
-        issueList:[]
+        issueList:[],
+        decimals:""
     };
     this.handleSelect = this.handleSelect.bind(this);
     this.handleIssue = this.handleIssue.bind(this);
@@ -50,6 +51,8 @@ class Issue extends Component {
       this.MyContract.setProvider(web3.currentProvider);
 
       var amount = this.amount.value;
+      console.log(amount)
+      amount = String(amount*Math.pow(10,this.state.decimals));
       var receiver = this.receiver.value;
 
       if(!this.utils.isAddress( this.state.tookenAddress)){
@@ -69,6 +72,7 @@ class Issue extends Component {
         alert("input correct partition please!")
         return
       }
+      console.log(typeof(amount),amount)
       console.log(partition,amount,receiver);
       let inst = await this.MyContract.at(this.state.tookenAddress)
       await inst.issueByPartition(
@@ -78,7 +82,7 @@ class Issue extends Component {
         "0x0000",
         { from: this.props.drizzleState.accounts[0] }).then(()=>{
           //调接口存储发行信息
-          this.saveIssue(partition,amount,receiver);
+          this.saveIssue(partition,this.amount.value,receiver);
         });
 
       return;
@@ -90,7 +94,7 @@ class Issue extends Component {
         "0x0000",
         { from: this.props.drizzleState.accounts[0] }).then(()=>{
           //调接口存储发行信息
-          this.saveIssue(partition,amount,receiver)
+          this.saveIssue(partition,this.amount.value,receiver)
         });
 
       return;
@@ -174,6 +178,7 @@ class Issue extends Component {
             console.log(res.data[index])
               this.setState({
                 tookenAddress:res.data[index].deployedToken.contractAddress,
+                decimals:res.data[index].deployedToken.decimals,
                 issueByPartitionOrNot:res.data[index].tokenConfig==null||res.data[index].tokenConfig.partitions==null?false:true
               })
               
@@ -188,6 +193,7 @@ class Issue extends Component {
     }
   }
   async saveIssue(partition,amount,receiver) {
+    console.log(amount)
     let url = this.state.baseURL+"/issurance/record?projectId="+this.state.pid+"&tokenAddress="+this.state.tookenAddress+"&partition="+partition
               +"&amount="+amount+"&receiverAddress="+receiver;
 
