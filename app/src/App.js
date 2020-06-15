@@ -29,6 +29,7 @@ class App extends Component {
 
                 return (<div>
                   Supported networks:   {Object.keys(ns).join()}
+                  <br/>If application halting at this point for a long time, please check your wallet to see it connected to the right network!
                   <br/>Loading...
                   </div>
                   );
