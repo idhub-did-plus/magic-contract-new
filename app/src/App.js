@@ -25,7 +25,13 @@ class App extends Component {
               const { drizzle, drizzleState, initialized } = drizzleContext;
 
               if (!initialized) {
-                return "Loading...";
+                let ns = drizzle.options.contracts[0].networks;
+
+                return (<div>
+                  Supported networks:   {Object.keys(ns).join()}
+                  <br/>Loading...
+                  </div>
+                  );
               }
               return (
                 <LoginController drizzle={drizzle} drizzleState={drizzleState}>
