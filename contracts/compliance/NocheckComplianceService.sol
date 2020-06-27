@@ -4,7 +4,7 @@ import "./ComplianceService.sol";
 
 contract NocheckComplianceService {
   
-    function checkCompliance(address token, address from, address to) public view returns (bool) {
+    function checkCompliance(address token, address from, address to, uint256 _value) public view returns (bool) {
  
         return true;
     }

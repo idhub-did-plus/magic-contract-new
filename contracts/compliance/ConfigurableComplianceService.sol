@@ -32,7 +32,7 @@ contract ConfigurableComplianceService is ComplianceConfiguration, ComplianceSer
         return trustedIssuer;
     }
     
-    function checkCompliance(address token, address from, address to) public view returns (bool) {
+    function checkCompliance(address token, address from, address to, uint256 _value) public view returns (bool) {
         bool rstSender = checkSenderOnly(token, from);
         bool rstReceiver = checkReceiverOnly(token, to);
         return rstSender && rstReceiver;
