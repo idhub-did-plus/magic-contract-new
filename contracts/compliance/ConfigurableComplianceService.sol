@@ -3,10 +3,10 @@ pragma solidity ^0.5.0;
 import "./ComplianceService.sol";
 import "./ComplianceConfiguration.sol";
 import "./libs/Strings.sol";
-import "./ownable/Ownable.sol";
-import "./interfaces/EthereumClaimsRegistryInterface.sol";
-import "./interfaces/IdentityRegistryInterface.sol";
-import "./interfaces/EthereumDIDRegistryResolverInterface.sol";
+
+import "../interfaces/EthereumClaimsRegistryInterface.sol";
+import "../interfaces/IdentityRegistryInterface.sol";
+import "../interfaces/EthereumDIDRegistryResolverInterface.sol";
 
 contract ConfigurableComplianceService is ComplianceConfiguration, ComplianceService {
     using Strings for *;
