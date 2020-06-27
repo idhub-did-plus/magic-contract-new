@@ -5,11 +5,11 @@ import "../ComplianceService.sol";
 contract CompositeCS is ComplianceService {
  
     address[] public components;
-    bool and;
+
     
     constructor ( address[] memory cs, bool a) public {
      components = cs;
-     and = a;
+
     }
     
 
@@ -19,16 +19,13 @@ contract CompositeCS is ComplianceService {
           for (uint i = 0; i< components.length; i++){
               ComplianceService c = ComplianceService(components[i]);
               bool passed = c.checkCompliance(token, from, to, _value);
-              if(and){
+       
                 if(!passed)
                   return false;
-              }else{
-                if(passed)
-                  return true;
-              }
+            
 
           }
-        return and?true:false;
+        return true;
     }
     
 }
