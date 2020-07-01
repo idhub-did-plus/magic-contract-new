@@ -2,8 +2,8 @@ pragma solidity ^0.5.0;
 
 import "./interfaces/IERC1400.sol";
 import "./libs/SafeMath.sol";
-import "./interfaces/ComplianceService.sol";
-import "./interfaces/ComplianceServiceRegistry.sol";
+import "../compliance/ComplianceService.sol";
+import "../compliance/ComplianceServiceRegistry.sol";
 import "./interfaces/IERC20.sol";
 
 /**
@@ -384,7 +384,7 @@ contract ERC1400 is IERC1400,IERC20  {
     // _PartitionwithLock[_partition] = Lockdata;
     //require(wl.FindPersonal(_tokenHolder) == true); 
     ComplianceService cs = ComplianceService(csr.findService(address(this)));
-    require(cs.checkCompliance(address(this),msg.sender,_tokenHolder) ==true);
+    require(cs.checkCompliance(address(this),msg.sender,_tokenHolder, _value) ==true);
     _issueByPartition(_partition, msg.sender,_tokenHolder,_value,_data, "");
   }
   /**
@@ -710,7 +710,7 @@ contract ERC1400 is IERC1400,IERC20  {
     //require(wl.FindPersonal(_from) == true);
     //require(wl.FindPersonal(_to) == true);
     ComplianceService cs = ComplianceService(csr.findService(address(this)));
-    require(cs.checkCompliance(address(this),_from,_to) == true);
+    require(cs.checkCompliance(address(this),_from,_to,_value) == true);
     // require(now >=Lockdata);
     require(_isMultiple(_value));
     require(_balanceOfByPartition[_from][_fromPartition] >= _value, "A4"); // Transfer Blocked - Sender balance insufficient
