@@ -7,7 +7,7 @@ contract CompositeCS is ComplianceService {
     address[] public components;
 
     
-    constructor ( address[] memory cs, bool a) public {
+    constructor ( address[] memory cs) public {
      components = cs;
 
     }
