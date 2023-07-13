@@ -966,6 +966,14 @@
   resolved "https://registry.npm.taobao.org/@csstools/convert-colors/download/@csstools/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
   integrity sha1-rUldxBsS511YjG24uYNPCPoTHrc=
 
+"@dfuse/client@^0.3.1":
+  version "0.3.21"
+  resolved "https://registry.yarnpkg.com/@dfuse/client/-/client-0.3.21.tgz#4c292337bfa72e98a63dba621a923bc1f6992850"
+  integrity sha512-pJu+XEzBx8gEVaZaYNnUnwSMohKEQkpV9Iiz4w5myS80Vm/NAwcUcDaG/csqRpWTIw/tlD6VrHZDXoevPFgtsg==
+  dependencies:
+    "@types/debug" "^0.0.31"
+    debug "^4.1.0"
+
 "@drizzle/react-components@^1.5.0":
   version "1.5.0"
   resolved "https://registry.npm.taobao.org/@drizzle/react-components/download/@drizzle/react-components-1.5.0.tgz#9d7807585c20832bcb55ceecde81204ecd39add9"
@@ -1135,6 +1143,11 @@
   integrity sha1-QONhl0M/ePgHUk7GI6/PAWmsgdw=
   dependencies:
     "@types/node" "*"
+
+"@types/debug@^0.0.31":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@types/debug/-/debug-0.0.31.tgz#bac8d8aab6a823e91deb7f79083b2a35fa638f33"
+  integrity sha512-LS1MCPaQKqspg7FvexuhmDbWUhE2yIJ+4AgVIyObfc06/UKZ8REgxGNjZc82wPLWmbeOm7S+gSsLgo75TanG4A==
 
 "@types/node@*", "@types/node@^12.6.1":
   version "12.12.6"
@@ -5828,9 +5841,9 @@ htmlparser2@^3.3.0:
     readable-stream "^3.1.1"
 
 http-cache-semantics@^4.0.0:
-  version "4.0.3"
-  resolved "https://registry.npm.taobao.org/http-cache-semantics/download/http-cache-semantics-4.0.3.tgz#495704773277eeef6e43f9ab2c2c7d259dda25c5"
-  integrity sha1-SVcEdzJ37u9uQ/mrLCx9JZ3aJcU=
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/http-cache-semantics/-/http-cache-semantics-4.1.1.tgz#abe02fcb2985460bf0323be664436ec3476a6d5a"
+  integrity sha512-er295DKPVsV82j5kw1Gjt+ADA/XYHsajl82cGNQG2eyoPkvgUhX+nDIyelzhIWbbsXP39EHcI6l5tYs2FYqYXQ==
 
 http-deceiver@^1.2.7:
   version "1.2.7"
@@ -7276,6 +7289,11 @@ last-call-webpack-plugin@^3.0.0:
   dependencies:
     lodash "^4.17.5"
     webpack-sources "^1.1.0"
+
+layui-src@^2.5.5:
+  version "2.6.8"
+  resolved "https://registry.yarnpkg.com/layui-src/-/layui-src-2.6.8.tgz#1a4464b9fcce1eb5dfba2b5083af34ddd80247e4"
+  integrity sha512-XNJN2q65Gp438LoQRTV6+ErGQ3AnDPMJRtFELy5OF2Ubw2+3xodqVcI6peRcqblUBwDMy/gmp2ngocqOsP1HFA==
 
 lazy-cache@^0.2.3:
   version "0.2.7"
@@ -11212,6 +11230,11 @@ swarm-js@0.1.39:
     setimmediate "^1.0.5"
     tar "^4.0.2"
     xhr-request-promise "^0.1.2"
+
+swiper@^3.4.2:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/swiper/-/swiper-3.4.2.tgz#39d6b410b1a39833e1f72d3b72999df5f5e38392"
+  integrity sha512-bXolyzBIawQRluQwFbN8DYpe6Q02bKJ2/h4JV+6dzN/WX8a8ZFPa+F0o8z7hEHSyh2NzKkTWaogaTZYVfgmKTw==
 
 symbol-observable@^1.2.0:
   version "1.2.0"
